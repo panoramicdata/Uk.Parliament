@@ -26,7 +26,7 @@ namespace Uk.Parliament.Test
 			};
 
 			Output.WriteLine("Executing");
-			var result = _petitionsClient.GetManyAsync<Petition>(query).Result;
+			var result = _petitionsClient.GetPetitions(query);
 
 			// We should have a result
 			Assert.NotNull(result);
@@ -40,11 +40,11 @@ namespace Uk.Parliament.Test
 			Assert.True(data.Count >= 2);
 
 			// The SignaturesByCountry SHOULD NOT be set
-			Assert.All(data.Select(d=>d.Attributes?.SignaturesByCountry), Assert.Null);
+			Assert.All(data.Select(d => d.Attributes?.SignaturesByCountry), Assert.Null);
 
 			foreach (var petitionId in data.Select(p => p.Id))
 			{
-				var fullPetition = _petitionsClient.GetSingleAsync<Petition>(petitionId).Result;
+				var fullPetition = _petitionsClient.GetPetition(petitionId);
 				Assert.NotNull(fullPetition.Data);
 				Assert.NotNull(fullPetition.Data.Attributes);
 				// The SignaturesByCountry SHOULD be set

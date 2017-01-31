@@ -62,11 +62,11 @@ namespace Uk.Parliament.Petitions
 		/// <typeparam name="T">The type</typeparam>
 		/// <param name="id">The entity id</param>
 		/// <returns></returns>
-		public async Task<Result<T>> GetSingleAsync<T>(int id) where T : Resource, new()
+		private async Task<Result<T>> GetSingleAsync<T>(int id) where T : Resource, new()
 		{
 			try
 			{
-				var path = $"{new T{Id=id}.Endpoint}";
+				var path = $"{new T { Id = id }.Endpoint}";
 
 				var response = await _httpClient.GetAsync(path).ConfigureAwait(false);
 				var data = await GetPayloadAsync<T>(response);
@@ -84,7 +84,7 @@ namespace Uk.Parliament.Petitions
 		/// <typeparam name="T">The type</typeparam>
 		/// <param name="query">An optional query</param>
 		/// <returns></returns>
-		public async Task<Result<List<T>>> GetManyAsync<T>(Query query) where T : Resource, new()
+		private async Task<Result<List<T>>> GetManyAsync<T>(Query query) where T : Resource, new()
 		{
 			try
 			{
@@ -99,6 +99,26 @@ namespace Uk.Parliament.Petitions
 			{
 				return new Result<List<T>>(ex);
 			}
+		}
+
+		/// <summary>
+		/// Get all petitions that match a query
+		/// </summary>
+		/// <param name="query">The query</param>
+		/// <returns>The matching petitions</returns>
+		public Result<List<Petition>> GetPetitions(Query query)
+		{
+			return GetManyAsync<Petition>(query).Result;
+		}
+
+		/// <summary>
+		/// Gets a single petition by its Id
+		/// </summary>
+		/// <param name="petitionId">The petition id</param>
+		/// <returns>The petition</returns>
+		public Result<Petition> GetPetition(int petitionId)
+		{
+			return GetSingleAsync<Petition>(petitionId).Result;
 		}
 	}
 }
