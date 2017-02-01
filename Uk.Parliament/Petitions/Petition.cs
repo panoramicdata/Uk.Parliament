@@ -7,7 +7,7 @@ namespace Uk.Parliament.Petitions
 	/// <summary>
 	/// A petition resource
 	/// </summary>
-	[DataContract(Name="petition")]
+	[DataContract(Name = "petition")]
 	[UsedImplicitly]
 	public class Petition : Resource
 	{
