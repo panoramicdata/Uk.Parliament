@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uk.Parliament.Test", "Uk.Parliament.Test\Uk.Parliament.Test.csproj", "{3D3AFF94-8160-44F7-BC27-35DC86BC6E56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uk.Parliament.NuGet", "Uk.Parliament.NuGet\Uk.Parliament.NuGet.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E32ACD4-3E41-4B3E-9BDC-38A7F7C1244E} = {1E32ACD4-3E41-4B3E-9BDC-38A7F7C1244E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

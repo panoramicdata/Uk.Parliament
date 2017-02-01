@@ -1,1 +1,1 @@
-.\publishToNuget.ps1 -apiKey bc53489e-510b-43d3-ad88-485a68b7c834 -folder ..\bin\Release\
+.\publishToNuget.ps1 -apiKey bc53489e-510b-43d3-ad88-485a68b7c834 -folder .

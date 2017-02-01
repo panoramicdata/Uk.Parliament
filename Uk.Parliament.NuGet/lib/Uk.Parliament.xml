@@ -1,0 +1,408 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Uk.Parliament</name>
+    </assembly>
+    <members>
+        <member name="T:Uk.Parliament.Exceptions.HttpStatusResponseException">
+            <summary>
+            An HTTP Status response exception
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Exceptions.HttpStatusResponseException.#ctor(System.Net.HttpStatusCode,System.String)">
+            <summary>
+             Constructor
+            </summary>
+            <param name="statusCode"></param>
+            <param name="message"></param>
+        </member>
+        <member name="T:Uk.Parliament.Exceptions.MissingPayloadResponseException">
+            <summary>
+            Missing payload response exception
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Interfaces.Resource">
+            <summary>
+            An API resource
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Interfaces.Resource.#ctor(System.String)">
+            <summary>
+             Constructor
+            </summary>
+            <param name="baseEndpoint"></param>
+        </member>
+        <member name="P:Uk.Parliament.Interfaces.Resource.Id">
+            <summary>
+             The Id
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Interfaces.Resource.Links">
+            <summary>
+             The links
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Interfaces.Resource.Endpoint">
+            <summary>
+             The API endpoint
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.ApiResponse`1">
+            <summary>
+            An API response
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.ApiResponse`1.Links">
+            <summary>
+            Links
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.ApiResponse`1.Data">
+            <summary>
+            The data
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.CountrySignatures">
+            <summary>
+            Country signatures
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.CountrySignatures.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.CountrySignatures.Code">
+            <summary>
+            Code
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.CountrySignatures.SignatureCount">
+            <summary>
+            Signature count
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.Links">
+            <summary>
+             Response links
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Links.Self">
+            <summary>
+            Self link
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Links.First">
+            <summary>
+            First link
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Links.Last">
+            <summary>
+            Last link
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Links.Next">
+            <summary>
+            Next link
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Links.Previous">
+            <summary>
+            Previous link
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.Petition">
+            <summary>
+            A petition resource
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.Petition.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Petition.Attributes">
+            <summary>
+             The petition attributes
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.Petition.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Uk.Parliament.Petitions.PetitionAttributes">
+            <summary>
+            Petition attributes
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.Action">
+            <summary>
+            The action
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.Background">
+            <summary>
+            The background
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.AdditionalDetails">
+            <summary>
+            Additional details
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.State">
+            <summary>
+            The current state
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.SignatureCount">
+            <summary>
+            The number of signatures
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.CreatedAt">
+            <summary>
+            created_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.UpdatedAtUtc">
+            <summary>
+            updated_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.OpenAtUtc">
+            <summary>
+            open_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.ClosedAtUtc">
+            <summary>
+            closed_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.GovernmentResponseAtUtc">
+            <summary>
+            government_response_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.ScheduledDebateDate">
+            <summary>
+            The scheduled_debate_date
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.DebateThresholdReachedAtUtc">
+            <summary>
+            debate_threshold_reached_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.RejectedAt">
+            <summary>
+            rejected_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.DebateOutcomeAt">
+            <summary>
+            debate_outcome_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.ModerationThresholdReachedAt">
+            <summary>
+            moderation_threshold_reached_at
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.CreatorName">
+            <summary>
+            The creator_name
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.Rejection">
+            <summary>
+            The rejection
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.GovernmentResponse">
+            <summary>
+            The government response
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.Debate">
+            <summary>
+            The debate
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionAttributes.SignaturesByCountry">
+            <summary>
+             The petition signatures by country
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.PetitionAttributes.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Uk.Parliament.Petitions.PetitionDebate">
+            <summary>
+            Petition debate
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionDebate.DebatedOnDate">
+            <summary>
+            The date on which the petition was debated
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionDebate.TranscriptUrl">
+            <summary>
+            The transcript url
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionDebate.VideoUrl">
+            <summary>
+            The video_url
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionDebate.Overview">
+            <summary>
+            The overview
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.PetitionGovernmentResponse">
+            <summary>
+            A government response to a petition
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionGovernmentResponse.Summary">
+            <summary>
+            The summary
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionGovernmentResponse.Details">
+            <summary>
+            The details
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionGovernmentResponse.CreatedAtUtc">
+            <summary>
+            When the response was created
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.PetitionGovernmentResponse.UpdatedAtUtc">
+            <summary>
+            When the response was updated
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.PetitionsClient">
+            <summary>
+            A UK Parliament PetitionsClient
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.PetitionsClient.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.PetitionsClient.GetSingleAsync``1(System.Int32)">
+            <summary>
+            Get many items of type T
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="id">The entity id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.PetitionsClient.GetManyAsync``1(Uk.Parliament.Petitions.Query)">
+            <summary>
+            Get many items of type T
+            </summary>
+            <typeparam name="T">The type</typeparam>
+            <param name="query">An optional query</param>
+            <returns></returns>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.PetitionsClient.GetPetitions(Uk.Parliament.Petitions.Query)">
+            <summary>
+            Get all petitions that match a query
+            </summary>
+            <param name="query">The query</param>
+            <returns>The matching petitions</returns>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.PetitionsClient.GetPetition(System.Int32)">
+            <summary>
+            Gets a single petition by its Id
+            </summary>
+            <param name="petitionId">The petition id</param>
+            <returns>The petition</returns>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.PetitionState">
+            <summary>
+            Petition state
+            </summary>
+        </member>
+        <member name="F:Uk.Parliament.Petitions.PetitionState.Open">
+            <summary>
+            Open
+            </summary>
+        </member>
+        <member name="F:Uk.Parliament.Petitions.PetitionState.Closed">
+            <summary>
+            Closed
+            </summary>
+        </member>
+        <member name="T:Uk.Parliament.Petitions.Query">
+            <summary>
+             A query
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Query.Text">
+            <summary>
+             The query text
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Query.PageSize">
+            <summary>
+            The maximum number to take
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Query.PageNumber">
+            <summary>
+            The page to retrieve
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.Query.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Uk.Parliament.Petitions.Result`1">
+            <summary>
+            An API response
+            </summary>
+            <typeparam name="T">The type</typeparam>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Result`1.Ok">
+            <summary>
+            Whether the result was OK
+            </summary>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Result`1.Data">
+            <summary>
+            If the result is OK, this will contain the data.
+            Otherwise, null.
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.Result`1.#ctor(`0)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.Result`1.#ctor(System.Exception)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="exception"></param>
+        </member>
+        <member name="P:Uk.Parliament.Petitions.Result`1.Exception">
+            <summary>
+            If the result is not OK, this will contain the exception.
+            Otherwise, null.
+            </summary>
+        </member>
+        <member name="M:Uk.Parliament.Petitions.Result`1.ToString">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

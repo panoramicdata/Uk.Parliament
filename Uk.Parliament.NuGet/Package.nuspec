@@ -2,7 +2,7 @@
 <package>
 	<metadata>
 		<id>Uk.Parliament</id>
-		<version>1.0.1</version>
+		<version>1.0.4</version>
 		<title>Uk.Parliament</title>
 		<authors>David Bond</authors>
 		<owners>David Bond, Panoramic Data Limited</owners>
@@ -10,11 +10,14 @@
 			A means of easily accessing UK petition data.
 		</description>
 		<releaseNotes>
+			______________________________________________
+			Version 1.0
+			Retreive basic petition information.
 		</releaseNotes>
 		<summary>
 			A means of easily accessing UK petition data.
 		</summary>
-		<language>en-US</language>
+		<language>en-GB</language>
 		<projectUrl>https://nuget.org/packages/Uk.Parliament.NuGet</projectUrl>
 		<iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -22,11 +25,11 @@
 		<copyright>Copyright © Panoramic Data 2017</copyright>
 		<dependencies>
 			<group targetFramework="net40">
-				<dependency id="log4net" version="1.2.10" />
+				<dependency id="NewtonSoft.Json" version="9.0.1" />
 			</group>
 		</dependencies>
 		<references></references>
-		<tags>UK Parliament</tags>
+		<tags>UK, Parliament, Government, API</tags>
 	</metadata>
 	<files>
 		<file src="lib\" target="lib" />

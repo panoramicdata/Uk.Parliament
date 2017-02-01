@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Uk.Parliament.NuGet</RootNamespace>
     <AssemblyName>Uk.Parliament.NuGet</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -56,7 +56,7 @@
     <None Include="NuGet.exe" />
     <None Include="NuGet.config" />
     <None Include="Package.nuspec" />
-    <None Include="publish.ps1" />
+    <None Include="publishToNuget.ps1" />
     <None Include="tools\init.ps1" />
     <None Include="tools\install.ps1" />
     <None Include="tools\uninstall.ps1" />
