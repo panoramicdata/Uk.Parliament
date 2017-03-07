@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Uk.Parliament.Petitions
 {
@@ -10,16 +11,19 @@ namespace Uk.Parliament.Petitions
 		/// <summary>
 		///  The query text
 		/// </summary>
+		[UsedImplicitly]
 		public string Text { get; set; }
 
 		/// <summary>
 		/// The maximum number to take
 		/// </summary>
+		[UsedImplicitly]
 		public int? PageSize { get; set; }
 
 		/// <summary>
 		/// The page to retrieve
 		/// </summary>
+		[UsedImplicitly]
 		public int? PageNumber { get; set; }
 
 		/// <inheritdoc />

@@ -2,7 +2,7 @@
 <package>
 	<metadata>
 		<id>Uk.Parliament</id>
-		<version>1.0.4</version>
+		<version>1.0.5</version>
 		<title>Uk.Parliament</title>
 		<authors>David Bond</authors>
 		<owners>David Bond, Panoramic Data Limited</owners>
@@ -12,7 +12,7 @@
 		<releaseNotes>
 			______________________________________________
 			Version 1.0
-			Retreive basic petition information.
+			Retrieve basic petition information.
 		</releaseNotes>
 		<summary>
 			A means of easily accessing UK petition data.

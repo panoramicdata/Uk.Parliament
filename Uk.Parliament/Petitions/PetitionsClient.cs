@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Uk.Parliament.Exceptions;
@@ -52,9 +51,9 @@ namespace Uk.Parliament.Petitions
 
 		private T Deserialize<T>(string payload) where T : class => JsonConvert.DeserializeObject<T>(payload);
 
-		private string Serialize<T>(T obj) => JsonConvert.SerializeObject(obj);
+		// private string Serialize<T>(T obj) => JsonConvert.SerializeObject(obj);
 
-		private HttpContent JsonPayload<T>(T obj) where T : class => new StringContent(Serialize(obj), Encoding.UTF8, "application/json");
+		// private HttpContent JsonPayload<T>(T obj) where T : class => new StringContent(Serialize(obj), Encoding.UTF8, "application/json");
 
 		/// <summary>
 		/// Get many items of type T

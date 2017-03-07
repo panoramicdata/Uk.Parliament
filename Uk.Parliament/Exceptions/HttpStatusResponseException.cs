@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using JetBrains.Annotations;
 
 namespace Uk.Parliament.Exceptions
 {
@@ -8,7 +9,11 @@ namespace Uk.Parliament.Exceptions
 	/// </summary>
 	public class HttpStatusResponseException : Exception
 	{
-		private readonly HttpStatusCode _statusCode;
+		/// <summary>
+		///  The HTTP Status Code
+		/// </summary>
+		[PublicAPI]
+		public HttpStatusCode StatusCode { get; }
 
 		/// <summary>
 		///  Constructor
@@ -17,7 +22,7 @@ namespace Uk.Parliament.Exceptions
 		/// <param name="message"></param>
 		public HttpStatusResponseException(HttpStatusCode statusCode, string message) : base(message)
 		{
-			_statusCode = statusCode;
+			StatusCode = statusCode;
 		}
 	}
 }

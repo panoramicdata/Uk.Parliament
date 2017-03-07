@@ -1,35 +1,34 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following
+// General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Uk.Parliament")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Uk.Parliament.Test")]
+[assembly: AssemblyDescription("Uk.Parliament.Test")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Panoramic Data Limited")]
-[assembly: AssemblyProduct("Uk.Parliament")]
+[assembly: AssemblyProduct("Uk.Parliament.Test")]
 [assembly: AssemblyCopyright("Copyright © Panoramic Data Limited 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// Setting ComVisible to false makes the types in this assembly not visible
-// to COM components.  If you need to access a type in this assembly from
+// Setting ComVisible to false makes the types in this assembly not visible 
+// to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e0e96b27-3833-44be-8596-c7266e0ba709")]
+[assembly: Guid("3d3aff94-8160-44f7-bc27-35dc86bc6e56")]
 
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
-//      Minor Version
+//      Minor Version 
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers
+// You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.5.0")]
