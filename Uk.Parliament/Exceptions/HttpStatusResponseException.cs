@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using JetBrains.Annotations;
 
 namespace Uk.Parliament.Exceptions
 {
@@ -12,7 +11,6 @@ namespace Uk.Parliament.Exceptions
 		/// <summary>
 		///  The HTTP Status Code
 		/// </summary>
-		[PublicAPI]
 		public HttpStatusCode StatusCode { get; }
 
 		/// <summary>

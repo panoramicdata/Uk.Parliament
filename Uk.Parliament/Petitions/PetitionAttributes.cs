@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using JetBrains.Annotations;
 
 namespace Uk.Parliament.Petitions
 {
@@ -9,7 +8,6 @@ namespace Uk.Parliament.Petitions
 	/// Petition attributes
 	/// </summary>
 	[DataContract]
-	[UsedImplicitly]
 	public class PetitionAttributes
 	{
 		/// <summary>

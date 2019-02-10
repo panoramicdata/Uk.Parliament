@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Serialization;
-using JetBrains.Annotations;
 
 namespace Uk.Parliament.Petitions
 {
@@ -7,7 +6,6 @@ namespace Uk.Parliament.Petitions
 	/// A government response to a petition
 	/// </summary>
 	[DataContract]
-	[UsedImplicitly]
 	public class PetitionGovernmentResponse
 	{
 		/// <summary>

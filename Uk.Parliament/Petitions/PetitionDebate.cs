@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using JetBrains.Annotations;
 
 namespace Uk.Parliament.Petitions
 {
 	/// <summary>
 	/// Petition debate
 	/// </summary>
-	[UsedImplicitly]
 	[DataContract]
 	public class PetitionDebate
 	{
