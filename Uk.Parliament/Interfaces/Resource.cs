@@ -1,41 +1,34 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using Uk.Parliament.Petitions;
 
-namespace Uk.Parliament.Interfaces
+namespace Uk.Parliament.Interfaces;
+
+/// <summary>
+/// An API resource
+/// </summary>
+/// <remarks>
+///  Constructor
+/// </remarks>
+/// <param name="baseEndpoint"></param>
+[KnownType(typeof(Petition))]
+public abstract class Resource(string baseEndpoint)
 {
+
 	/// <summary>
-	/// An API resource
+	///  The Id
 	/// </summary>
-	[DataContract]
-	[KnownType(typeof(Petition))]
-	public abstract class Resource
-	{
-		private readonly string _baseEndpoint;
+	[JsonPropertyName("id")]
+	public int Id { get; set; }
 
-		/// <summary>
-		///  Constructor
-		/// </summary>
-		/// <param name="baseEndpoint"></param>
-		protected Resource(string baseEndpoint)
-		{
-			_baseEndpoint = baseEndpoint;
-		}
+	/// <summary>
+	///  The links
+	/// </summary>
+	[JsonPropertyName("links")]
+	public Links Links { get; set; }
 
-		/// <summary>
-		///  The Id
-		/// </summary>
-		[DataMember(Name = "id")]
-		public int Id { get; set; }
-
-		/// <summary>
-		///  The links
-		/// </summary>
-		[DataMember(Name = "links")]
-		public Links Links { get; set; }
-
-		/// <summary>
-		///  The API endpoint
-		/// </summary>
-		public string Endpoint => $"{_baseEndpoint}{(Id == 0 ? string.Empty : $"/{Id}")}.json";
-	}
+	/// <summary>
+	///  The API endpoint
+	/// </summary>
+	public string Endpoint => $"{baseEndpoint}{(Id == 0 ? string.Empty : $"/{Id}")}.json";
 }

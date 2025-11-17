@@ -1,15 +1,47 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon />
-    <Version>1.0.5</Version>
-    <Copyright>Panoramic Data Limited 2019</Copyright>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<ApplicationIcon />
+		<Version>1.0.5</Version>
+		<Copyright>Panoramic Data Limited 2025</Copyright>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		
+		<!-- Package Metadata -->
+		<PackageId>Uk.Parliament</PackageId>
+		<Authors>Panoramic Data Limited</Authors>
+		<Company>Panoramic Data Limited</Company>
+		<Description>A .NET library for accessing the UK Parliament Petitions API</Description>
+		<PackageTags>uk;parliament;petitions;api;government</PackageTags>
+		<PackageProjectUrl>https://github.com/panoramicdata/Uk.Parliament</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/panoramicdata/Uk.Parliament</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
+		
+		<!-- Symbol Package Configuration -->
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		
+		<!-- Source Link Configuration -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+		
+		<!-- Deterministic Build -->
+		<Deterministic>true</Deterministic>
+		
+		<!-- Documentation -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>

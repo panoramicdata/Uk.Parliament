@@ -1,35 +1,35 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions
+namespace Uk.Parliament.Petitions;
+
+/// <summary>
+/// A government response to a petition
+/// </summary>
+[DataContract]
+public class PetitionGovernmentResponse
 {
 	/// <summary>
-	/// A government response to a petition
+	/// The summary
 	/// </summary>
-	[DataContract]
-	public class PetitionGovernmentResponse
-	{
-		/// <summary>
-		/// The summary
-		/// </summary>
-		[DataMember(Name = "summary")]
-		public string Summary { get; set; }
+	[JsonPropertyName("summary")]
+	public string Summary { get; set; }
 
-		/// <summary>
-		/// The details
-		/// </summary>
-		[DataMember(Name = "details")]
-		public string Details { get; set; }
+	/// <summary>
+	/// The details
+	/// </summary>
+	[JsonPropertyName("details")]
+	public string Details { get; set; }
 
-		/// <summary>
-		/// When the response was created
-		/// </summary>
-		[DataMember(Name = "created_at")]
-		public string CreatedAtUtc { get; set; }
+	/// <summary>
+	/// When the response was created
+	/// </summary>
+	[JsonPropertyName("created_at")]
+	public string CreatedAtUtc { get; set; }
 
-		/// <summary>
-		/// When the response was updated
-		/// </summary>
-		[DataMember(Name = "updated_at")]
-		public string UpdatedAtUtc { get; set; }
-	}
+	/// <summary>
+	/// When the response was updated
+	/// </summary>
+	[JsonPropertyName("updated_at")]
+	public string UpdatedAtUtc { get; set; }
 }

@@ -1,23 +1,21 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions
+namespace Uk.Parliament.Petitions;
+
+/// <summary>
+/// An API response
+/// </summary>
+public class ApiResponse<T>
 {
 	/// <summary>
-	/// An API response
+	/// Links
 	/// </summary>
-	[DataContract]
-	public class ApiResponse<T>
-	{
-		/// <summary>
-		/// Links
-		/// </summary>
-		[DataMember(Name = "links")]
-		public Links Links { get; set; }
+	[JsonPropertyName("links")]
+	public Links Links { get; set; }
 
-		/// <summary>
-		/// The data
-		/// </summary>
-		[DataMember(Name = "data")]
-		public T Data { get; set; }
-	}
+	/// <summary>
+	/// The data
+	/// </summary>
+	[JsonPropertyName("data")]
+	public T Data { get; set; }
 }

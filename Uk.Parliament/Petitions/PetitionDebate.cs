@@ -1,36 +1,34 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions
+namespace Uk.Parliament.Petitions;
+
+/// <summary>
+/// Petition debate
+/// </summary>
+public class PetitionDebate
 {
 	/// <summary>
-	/// Petition debate
+	/// The date on which the petition was debated
 	/// </summary>
-	[DataContract]
-	public class PetitionDebate
-	{
-		/// <summary>
-		/// The date on which the petition was debated
-		/// </summary>
-		[DataMember(Name = "summary")]
-		public DateTime DebatedOnDate { get; set; }
+	[JsonPropertyName("summary")]
+	public DateTime DebatedOnDate { get; set; }
 
-		/// <summary>
-		/// The transcript url
-		/// </summary>
-		[DataMember(Name = "transcript_url")]
-		public string TranscriptUrl { get; set; }
+	/// <summary>
+	/// The transcript url
+	/// </summary>
+	[JsonPropertyName("transcript_url")]
+	public string TranscriptUrl { get; set; }
 
-		/// <summary>
-		/// The video_url
-		/// </summary>
-		[DataMember(Name = "video_url")]
-		public string VideoUrl { get; set; }
+	/// <summary>
+	/// The video_url
+	/// </summary>
+	[JsonPropertyName("video_url")]
+	public string VideoUrl { get; set; }
 
-		/// <summary>
-		/// The overview
-		/// </summary>
-		[DataMember(Name = "overview")]
-		public string Overview { get; set; }
-	}
+	/// <summary>
+	/// The overview
+	/// </summary>
+	[JsonPropertyName("overview")]
+	public string Overview { get; set; }
 }

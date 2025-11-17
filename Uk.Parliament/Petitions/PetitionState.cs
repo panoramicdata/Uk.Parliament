@@ -1,19 +1,18 @@
 
-namespace Uk.Parliament.Petitions
+namespace Uk.Parliament.Petitions;
+
+/// <summary>
+/// Petition state
+/// </summary>
+public enum PetitionState
 {
 	/// <summary>
-	/// Petition state
+	/// Open
 	/// </summary>
-	public enum PetitionState
-	{
-		/// <summary>
-		/// Open
-		/// </summary>
-		Open,
+	Open,
 
-		/// <summary>
-		/// Closed
-		/// </summary>
-		Closed,
-	}
+	/// <summary>
+	/// Closed
+	/// </summary>
+	Closed,
 }

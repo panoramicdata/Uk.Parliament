@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Net;
 
-namespace Uk.Parliament.Exceptions
+namespace Uk.Parliament.Exceptions;
+
+/// <summary>
+/// An HTTP Status response exception
+/// </summary>
+public class HttpStatusResponseException : Exception
 {
 	/// <summary>
-	/// An HTTP Status response exception
+	///  The HTTP Status Code
 	/// </summary>
-	public class HttpStatusResponseException : Exception
-	{
-		/// <summary>
-		///  The HTTP Status Code
-		/// </summary>
-		public HttpStatusCode StatusCode { get; }
+	public HttpStatusCode StatusCode { get; }
 
-		/// <summary>
-		///  Constructor
-		/// </summary>
-		/// <param name="statusCode"></param>
-		/// <param name="message"></param>
-		public HttpStatusResponseException(HttpStatusCode statusCode, string message) : base(message)
-		{
-			StatusCode = statusCode;
-		}
+	/// <summary>
+	///  Constructor
+	/// </summary>
+	/// <param name="statusCode"></param>
+	/// <param name="message"></param>
+	public HttpStatusResponseException(HttpStatusCode statusCode, string message) : base(message)
+	{
+		StatusCode = statusCode;
 	}
 }

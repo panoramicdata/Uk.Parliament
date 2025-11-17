@@ -1,29 +1,27 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions
+namespace Uk.Parliament.Petitions;
+
+/// <summary>
+/// Country signatures
+/// </summary>
+public class CountrySignatures
 {
 	/// <summary>
-	/// Country signatures
+	/// Name
 	/// </summary>
-	[DataContract]
-	public class CountrySignatures
-	{
-		/// <summary>
-		/// Name
-		/// </summary>
-		[DataMember(Name="name")]
-		public string Name { get; set; }
+	[JsonPropertyName("name")]
+	public string Name { get; set; }
 
-		/// <summary>
-		/// Code
-		/// </summary>
-		[DataMember(Name = "code")]
-		public string Code { get; set; }
+	/// <summary>
+	/// Code
+	/// </summary>
+	[JsonPropertyName("code")]
+	public string Code { get; set; }
 
-		/// <summary>
-		/// Signature count
-		/// </summary>
-		[DataMember(Name = "signature_count")]
-		public string SignatureCount { get; set; }
-	}
+	/// <summary>
+	/// Signature count
+	/// </summary>
+	[JsonPropertyName("signature_count")]
+	public string SignatureCount { get; set; }
 }
