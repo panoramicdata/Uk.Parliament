@@ -220,7 +220,21 @@ Copyright © 2025 Panoramic Data Limited
 
 - [UK Parliament Petitions Website](https://petition.parliament.uk/)
 - [UK Parliament Petitions API](https://petition.parliament.uk/petitions.json)
+- [e-Petitions GitHub Repository](https://github.com/alphagov/e-petitions) - The open-source platform powering the UK Parliament Petitions system
+- [API Documentation](https://github.com/alphagov/e-petitions/blob/master/API.md) - Technical API documentation from the e-petitions project
+
+## API Endpoints
+
+This library provides access to the following UK Parliament Petitions API endpoints:
+
+- `GET /petitions.json` - List petitions with optional filters
+- `GET /petitions/{id}.json` - Get a specific petition by ID
+
+### Query Parameters
+
+- `state` - Filter by petition state (open, closed, rejected, hidden, stopped)
+- `search` - Search petitions by text
+- `page` - Page number for pagination
+- `_pageSize` - Number of results per page (Note: The API may return a default page size regardless of this parameter)
 
 ## Support
-
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/panoramicdata/Uk.Parliament).
