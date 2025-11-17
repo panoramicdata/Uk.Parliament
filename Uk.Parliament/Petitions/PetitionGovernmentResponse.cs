@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Petitions;
@@ -9,6 +10,12 @@ namespace Uk.Parliament.Petitions;
 [DataContract]
 public class PetitionGovernmentResponse
 {
+	/// <summary>
+	/// The date the government responded
+	/// </summary>
+	[JsonPropertyName("responded_on")]
+	public string RespondedOn { get; set; }
+
 	/// <summary>
 	/// The summary
 	/// </summary>
@@ -25,11 +32,11 @@ public class PetitionGovernmentResponse
 	/// When the response was created
 	/// </summary>
 	[JsonPropertyName("created_at")]
-	public string CreatedAtUtc { get; set; }
+	public DateTime CreatedAt { get; set; }
 
 	/// <summary>
 	/// When the response was updated
 	/// </summary>
 	[JsonPropertyName("updated_at")]
-	public string UpdatedAtUtc { get; set; }
+	public DateTime UpdatedAt { get; set; }
 }

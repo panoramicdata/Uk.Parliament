@@ -30,6 +30,12 @@ public class PetitionAttributes
 	public string AdditionalDetails { get; set; }
 
 	/// <summary>
+	/// Committee note
+	/// </summary>
+	[JsonPropertyName("committee_note")]
+	public string CommitteeNote { get; set; }
+
+	/// <summary>
 	/// The current state
 	/// </summary>
 	[JsonPropertyName("state")]
@@ -51,25 +57,31 @@ public class PetitionAttributes
 	/// updated_at
 	/// </summary>
 	[JsonPropertyName("updated_at")]
-	public DateTime? UpdatedAtUtc { get; set; }
+	public DateTime? UpdatedAt { get; set; }
 
 	/// <summary>
-	/// open_at
+	/// opened_at
 	/// </summary>
-	[JsonPropertyName("open_at")]
-	public DateTime? OpenAtUtc { get; set; }
+	[JsonPropertyName("opened_at")]
+	public DateTime? OpenedAt { get; set; }
 
 	/// <summary>
 	/// closed_at
 	/// </summary>
 	[JsonPropertyName("closed_at")]
-	public DateTime? ClosedAtUtc { get; set; }
+	public DateTime? ClosedAt { get; set; }
 
 	/// <summary>
 	/// government_response_at
 	/// </summary>
 	[JsonPropertyName("government_response_at")]
-	public DateTime? GovernmentResponseAtUtc { get; set; }
+	public DateTime? GovernmentResponseAt { get; set; }
+
+	/// <summary>
+	/// response_threshold_reached_at
+	/// </summary>
+	[JsonPropertyName("response_threshold_reached_at")]
+	public DateTime? ResponseThresholdReachedAt { get; set; }
 
 	/// <summary>
 	/// The scheduled_debate_date
@@ -81,7 +93,7 @@ public class PetitionAttributes
 	/// debate_threshold_reached_at
 	/// </summary>
 	[JsonPropertyName("debate_threshold_reached_at")]
-	public DateTime? DebateThresholdReachedAtUtc { get; set; }
+	public DateTime? DebateThresholdReachedAt { get; set; }
 
 	/// <summary>
 	/// rejected_at
@@ -126,6 +138,18 @@ public class PetitionAttributes
 	public PetitionDebate Debate { get; set; }
 
 	/// <summary>
+	/// Government departments associated with this petition
+	/// </summary>
+	[JsonPropertyName("departments")]
+	public List<Department> Departments { get; set; }
+
+	/// <summary>
+	/// Topics associated with this petition
+	/// </summary>
+	[JsonPropertyName("topics")]
+	public List<Topic> Topics { get; set; }
+
+	/// <summary>
 	///  The petition signatures by country
 	/// </summary>
 	[JsonPropertyName("signatures_by_country")]
@@ -136,6 +160,18 @@ public class PetitionAttributes
 	/// </summary>
 	[JsonPropertyName("signatures_by_constituency")]
 	public List<ConstituencySignatures> SignaturesByConstituency { get; set; }
+
+	/// <summary>
+	///  The petition signatures by region
+	/// </summary>
+	[JsonPropertyName("signatures_by_region")]
+	public List<RegionSignatures> SignaturesByRegion { get; set; }
+
+	/// <summary>
+	/// Other parliamentary business related to this petition
+	/// </summary>
+	[JsonPropertyName("other_parliamentary_business")]
+	public List<object> OtherParliamentaryBusiness { get; set; }
 
 	/// <inheritdoc />
 	public override string ToString() => $"{Action ?? "Invalid petition"}";

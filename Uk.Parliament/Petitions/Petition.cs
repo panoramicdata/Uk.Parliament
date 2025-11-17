@@ -18,6 +18,12 @@ public class Petition : Resource
 	}
 
 	/// <summary>
+	/// The resource type (always "petition")
+	/// </summary>
+	[JsonPropertyName("type")]
+	public string Type { get; set; }
+
+	/// <summary>
 	///  The petition attributes
 	/// </summary>
 	[JsonPropertyName("attributes")]

@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74C1C2B5-84FD-44E3-B46D-A641B2D34255}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		global.json = global.json
 		README.md = README.md
 		Uk.Parliament.ico = Uk.Parliament.ico
 	EndProjectSection

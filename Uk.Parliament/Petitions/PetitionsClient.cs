@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Exceptions;
@@ -17,6 +19,17 @@ public class PetitionsClient
 {
 	private readonly HttpClient _httpClient;
 	private static string BaseUrl => "https://petition.parliament.uk/";
+	private static readonly JsonSerializerOptions JsonOptions = new()
+	{
+		PropertyNameCaseInsensitive = true,
+#if DEBUG
+		// In debug mode, fail if there are unmapped properties to help ensure our model is complete
+		UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow
+#else
+		// In release mode, skip unmapped properties for forward compatibility
+		UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip
+#endif
+	};
 
 	/// <summary>
 	/// Constructor
@@ -37,7 +50,7 @@ public class PetitionsClient
 			throw new HttpStatusResponseException(response.StatusCode, await response.Content.ReadAsStringAsync());
 		}
 
-		var @object = await response.Content.ReadFromJsonAsync<ApiResponse<T>>();
+		var @object = await response.Content.ReadFromJsonAsync<ApiResponse<T>>(JsonOptions);
 
 		// Return the object
 		return @object.Data;
