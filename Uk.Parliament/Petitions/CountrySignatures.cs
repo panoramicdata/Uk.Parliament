@@ -23,5 +23,8 @@ public class CountrySignatures
 	/// Signature count
 	/// </summary>
 	[JsonPropertyName("signature_count")]
-	public string SignatureCount { get; set; }
+	public int SignatureCount { get; set; }
+
+	/// <inheritdoc />
+	public override string ToString() => $"{Name} ({Code}): {SignatureCount} signatures";
 }

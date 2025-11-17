@@ -3,7 +3,7 @@
 namespace Uk.Parliament.Petitions;
 
 /// <summary>
-///  A query
+///  A query for searching petitions
 /// </summary>
 public class Query
 {
@@ -22,6 +22,11 @@ public class Query
 	/// </summary>
 	public int? PageNumber { get; set; }
 
+	/// <summary>
+	/// Filter by petition state
+	/// </summary>
+	public PetitionState? State { get; set; }
+
 	/// <inheritdoc />
 	public override string ToString()
 	{
@@ -33,6 +38,12 @@ public class Query
 			s.Add($"search={Text}");
 		}
 
+		// State filter
+		if (State.HasValue)
+		{
+			s.Add($"state={State.Value.ToString().ToLowerInvariant()}");
+		}
+
 		// Page size
 		if (PageSize != null)
 		{
@@ -42,7 +53,7 @@ public class Query
 		// Page number
 		if (PageNumber != null)
 		{
-			s.Add($"_page={PageNumber}");
+			s.Add($"page={PageNumber}");
 		}
 
 		return s.Count == 0 ? string.Empty : $"?{string.Join("&", s)}";

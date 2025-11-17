@@ -39,7 +39,7 @@ var client = new PetitionsClient();
 
 // Get a single petition by ID
 var result = await client.GetPetitionAsync(petitionId: 123456, CancellationToken.None);
-if (result.IsSuccess)
+if (result.Ok)
 {
     var petition = result.Data;
     Console.WriteLine($"Title: {petition.Attributes.Action}");
@@ -54,7 +54,7 @@ var query = new Query
 };
 
 var petitionsResult = await client.GetPetitionsAsync(query, CancellationToken.None);
-if (petitionsResult.IsSuccess)
+if (petitionsResult.Ok)
 {
     foreach (var petition in petitionsResult.Data)
     {
@@ -83,7 +83,7 @@ The library uses a `Result<T>` pattern for error handling:
 ```csharp
 var result = await client.GetPetitionAsync(123456, CancellationToken.None);
 
-if (result.IsSuccess)
+if (result.Ok)
 {
     // Access the petition data
     var petition = result.Data;

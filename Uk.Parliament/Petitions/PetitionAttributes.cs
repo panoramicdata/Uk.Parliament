@@ -111,7 +111,7 @@ public class PetitionAttributes
 	/// The rejection
 	/// </summary>
 	[JsonPropertyName("rejection")]
-	public string Rejection { get; set; }
+	public PetitionRejection Rejection { get; set; }
 
 	/// <summary>
 	/// The government response
@@ -130,6 +130,12 @@ public class PetitionAttributes
 	/// </summary>
 	[JsonPropertyName("signatures_by_country")]
 	public List<CountrySignatures> SignaturesByCountry { get; set; }
+
+	/// <summary>
+	///  The petition signatures by constituency
+	/// </summary>
+	[JsonPropertyName("signatures_by_constituency")]
+	public List<ConstituencySignatures> SignaturesByConstituency { get; set; }
 
 	/// <inheritdoc />
 	public override string ToString() => $"{Action ?? "Invalid petition"}";

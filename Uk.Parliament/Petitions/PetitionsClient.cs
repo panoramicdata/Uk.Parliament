@@ -16,7 +16,7 @@ namespace Uk.Parliament.Petitions;
 public class PetitionsClient
 {
 	private readonly HttpClient _httpClient;
-	private string BaseUrl => "https://petition.parliament.uk/";
+	private static string BaseUrl => "https://petition.parliament.uk/";
 
 	/// <summary>
 	/// Constructor
@@ -37,7 +37,7 @@ public class PetitionsClient
 			throw new HttpStatusResponseException(response.StatusCode, await response.Content.ReadAsStringAsync());
 		}
 
-		var @object = await response.Content.ReadFromJsonAsync<Result<T>>();
+		var @object = await response.Content.ReadFromJsonAsync<ApiResponse<T>>();
 
 		// Return the object
 		return @object.Data;
@@ -48,6 +48,7 @@ public class PetitionsClient
 	/// </summary>
 	/// <typeparam name="T">The type</typeparam>
 	/// <param name="id">The entity id</param>
+	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
 	private async Task<Result<T>> GetSingleAsync<T>(int id, CancellationToken cancellationToken) where T : Resource, new()
 	{
@@ -65,11 +66,13 @@ public class PetitionsClient
 			return new Result<T>(ex);
 		}
 	}
+
 	/// <summary>
 	/// Get many items of type T
 	/// </summary>
 	/// <typeparam name="T">The type</typeparam>
 	/// <param name="query">An optional query</param>
+	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
 	private async Task<Result<List<T>>> GetManyAsync<T>(Query query, CancellationToken cancellationToken) where T : Resource, new()
 	{
@@ -92,6 +95,7 @@ public class PetitionsClient
 	/// Get all petitions that match a query
 	/// </summary>
 	/// <param name="query">The query</param>
+	/// <param name="cancellationToken"></param>
 	/// <returns>The matching petitions</returns>
 	public Task<Result<List<Petition>>> GetPetitionsAsync(
 		Query query,
@@ -102,6 +106,7 @@ public class PetitionsClient
 	/// Gets a single petition by its Id
 	/// </summary>
 	/// <param name="petitionId">The petition id</param>
+	/// <param name="cancellationToken"></param>
 	/// <returns>The petition</returns>
 	public Task<Result<Petition>> GetPetitionAsync(
 		int petitionId,

@@ -260,7 +260,3 @@ paket-files/
 __pycache__/
 *.pyc
 /Uk.Parliament/Nuget/publishToNuget.ps1
-/Uk.Parliament/Nuget/publishToNuget.ps1
-/Uk.Parliament/Nuget/publishToNuget.ps1
-/Uk.Parliament/Nuget/publishToNuget.ps1
-/Uk.Parliament.NuGet/publishToNuget.ps1
