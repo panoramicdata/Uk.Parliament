@@ -222,6 +222,7 @@ Copyright © 2025 Panoramic Data Limited
 - [UK Parliament Petitions API](https://petition.parliament.uk/petitions.json)
 - [e-Petitions GitHub Repository](https://github.com/alphagov/e-petitions) - The open-source platform powering the UK Parliament Petitions system
 - [API Documentation](https://github.com/alphagov/e-petitions/blob/master/API.md) - Technical API documentation from the e-petitions project
+- [Other UK Parliament APIs](PARLIAMENT_APIS.md) - Documentation about other available Parliament APIs (Members, Bills, Committees, Hansard, etc.)
 
 ## API Endpoints
 
