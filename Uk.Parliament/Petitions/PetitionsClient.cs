@@ -103,6 +103,64 @@ public class PetitionsClient
 		=> GetManyAsync<Petition>(query, cancellationToken);
 
 	/// <summary>
+	/// Gets all petitions that match a query, automatically handling pagination to retrieve all results
+	/// </summary>
+	/// <param name="query">The query (PageNumber will be ignored as all pages are retrieved)</param>
+	/// <param name="cancellationToken"></param>
+	/// <returns>All matching petitions across all pages</returns>
+	public async Task<Result<List<Petition>>> GetAllPetitionsAsync(
+		Query query,
+		CancellationToken cancellationToken)
+	{
+		var allPetitions = new List<Petition>();
+		var pageNumber = 1;
+
+		try
+		{
+			while (true)
+			{
+				// Create a query for this specific page
+				var pageQuery = new Query
+				{
+					Text = query.Text,
+					State = query.State,
+					PageSize = query.PageSize ?? 50, // Use specified page size or default to 50
+					PageNumber = pageNumber
+				};
+
+				var pageResult = await GetPetitionsAsync(pageQuery, cancellationToken);
+
+				if (!pageResult.Ok)
+				{
+					return new Result<List<Petition>>(pageResult.Exception);
+				}
+
+				if (pageResult.Data == null || pageResult.Data.Count == 0)
+				{
+					// No more results
+					break;
+				}
+
+				allPetitions.AddRange(pageResult.Data);
+
+				// If we got fewer results than the page size, we've reached the last page
+				if (pageResult.Data.Count < (query.PageSize ?? 50))
+				{
+					break;
+				}
+
+				pageNumber++;
+			}
+
+			return new Result<List<Petition>>(allPetitions);
+		}
+		catch (Exception ex)
+		{
+			return new Result<List<Petition>>(ex);
+		}
+	}
+
+	/// <summary>
 	/// Gets a single petition by its Id
 	/// </summary>
 	/// <param name="petitionId">The petition id</param>

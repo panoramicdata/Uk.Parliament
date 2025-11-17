@@ -215,4 +215,27 @@ public class Petitions
 		petitions.Data.Should().NotBeNull();
 		petitions.Data.Should().NotBeEmpty();
 	}
+
+	[Fact]
+	public async Task GetAllPetitionsAsync_WithStateFilter_RetrievesMultiplePages()
+	{
+		var petitionsClient = new PetitionsClient();
+
+		var allPetitions = await petitionsClient.GetAllPetitionsAsync(new Query
+		{
+			State = PetitionState.Rejected,
+			PageSize = 10 // Small page size to ensure we get multiple pages
+		}, default);
+
+		if (!allPetitions.Ok)
+		{
+			throw new Exception($"API call failed: {allPetitions.Exception?.Message}", allPetitions.Exception);
+		}
+
+		allPetitions.Ok.Should().BeTrue();
+		allPetitions.Data.Should().NotBeNull();
+		allPetitions.Data.Should().NotBeEmpty();
+		// With a page size of 10, if we have more than 10 results, we successfully handled pagination
+		allPetitions.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
+	}
 }

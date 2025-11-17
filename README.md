@@ -46,7 +46,7 @@ if (result.Ok)
     Console.WriteLine($"Signatures: {petition.Attributes.SignatureCount}");
 }
 
-// Get multiple petitions with a query
+// Get multiple petitions with a query (single page)
 var query = new Query
 {
     State = PetitionState.Open,
@@ -59,6 +59,22 @@ if (petitionsResult.Ok)
     foreach (var petition in petitionsResult.Data)
     {
         Console.WriteLine($"{petition.Attributes.Action} - {petition.Attributes.SignatureCount} signatures");
+    }
+}
+
+// Get ALL petitions matching a query (automatically handles pagination)
+var allPetitionsResult = await client.GetAllPetitionsAsync(new Query
+{
+    State = PetitionState.Closed,
+    Text = "education"
+}, CancellationToken.None);
+
+if (allPetitionsResult.Ok)
+{
+    Console.WriteLine($"Found {allPetitionsResult.Data.Count} total petitions");
+    foreach (var petition in allPetitionsResult.Data)
+    {
+        Console.WriteLine($"{petition.Attributes.Action}");
     }
 }
 ```
@@ -99,9 +115,11 @@ else
 
 - ? Retrieve individual petitions by ID
 - ? Query multiple petitions with filters
+- ? Automatic pagination support with `GetAllPetitionsAsync()`
 - ? Support for petition states (Open, Closed, Rejected, etc.)
 - ? Access to petition signatures, government responses, and debate information
 - ? Country-level signature data
+- ? Constituency-level signature data
 - ? Async/await support with cancellation tokens
 - ? Built on .NET 10.0
 - ? Full debugging support with SourceLink
@@ -151,7 +169,8 @@ The main client for interacting with the UK Parliament Petitions API.
 #### Methods
 
 - `GetPetitionAsync(int petitionId, CancellationToken cancellationToken)` - Get a single petition by its ID
-- `GetPetitionsAsync(Query query, CancellationToken cancellationToken)` - Get multiple petitions based on query parameters
+- `GetPetitionsAsync(Query query, CancellationToken cancellationToken)` - Get a single page of petitions based on query parameters
+- `GetAllPetitionsAsync(Query query, CancellationToken cancellationToken)` - Get all petitions matching the query, automatically handling pagination across all pages
 
 ### Models
 
