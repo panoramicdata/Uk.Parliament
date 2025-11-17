@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using Uk.Parliament.Petitions;
+using Uk.Parliament.Models;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -19,13 +19,13 @@ public abstract class Resource(string baseEndpoint)
 	///  The Id
 	/// </summary>
 	[JsonPropertyName("id")]
-	public int Id { get; set; }
+	public required int Id { get; set; }
 
 	/// <summary>
 	///  The links
 	/// </summary>
 	[JsonPropertyName("links")]
-	public Links Links { get; set; }
+	public required Links Links { get; set; }
 
 	/// <summary>
 	///  The API endpoint

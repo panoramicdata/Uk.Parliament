@@ -1,21 +1,21 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
-/// An API response
+/// Parliament API response wrapper
 /// </summary>
-public class ApiResponse<T>
+public class ParliamentApiResponse<T>
 {
 	/// <summary>
 	/// Links
 	/// </summary>
 	[JsonPropertyName("links")]
-	public Links Links { get; set; }
+	public required Links Links { get; set; }
 
 	/// <summary>
 	/// The data
 	/// </summary>
 	[JsonPropertyName("data")]
-	public T Data { get; set; }
+	public required T Data { get; set; }
 }

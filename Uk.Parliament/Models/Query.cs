@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
 ///  A query for searching petitions

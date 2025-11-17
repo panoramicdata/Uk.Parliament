@@ -1,5 +1,6 @@
 using FluentAssertions;
-using Uk.Parliament.Petitions;
+using Uk.Parliament.Extensions;
+using Uk.Parliament.Models;
 
 namespace Uk.Parliament.Test;
 
@@ -8,234 +9,183 @@ public class Petitions
 	private const int ValidPetitionId = 700143; // A known closed petition with data
 
 	[Fact]
-	public async Task GetPetitionsAsync_WithTextSearch_Succeeds()
+	public async Task GetAsync_WithTextSearch_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petitions = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			Text = "Electric Vehicles",
-			PageNumber = 1,
-			PageSize = 10
-		}, default);
+		var response = await client.Petitions.GetAsync(
+			search: "Electric Vehicles",
+			page: 1,
+			pageSize: 10);
 
-		if (!petitions.Ok)
-		{
-			throw new Exception($"API call failed: {petitions.Exception?.Message}", petitions.Exception);
-		}
-
-		petitions.Ok.Should().BeTrue();
-		petitions.Data.Should().NotBeNull();
-		petitions.Data.Should().NotBeEmpty();
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Should().NotBeEmpty();
 	}
 
 	[Fact]
-	public async Task GetPetitionsAsync_WithStateFilter_Open_Succeeds()
+	public async Task GetAsync_WithStateFilter_Open_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petitions = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			State = PetitionState.Open,
-			PageNumber = 1,
-			PageSize = 5
-		}, default);
+		var response = await client.Petitions.GetAsync(
+			state: "open",
+			page: 1,
+			pageSize: 5);
 
-		if (!petitions.Ok)
-		{
-			throw new Exception($"API call failed: {petitions.Exception?.Message}", petitions.Exception);
-		}
-
-		petitions.Ok.Should().BeTrue();
-		petitions.Data.Should().NotBeNull();
-		petitions.Data.Should().NotBeEmpty();
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Should().NotBeEmpty();
 	}
 
 	[Fact]
-	public async Task GetPetitionsAsync_WithStateFilter_Closed_Succeeds()
+	public async Task GetAsync_WithStateFilter_Closed_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petitions = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			State = PetitionState.Closed,
-			PageNumber = 1,
-			PageSize = 5
-		}, default);
+		var response = await client.Petitions.GetAsync(
+			state: "closed",
+			page: 1,
+			pageSize: 5);
 
-		if (!petitions.Ok)
-		{
-			throw new Exception($"API call failed: {petitions.Exception?.Message}", petitions.Exception);
-		}
-
-		petitions.Ok.Should().BeTrue();
-		petitions.Data.Should().NotBeNull();
-		petitions.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Closed));
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Closed));
 	}
 
 	[Fact]
-	public async Task GetPetitionsAsync_WithStateFilter_Rejected_Succeeds()
+	public async Task GetAsync_WithStateFilter_Rejected_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petitions = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			State = PetitionState.Rejected,
-			PageNumber = 1,
-			PageSize = 5
-		}, default);
+		var response = await client.Petitions.GetAsync(
+			state: "rejected",
+			page: 1,
+			pageSize: 5);
 
-		if (!petitions.Ok)
-		{
-			throw new Exception($"API call failed: {petitions.Exception?.Message}", petitions.Exception);
-		}
-
-		petitions.Ok.Should().BeTrue();
-		petitions.Data.Should().NotBeNull();
-		petitions.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
 	}
 
 	[Fact]
-	public async Task GetPetitionAsync_ById_Succeeds()
+	public async Task GetByIdAsync_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petition = await petitionsClient.GetPetitionAsync(ValidPetitionId, default);
+		var response = await client.Petitions.GetByIdAsync(ValidPetitionId);
 
-		if (!petition.Ok)
-		{
-			throw new Exception($"API call failed: {petition.Exception?.Message}", petition.Exception);
-		}
-
-		petition.Ok.Should().BeTrue();
-		petition.Data.Should().NotBeNull();
-		petition.Data.Id.Should().Be(ValidPetitionId);
-		petition.Data.Attributes.Should().NotBeNull();
-		petition.Data.Attributes.Action.Should().NotBeNullOrWhiteSpace();
-		petition.Data.Attributes.SignatureCount.Should().BeGreaterThan(0);
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Id.Should().Be(ValidPetitionId);
+		_ = response.Data.Attributes.Should().NotBeNull();
+		_ = response.Data.Attributes.Action.Should().NotBeNullOrWhiteSpace();
+		_ = response.Data.Attributes.SignatureCount.Should().BeGreaterThan(0);
 	}
 
 	[Fact]
-	public async Task GetPetitionAsync_HasSignaturesByCountry()
+	public async Task GetByIdAsync_HasSignaturesByCountry()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petition = await petitionsClient.GetPetitionAsync(ValidPetitionId, default);
+		var response = await client.Petitions.GetByIdAsync(ValidPetitionId);
 
-		if (!petition.Ok)
+		_ = response.Data.Attributes.SignaturesByCountry.Should().NotBeNull();
+		_ = response.Data.Attributes.SignaturesByCountry.Should().NotBeEmpty();
+		_ = response.Data.Attributes.SignaturesByCountry.Should().AllSatisfy(s =>
 		{
-			throw new Exception($"API call failed: {petition.Exception?.Message}", petition.Exception);
-		}
-
-		petition.Data.Attributes.SignaturesByCountry.Should().NotBeNull();
-		petition.Data.Attributes.SignaturesByCountry.Should().NotBeEmpty();
-		petition.Data.Attributes.SignaturesByCountry.Should().AllSatisfy(s =>
-		{
-			s.Name.Should().NotBeNullOrWhiteSpace();
-			s.SignatureCount.Should().BeGreaterThanOrEqualTo(0);
+			_ = s.Name.Should().NotBeNullOrWhiteSpace();
+			_ = s.SignatureCount.Should().BeGreaterThanOrEqualTo(0);
 		});
-		petition.Data.Attributes.SignaturesByCountry.Should().Contain(s => s.Code == "GB");
+		_ = response.Data.Attributes.SignaturesByCountry.Should().Contain(s => s.Code == "GB");
 	}
 
 	[Fact]
-	public async Task GetPetitionAsync_HasSignaturesByConstituency()
+	public async Task GetByIdAsync_HasSignaturesByConstituency()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petition = await petitionsClient.GetPetitionAsync(ValidPetitionId, default);
+		var response = await client.Petitions.GetByIdAsync(ValidPetitionId);
 
-		if (!petition.Ok)
+		_ = response.Data.Attributes.SignaturesByConstituency.Should().NotBeNull();
+		_ = response.Data.Attributes.SignaturesByConstituency.Should().NotBeEmpty();
+		_ = response.Data.Attributes.SignaturesByConstituency.Should().AllSatisfy(s =>
 		{
-			throw new Exception($"API call failed: {petition.Exception?.Message}", petition.Exception);
-		}
-
-		petition.Data.Attributes.SignaturesByConstituency.Should().NotBeNull();
-		petition.Data.Attributes.SignaturesByConstituency.Should().NotBeEmpty();
-		petition.Data.Attributes.SignaturesByConstituency.Should().AllSatisfy(s =>
-		{
-			s.Name.Should().NotBeNullOrWhiteSpace();
-			s.OnsCode.Should().NotBeNullOrWhiteSpace();
-			s.SignatureCount.Should().BeGreaterThanOrEqualTo(0);
+			_ = s.Name.Should().NotBeNullOrWhiteSpace();
+			_ = s.OnsCode.Should().NotBeNullOrWhiteSpace();
+			_ = s.SignatureCount.Should().BeGreaterThanOrEqualTo(0);
 		});
 	}
 
 	[Fact]
-	public async Task GetPetitionsAsync_WithPagination_Succeeds()
+	public async Task GetAsync_WithPagination_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var page1 = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			State = PetitionState.Open,
-			PageNumber = 1,
-			PageSize = 10
-		}, default);
+		var page1 = await client.Petitions.GetAsync(
+			state: "open",
+			page: 1,
+			pageSize: 10);
 
-		if (!page1.Ok)
-		{
-			throw new Exception($"API call failed: {page1.Exception?.Message}", page1.Exception);
-		}
+		_ = page1.Data.Should().NotBeNull();
+		_ = page1.Data.Should().NotBeEmpty();
 
-		page1.Data.Should().NotBeNull();
-		page1.Data.Should().NotBeEmpty();
+		var page2 = await client.Petitions.GetAsync(
+			state: "open",
+			page: 2,
+			pageSize: 10);
 
-		var page2 = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			State = PetitionState.Open,
-			PageNumber = 2,
-			PageSize = 10
-		}, default);
-
-		if (!page2.Ok)
-		{
-			throw new Exception($"API call failed: {page2.Exception?.Message}", page2.Exception);
-		}
-
-		page2.Data.Should().NotBeNull();
-		page2.Data.Should().NotBeEmpty();
-		page1.Data[0].Id.Should().NotBe(page2.Data[0].Id);
+		_ = page2.Data.Should().NotBeNull();
+		_ = page2.Data.Should().NotBeEmpty();
+		_ = page1.Data[0].Id.Should().NotBe(page2.Data[0].Id);
 	}
 
 	[Fact]
-	public async Task GetPetitionsAsync_NoFilters_Succeeds()
+	public async Task GetAsync_NoFilters_Succeeds()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var petitions = await petitionsClient.GetPetitionsAsync(new Query
-		{
-			PageSize = 5
-		}, default);
+		var response = await client.Petitions.GetAsync(
+			pageSize: 5);
 
-		if (!petitions.Ok)
-		{
-			throw new Exception($"API call failed: {petitions.Exception?.Message}", petitions.Exception);
-		}
-
-		petitions.Ok.Should().BeTrue();
-		petitions.Data.Should().NotBeNull();
-		petitions.Data.Should().NotBeEmpty();
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Should().NotBeEmpty();
 	}
 
 	[Fact]
-	public async Task GetAllPetitionsAsync_WithStateFilter_RetrievesMultiplePages()
+	public async Task GetAllListAsync_WithStateFilter_RetrievesMultiplePages()
 	{
-		var petitionsClient = new PetitionsClient();
+		var client = new ParliamentClient();
 
-		var allPetitions = await petitionsClient.GetAllPetitionsAsync(new Query
-		{
-			State = PetitionState.Rejected,
-			PageSize = 10 // Small page size to ensure we get multiple pages
-		}, default);
+		var allPetitions = await client.Petitions.GetAllListAsync(
+			state: "rejected",
+			pageSize: 10); // Small page size to ensure we get multiple pages
 
-		if (!allPetitions.Ok)
-		{
-			throw new Exception($"API call failed: {allPetitions.Exception?.Message}", allPetitions.Exception);
-		}
-
-		allPetitions.Ok.Should().BeTrue();
-		allPetitions.Data.Should().NotBeNull();
-		allPetitions.Data.Should().NotBeEmpty();
+		_ = allPetitions.Should().NotBeNull();
+		_ = allPetitions.Should().NotBeEmpty();
 		// With a page size of 10, if we have more than 10 results, we successfully handled pagination
-		allPetitions.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
+		_ = allPetitions.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
+	}
+
+	[Fact]
+	public async Task GetAllAsync_StreamingResults_Works()
+	{
+		var client = new ParliamentClient();
+		var count = 0;
+
+		await foreach (var petition in client.Petitions.GetAllAsync(state: "open", pageSize: 5))
+		{
+			_ = petition.Should().NotBeNull();
+			_ = petition.Attributes.Should().NotBeNull();
+			count++;
+
+			if (count >= 15)
+			{
+				break; // Test that pagination works by getting at least 3 pages
+			}
+		}
+
+		_ = count.Should().BeGreaterThanOrEqualTo(15);
 	}
 }

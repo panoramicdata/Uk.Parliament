@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
 /// An API response

@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
 /// A government response to a petition

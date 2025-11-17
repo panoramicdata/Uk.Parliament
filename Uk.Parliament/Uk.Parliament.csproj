@@ -3,45 +3,63 @@
 	<PropertyGroup>
 		<TargetFrameworks>net10.0</TargetFrameworks>
 		<ApplicationIcon />
-		<Version>1.0.5</Version>
+		<Nullable>enable</Nullable>
 		<Copyright>Panoramic Data Limited 2025</Copyright>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		
+
 		<!-- Package Metadata -->
 		<PackageId>Uk.Parliament</PackageId>
 		<Authors>Panoramic Data Limited</Authors>
 		<Company>Panoramic Data Limited</Company>
-		<Description>A .NET library for accessing the UK Parliament Petitions API</Description>
-		<PackageTags>uk;parliament;petitions;api;government</PackageTags>
+		<Description>A comprehensive .NET client for all UK Parliament APIs (Petitions, Members, Bills, Committees, Divisions) using Refit</Description>
+		<PackageTags>uk;parliament;petitions;members;bills;committees;divisions;api;government;refit</PackageTags>
 		<PackageProjectUrl>https://github.com/panoramicdata/Uk.Parliament</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/panoramicdata/Uk.Parliament</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
-		
+		<PackageReleaseNotes>v2.0.0 - BREAKING CHANGES: Complete rewrite using Refit. Single ParliamentClient with support for all 6 UK Parliament APIs. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
+
 		<!-- Symbol Package Configuration -->
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		
+
 		<!-- Source Link Configuration -->
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-		
+
 		<!-- Deterministic Build -->
 		<Deterministic>true</Deterministic>
-		
+
 		<!-- Documentation -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Refit for type-safe REST API -->
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Refit" Version="8.0.0" />
+		<PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+
+		<!-- Microsoft Extensions for DI support -->
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+
+		<!-- Source Link -->
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Members\" />
 	</ItemGroup>
 
 </Project>

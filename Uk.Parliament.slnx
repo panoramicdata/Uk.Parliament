@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="PARLIAMENT_APIS.md" />
+    <File Path="README.md" />
+    <File Path="REFIT.md" />
+    <File Path="Uk.Parliament.ico" />
+    <File Path="version.json" />
+  </Folder>
+  <Project Path="Uk.Parliament.Test/Uk.Parliament.Test.csproj" />
+  <Project Path="Uk.Parliament/Uk.Parliament.csproj" />
+</Solution>

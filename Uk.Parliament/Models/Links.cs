@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
 ///  Response links
@@ -11,29 +11,29 @@ public class Links
 	/// Self link
 	/// </summary>
 	[JsonPropertyName("self")]
-	public string Self { get; set; }
+	public string? Self { get; set; }
 
 	/// <summary>
 	/// First link
 	/// </summary>
 	[JsonPropertyName("first")]
-	public string First { get; set; }
+	public string? First { get; set; }
 
 	/// <summary>
 	/// Last link
 	/// </summary>
 	[JsonPropertyName("last")]
-	public string Last { get; set; }
+	public string? Last { get; set; }
 
 	/// <summary>
 	/// Next link
 	/// </summary>
 	[JsonPropertyName("next")]
-	public string Next { get; set; }
+	public string? Next { get; set; }
 
 	/// <summary>
 	/// Previous link
 	/// </summary>
 	[JsonPropertyName("prev")]
-	public string Previous { get; set; }
+	public string? Previous { get; set; }
 }

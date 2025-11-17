@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
 /// Petition state
@@ -17,17 +17,17 @@ public enum PetitionState
 	/// Closed
 	/// </summary>
 	Closed,
-	
+
 	/// <summary>
 	/// Rejected
 	/// </summary>
 	Rejected,
-	
+
 	/// <summary>
 	/// Hidden
 	/// </summary>
 	Hidden,
-	
+
 	/// <summary>
 	/// Stopped
 	/// </summary>

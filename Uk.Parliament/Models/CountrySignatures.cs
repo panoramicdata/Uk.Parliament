@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Uk.Parliament.Petitions;
+namespace Uk.Parliament.Models;
 
 /// <summary>
 /// Country signatures

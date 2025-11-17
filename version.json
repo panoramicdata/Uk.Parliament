@@ -1,0 +1,8 @@
+{
+  "version": "10.0",
+  "versionHeightOffset": 0,
+  "publicReleaseRefSpec": [
+    "^refs/heads/main$",
+    "^refs/tags/v1\\.\\d+\\.\\d+"
+  ]
+}
