@@ -9,6 +9,7 @@
     <File Path="nuget-key.example.txt" />
     <File Path="nuget-key.txt" />
     <File Path="PARLIAMENT_APIS.md" />
+    <File Path="Publish.ps1" />
     <File Path="README.md" />
     <File Path="REFIT.md" />
     <File Path="Uk.Parliament.ico" />
