@@ -22,6 +22,7 @@ public class ParliamentClientTests
 		_ = client.CommonsDivisions.Should().NotBeNull(); // Interface implemented (API has 500 errors)
 		_ = client.LordsDivisions.Should().NotBeNull(); // Interface implemented (API has 500 errors)
 		_ = client.Interests.Should().NotBeNull(); // Newly added
+		_ = client.QuestionsStatements.Should().NotBeNull(); // Newly added
 	}
 
 	[Fact]

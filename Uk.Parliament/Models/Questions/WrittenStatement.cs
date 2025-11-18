@@ -1,0 +1,82 @@
+using System;
+using System.Text.Json.Serialization;
+
+namespace Uk.Parliament.Models.Questions;
+
+/// <summary>
+/// Represents a written ministerial statement
+/// </summary>
+public class WrittenStatement
+{
+	/// <summary>
+	/// Statement identifier
+	/// </summary>
+	[JsonPropertyName("id")]
+	public int Id { get; set; }
+
+	/// <summary>
+	/// Unique Identifier Number (UIN) for the statement
+	/// </summary>
+	[JsonPropertyName("uin")]
+	public required string Uin { get; set; }
+
+	/// <summary>
+	/// Member who made the statement
+	/// </summary>
+	[JsonPropertyName("makingMemberId")]
+	public int MakingMemberId { get; set; }
+
+	/// <summary>
+	/// Name of the member who made the statement
+	/// </summary>
+	[JsonPropertyName("makingMember")]
+	public string? MakingMember { get; set; }
+
+	/// <summary>
+	/// House where statement was made (Commons/Lords)
+	/// </summary>
+	[JsonPropertyName("house")]
+	public required string House { get; set; }
+
+	/// <summary>
+	/// Department that issued the statement
+	/// </summary>
+	[JsonPropertyName("department")]
+	public string? Department { get; set; }
+
+	/// <summary>
+	/// Date the statement was made
+	/// </summary>
+	[JsonPropertyName("dateMade")]
+	public DateTime DateMade { get; set; }
+
+	/// <summary>
+	/// Statement title/heading
+	/// </summary>
+	[JsonPropertyName("title")]
+	public required string Title { get; set; }
+
+	/// <summary>
+	/// Statement text/content
+	/// </summary>
+	[JsonPropertyName("statementText")]
+	public required string StatementText { get; set; }
+
+	/// <summary>
+	/// Related document URL
+	/// </summary>
+	[JsonPropertyName("documentUrl")]
+	public string? DocumentUrl { get; set; }
+
+	/// <summary>
+	/// Whether this is a correction statement
+	/// </summary>
+	[JsonPropertyName("isCorrection")]
+	public bool IsCorrection { get; set; }
+
+	/// <summary>
+	/// Whether this statement has been withdrawn
+	/// </summary>
+	[JsonPropertyName("isWithdrawn")]
+	public bool IsWithdrawn { get; set; }
+}

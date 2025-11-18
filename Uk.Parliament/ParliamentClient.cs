@@ -61,6 +61,11 @@ public class ParliamentClient : IDisposable
 	public IInterestsApi Interests { get; }
 
 	/// <summary>
+	/// Written Questions and Statements API - Access parliamentary questions and ministerial statements
+	/// </summary>
+	public IQuestionsStatementsApi QuestionsStatements { get; }
+
+	/// <summary>
 	/// Constructor with options (creates own HttpClient)
 	/// </summary>
 	/// <param name="options">Configuration options</param>
@@ -91,6 +96,9 @@ public class ParliamentClient : IDisposable
 		
 		// Interests API
 		Interests = CreateApi<IInterestsApi>(options.InterestsBaseUrl, refitSettings);
+		
+		// Questions & Statements API
+		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(options.QuestionsStatementsBaseUrl, refitSettings);
 	}
 
 	/// <summary>
@@ -122,6 +130,7 @@ public class ParliamentClient : IDisposable
 		
 		// Interests API
 		Interests = CreateApi<IInterestsApi>(httpClient, options.InterestsBaseUrl, refitSettings);
+		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(httpClient, options.QuestionsStatementsBaseUrl, refitSettings);
 	}
 
 	private static void ConfigureHttpClient(HttpClient httpClient, ParliamentClientOptions options)

@@ -45,6 +45,11 @@ public class ParliamentClientOptions
 	public string InterestsBaseUrl { get; set; } = "https://interests-api.parliament.uk/";
 
 	/// <summary>
+	/// Base URL for the Written Questions and Statements API
+	/// </summary>
+	public string QuestionsStatementsBaseUrl { get; set; } = "https://questions-statements-api.parliament.uk/";
+
+	/// <summary>
 	/// User agent string for API requests
 	/// </summary>
 	public string UserAgent { get; set; } = "Uk.Parliament.NET/2.0";

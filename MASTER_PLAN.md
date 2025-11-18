@@ -15,7 +15,7 @@
 | **Commons Votes** | [Swagger Docs](https://commonsvotes-api.parliament.uk/swagger/docs/v1) | 🔴 Blocked |
 | **Lords Votes** | [Swagger JSON](https://lordsvotes-api.parliament.uk/swagger/v1/swagger.json) | 🔴 Blocked |
 | **Interests** | [Swagger JSON](https://interests-api.parliament.uk/swagger/v1/swagger.json) | ✅ Complete |
-| **Written Questions** | [Swagger JSON](https://questions-statements-api.parliament.uk/swagger/v1/swagger.json) | 📋 Phase 6.3 |
+| **Written Questions** | [Swagger JSON](https://questions-statements-api.parliament.uk/swagger/v1/swagger.json) | ✅ Complete |
 | **Oral Questions** | [Swagger Docs](https://oralquestionsandmotions-api.parliament.uk/swagger/docs/v1) | 📋 Phase 7 |
 | **Treaties** | [Swagger JSON](https://treaties-api.parliament.uk/swagger/v1/swagger.json) | 📋 Phase 7 |
 | **Erskine May** | [Swagger JSON](https://erskinemay-api.parliament.uk/swagger/v1/swagger.json) | 📋 Phase 8 |
@@ -42,12 +42,13 @@
 | **Commons Votes** | 2/8 (25%) | ❌ | ✅ | ❌ | 🔴 Blocked** |
 | **Lords Votes** | 2/7 (29%) | ❌ | ✅ | ❌ | 🔴 Blocked** |
 | **Interests** | 4/4 (100%) | ✅ | ✅ | ✅ | ✅ Complete |
+| **Questions/Statements** | 4/4 (100%) | ✅ | ✅ | ✅ | ✅ Complete |
 
 **Test Summary:**
 ```
-Total:    86 tests
-Passing:  68 (79%) ✅
-Failing:  4 (5%) - Network timeouts
+Total:    90 tests
+Passing:  72 (80%) ✅
+Failing:  4 (4%) - Network timeouts
 Skipped:  14 (16%) - Parliament API 500 errors
 ```
 
@@ -93,6 +94,15 @@ _**Interfaces complete - Cannot create models due to 100% API failure rate (all 
 - Added extension methods for pagination
 - **Result:** 4/4 unit tests passing
 - **Integration tests:** 8 tests created (skipped pending API access verification)
+
+### ✅ Phase 6.3: Written Questions & Statements API (60 min) - COMPLETE
+- Created 3 model classes (WrittenQuestion, WrittenStatement, DailyReport)
+- Implemented interface with 7 endpoints
+- Added 5 extension methods for pagination
+- **Result:** 4/4 unit tests passing
+- **Integration tests:** 15 tests created (skipped pending API access verification)
+
+**Phase 6 Summary:** 2 APIs implemented, 6 models, 8 unit tests passing, 23 integration tests created
 
 ---
 
