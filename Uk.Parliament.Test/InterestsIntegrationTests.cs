@@ -15,11 +15,11 @@ public class InterestsIntegrationTests : IDisposable
 		_client = new ParliamentClient();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact] // Remove Skip - API should be working
 	public async Task GetMemberInterestsAsync_WithValidMemberId_ReturnsInterests()
 	{
 		// Arrange
-		const int memberId = 172; // Example member ID
+		const int memberId = 172; // A known MP
 
 		// Act
 		var result = await _client.Interests.GetMemberInterestsAsync(memberId);
@@ -43,7 +43,7 @@ public class InterestsIntegrationTests : IDisposable
 		_ = await act.Should().ThrowAsync<Refit.ApiException>();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact] // Remove Skip - API should be working
 	public async Task GetCategoriesAsync_ReturnsCategories()
 	{
 		// Act
