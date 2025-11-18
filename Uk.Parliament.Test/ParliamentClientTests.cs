@@ -18,10 +18,9 @@ public class ParliamentClientTests
 		_ = client.Petitions.Should().NotBeNull();
 		_ = client.Members.Should().NotBeNull();
 		_ = client.Bills.Should().NotBeNull();
-		_ = client.Committees.Should().NotBeNull(); // Now implemented!
-		// Placeholder APIs are null until implemented
-		_ = client.CommonsDivisions.Should().BeNull();
-		_ = client.LordsDivisions.Should().BeNull();
+		_ = client.Committees.Should().NotBeNull();
+		_ = client.CommonsDivisions.Should().NotBeNull(); // Interface implemented (API has 500 errors)
+		_ = client.LordsDivisions.Should().NotBeNull(); // Interface implemented (API has 500 errors)
 	}
 
 	[Fact]

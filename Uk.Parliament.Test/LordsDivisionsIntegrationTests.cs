@@ -1,75 +1,99 @@
+using Xunit.Abstractions;
+using Microsoft.Extensions.Logging;
+
 namespace Uk.Parliament.Test;
 
 /// <summary>
 /// Integration tests for the Lords Divisions API (requires live API)
 /// </summary>
+/// <remarks>
+/// WARNING: As of January 2025, the Lords Divisions API is returning HTTP 500 errors.
+/// These tests are skipped until Parliament resolves the server-side issues.
+/// See 500_ERROR_ANALYSIS.md for full details and diagnostic logs.
+/// </remarks>
 public class LordsDivisionsIntegrationTests
 {
-	// NOTE: These tests are placeholders and will be implemented
-	// once the Divisions API models and interface methods are complete
+	private readonly ITestOutputHelper _output;
 
-	[Fact(Skip = "Lords Divisions API not yet implemented")]
+	public LordsDivisionsIntegrationTests(ITestOutputHelper output)
+	{
+		_output = output;
+	}
+
+	private ParliamentClient CreateClient()
+	{
+		var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
+		var logger = loggerFactory.CreateLogger("ParliamentClient");
+		
+		return new ParliamentClient(new ParliamentClientOptions
+		{
+			Logger = logger,
+			EnableVerboseLogging = true,
+			EnableDebugValidation = false
+		});
+	}
+
+	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
 	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
 	{
 		// Arrange
-		var client = new ParliamentClient();
+		var client = CreateClient();
 
 		// Act
-		// var divisions = await client.LordsDivisions.GetDivisionsAsync();
+		var divisions = await client.LordsDivisions.GetDivisionsAsync();
 
 		// Assert
-		// divisions.Should().NotBeNull();
-		// divisions.Should().NotBeEmpty();
+		_ = divisions.Should().NotBeNull();
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API not yet implemented")]
+	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 	{
 		// Arrange
-		var client = new ParliamentClient();
+		var client = CreateClient();
 
 		// Act
-		// var division = await client.LordsDivisions.GetDivisionByIdAsync(1);
+		var division = await client.LordsDivisions.GetDivisionByIdAsync(1);
 
 		// Assert
-		// division.Should().NotBeNull();
+		_ = division.Should().NotBeNull();
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API not yet implemented")]
+	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
 	public async Task GetDivisionGroupedByPartyAsync_WithValidId_ReturnsGroupedVotes()
 	{
 		// Arrange
-		var client = new ParliamentClient();
+		var client = CreateClient();
 
 		// Act
-		// var groupedVotes = await client.LordsDivisions.GetDivisionGroupedByPartyAsync(1);
+		var groupedVotes = await client.LordsDivisions.GetDivisionGroupedByPartyAsync(1);
 
 		// Assert
-		// groupedVotes.Should().NotBeNull();
+		_ = groupedVotes.Should().NotBeNull();
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API not yet implemented")]
+	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
 	{
 		// Arrange
-		var client = new ParliamentClient();
+		var client = CreateClient();
 
 		// Act
-		// var divisions = await client.LordsDivisions.SearchDivisionsAsync("Amendment");
+		var divisions = await client.LordsDivisions.SearchDivisionsAsync("Amendment");
 
 		// Assert
-		// divisions.Should().NotBeNull();
+		_ = divisions.Should().NotBeNull();
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API not yet implemented")]
+	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
 	public async Task GetDivisionsAsync_WithPagination_Succeeds()
 	{
 		// Arrange
-		var client = new ParliamentClient();
+		var client = CreateClient();
 
 		// Act
 		// var page1 = await client.LordsDivisions.GetDivisionsAsync(skip: 0, take: 10);
@@ -80,6 +104,4 @@ public class LordsDivisionsIntegrationTests
 		// page2.Should().NotBeNull();
 		await Task.CompletedTask;
 	}
-
-	// TODO: Add extension method tests when implemented
 }

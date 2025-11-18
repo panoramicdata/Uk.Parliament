@@ -38,14 +38,22 @@ public class ParliamentClient : IDisposable
 	public ICommitteesApi Committees { get; }
 
 	/// <summary>
-	/// Commons Divisions API - Access House of Commons voting records (placeholder for future implementation)
+	/// Commons Divisions API - Access House of Commons voting records
 	/// </summary>
-	public ICommonsDivisionsApi? CommonsDivisions { get; }
+	/// <remarks>
+	/// WARNING: This API is currently returning HTTP 500 errors from Parliament servers.
+	/// See 500_ERROR_ANALYSIS.md for details. Interface is implemented but may not function until Parliament fixes their API.
+	/// </remarks>
+	public ICommonsDivisionsApi CommonsDivisions { get; }
 
 	/// <summary>
-	/// Lords Divisions API - Access House of Lords voting records (placeholder for future implementation)
+	/// Lords Divisions API - Access House of Lords voting records
 	/// </summary>
-	public ILordsDivisionsApi? LordsDivisions { get; }
+	/// <remarks>
+	/// WARNING: This API is currently returning HTTP 500 errors from Parliament servers.
+	/// See 500_ERROR_ANALYSIS.md for details. Interface is implemented but may not function until Parliament fixes their API.
+	/// </remarks>
+	public ILordsDivisionsApi LordsDivisions { get; }
 
 	/// <summary>
 	/// Constructor with options (creates own HttpClient)
@@ -72,9 +80,9 @@ public class ParliamentClient : IDisposable
 		Bills = CreateApi<IBillsApi>(options.BillsBaseUrl, refitSettings);
 		Committees = CreateApi<ICommitteesApi>(options.CommitteesBaseUrl, refitSettings);
 		
-		// Placeholder APIs - will be null until implemented
-		// CommonsDivisions = CreateApi<ICommonsDivisionsApi>(options.CommonsDivisionsBaseUrl, refitSettings);
-		// LordsDivisions = CreateApi<ILordsDivisionsApi>(options.LordsDivisionsBaseUrl, refitSettings);
+		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
+		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(options.CommonsDivisionsBaseUrl, refitSettings);
+		LordsDivisions = CreateApi<ILordsDivisionsApi>(options.LordsDivisionsBaseUrl, refitSettings);
 	}
 
 	/// <summary>
@@ -100,9 +108,9 @@ public class ParliamentClient : IDisposable
 		Bills = CreateApi<IBillsApi>(httpClient, options.BillsBaseUrl, refitSettings);
 		Committees = CreateApi<ICommitteesApi>(httpClient, options.CommitteesBaseUrl, refitSettings);
 		
-		// Placeholder APIs - will be null until implemented
-		// CommonsDivisions = CreateApi<ICommonsDivisionsApi>(httpClient, options.CommonsDivisionsBaseUrl, refitSettings);
-		// LordsDivisions = CreateApi<ILordsDivisionsApi>(httpClient, options.LordsDivisionsBaseUrl, refitSettings);
+		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
+		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(httpClient, options.CommonsDivisionsBaseUrl, refitSettings);
+		LordsDivisions = CreateApi<ILordsDivisionsApi>(httpClient, options.LordsDivisionsBaseUrl, refitSettings);
 	}
 
 	private static void ConfigureHttpClient(HttpClient httpClient, ParliamentClientOptions options)

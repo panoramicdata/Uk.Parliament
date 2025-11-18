@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
@@ -30,9 +31,15 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 		var requestId = Guid.NewGuid();
 		var stopwatch = Stopwatch.StartNew();
 
+		// Use scope to attach the request ID to all log entries
+		using var scope = _logger?.BeginScope(new Dictionary<string, object>
+		{
+			["RequestId"] = requestId
+		});
+
 		if (_logger != null && _verboseLogging)
 		{
-			await LogRequestAsync(request, requestId);
+			await LogRequestAsync(request);
 		}
 
 		HttpResponseMessage? response = null;
@@ -42,80 +49,90 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 			
 			if (_logger != null)
 			{
-				await LogResponseAsync(response, requestId, stopwatch.Elapsed);
+				await LogResponseAsync(response, stopwatch.Elapsed);
 			}
 
 			return response;
 		}
 		catch (Exception ex)
 		{
-			_logger?.LogError(ex, "[{RequestId}] Request failed after {Elapsed}ms", requestId, stopwatch.ElapsedMilliseconds);
+			_logger?.LogError(ex, "Request failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
 			throw;
 		}
 	}
 
-	private async Task LogRequestAsync(HttpRequestMessage request, Guid requestId)
+	private async Task LogRequestAsync(HttpRequestMessage request)
 	{
 		var sb = new StringBuilder();
-		sb.AppendLine($"[{requestId}] ========== HTTP REQUEST ==========");
-		sb.AppendLine($"[{requestId}] {request.Method} {request.RequestUri}");
-		sb.AppendLine($"[{requestId}] Headers:");
+		sb.AppendLine("========== HTTP REQUEST ==========");
+		sb.AppendLine($"{request.Method} {request.RequestUri}");
+		sb.AppendLine("Headers:");
 		
 		foreach (var header in request.Headers)
 		{
-			sb.AppendLine($"[{requestId}]   {header.Key}: {string.Join(", ", header.Value)}");
+			sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 		}
 
 		if (request.Content != null)
 		{
-			sb.AppendLine($"[{requestId}] Content Headers:");
+			sb.AppendLine("Content Headers:");
 			foreach (var header in request.Content.Headers)
 			{
-				sb.AppendLine($"[{requestId}]   {header.Key}: {string.Join(", ", header.Value)}");
+				sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 			}
 
 			var content = await request.Content.ReadAsStringAsync();
 			if (!string.IsNullOrEmpty(content))
 			{
-				sb.AppendLine($"[{requestId}] Body:");
-				sb.AppendLine($"[{requestId}] {content}");
+				sb.AppendLine("Body:");
+				sb.AppendLine(content);
 			}
 		}
 
 		_logger?.LogDebug("{RequestLog}", sb.ToString());
 	}
 
-	private async Task LogResponseAsync(HttpResponseMessage response, Guid requestId, TimeSpan elapsed)
+	private async Task LogResponseAsync(HttpResponseMessage response, TimeSpan elapsed)
 	{
 		var sb = new StringBuilder();
-		sb.AppendLine($"[{requestId}] ========== HTTP RESPONSE ({elapsed.TotalMilliseconds:F0}ms) ==========");
-		sb.AppendLine($"[{requestId}] Status: {(int)response.StatusCode} {response.ReasonPhrase}");
-		sb.AppendLine($"[{requestId}] Headers:");
+		sb.AppendLine($"========== HTTP RESPONSE ({elapsed.TotalMilliseconds:F0}ms) ==========");
+		sb.AppendLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}");
+		sb.AppendLine("Headers:");
 		
 		foreach (var header in response.Headers)
 		{
-			sb.AppendLine($"[{requestId}]   {header.Key}: {string.Join(", ", header.Value)}");
+			sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 		}
 
-		if (response.Content != null && _verboseLogging)
+		// Always log response body for errors (4xx, 5xx), even if verbose logging is off
+		var isError = !response.IsSuccessStatusCode;
+		var shouldLogBody = _verboseLogging || isError;
+
+		if (response.Content != null && shouldLogBody)
 		{
-			sb.AppendLine($"[{requestId}] Content Headers:");
+			sb.AppendLine("Content Headers:");
 			foreach (var header in response.Content.Headers)
 			{
-				sb.AppendLine($"[{requestId}]   {header.Key}: {string.Join(", ", header.Value)}");
+				sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 			}
 
 			var content = await response.Content.ReadAsStringAsync();
 			if (!string.IsNullOrEmpty(content))
 			{
-				sb.AppendLine($"[{requestId}] Body ({content.Length} chars):");
-				// Truncate very long responses for readability
-				var displayContent = content.Length > 5000 ? content.Substring(0, 5000) + "... (truncated)" : content;
-				sb.AppendLine($"[{requestId}] {displayContent}");
+				sb.AppendLine($"Body ({content.Length} chars):");
+				// For errors, always show full content (up to 10000 chars)
+				// For success, truncate at 5000 chars if verbose logging
+				var maxLength = isError ? 10000 : 5000;
+				var displayContent = content.Length > maxLength ? content.Substring(0, maxLength) + "... (truncated)" : content;
+				sb.AppendLine(displayContent);
 			}
 		}
 
-		var logLevel = response.IsSuccessStatusCode ? LogLevel.Debug : LogLevel.Warning;
+		// Use Error level for 5xx, Warning for 4xx, Debug for 2xx/3xx
+		var logLevel = (int)response.StatusCode >= 500 ? LogLevel.Error :
+		               (int)response.StatusCode >= 400 ? LogLevel.Warning :
+		               LogLevel.Debug;
+		
 		_logger?.Log(logLevel, "{ResponseLog}", sb.ToString());
 	}
 }

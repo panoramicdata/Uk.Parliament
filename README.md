@@ -235,6 +235,12 @@ var options = new ParliamentClientOptions
     // Enable strict JSON validation (default: true in DEBUG, false in RELEASE)
     EnableDebugValidation = true,
     
+    // Enable verbose HTTP logging (default: true in DEBUG, false in RELEASE)
+    EnableVerboseLogging = true,
+    
+    // Logger for HTTP request/response diagnostics (default: null)
+    Logger = loggerFactory.CreateLogger("ParliamentClient"),
+    
     // Base URLs for each API (defaults provided)
     PetitionsBaseUrl = "https://petition.parliament.uk/",
     MembersBaseUrl = "https://members-api.parliament.uk/",
@@ -244,48 +250,160 @@ var options = new ParliamentClientOptions
 var client = new ParliamentClient(options);
 ```
 
-## Extension Methods
+## Logging and Debugging
 
-All APIs support pagination helpers:
+The library includes comprehensive HTTP request/response logging with Guid-based request tracking:
 
-```csharp
-// Streaming (memory efficient)
-await foreach (var item in api.GetAllAsync(pageSize: 50))
-{
-    // Process one item at a time
-}
-
-// Materialized list
-var allItems = await api.GetAllListAsync(pageSize: 50);
-```
-
-## Error Handling
-
-The library uses Refit's exception handling:
+### Basic Logging Setup
 
 ```csharp
-using Refit;
+using Microsoft.Extensions.Logging;
 
-try
+// Create logger factory
+var loggerFactory = LoggerFactory.Create(builder =>
 {
-    var petition = await client.Petitions.GetByIdAsync(123456);
-}
-catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+    builder
+        .SetMinimumLevel(LogLevel.Debug)
+        .AddConsole();
+});
+
+var logger = loggerFactory.CreateLogger("ParliamentClient");
+
+// Create client with logging enabled
+var client = new ParliamentClient(new ParliamentClientOptions
 {
-    Console.WriteLine("Petition not found");
-}
-catch (ApiException ex)
+    Logger = logger,
+    EnableVerboseLogging = true // Shows full request/response bodies
+});
+
+// All HTTP requests will now be logged
+var petitions = await client.Petitions.GetAsync();
+```
+
+### xUnit Test Logging
+
+```csharp
+public class MyTests
 {
-    Console.WriteLine($"API Error: {ex.StatusCode} - {ex.Content}");
+    private readonly ITestOutputHelper _output;
+
+    public MyTests(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [Fact]
+    public async Task TestWithLogging()
+    {
+        // Create logger that writes to test output
+        var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
+        var logger = loggerFactory.CreateLogger("ParliamentClient");
+        
+        var client = new ParliamentClient(new ParliamentClientOptions
+        {
+            Logger = logger,
+            EnableVerboseLogging = true
+        });
+        
+        // HTTP requests/responses will appear in test output
+        var response = await client.Committees.GetCommitteesAsync(take: 10);
+    }
 }
 ```
 
-## Requirements
+### Log Output Format
 
-- .NET 10.0 or later
-- Refit 8.0.0 or later
+Each request is assigned a unique Guid for tracking:
 
-## Building from Source
+```
+[Debug] [ParliamentClient] [4a7866ab-5567-4cf1-9a26-b2e895b68f04] ========== HTTP REQUEST ==========
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] GET https://committees-api.parliament.uk/api/Committees?take=10
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] Headers:
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04]   User-Agent: Uk.Parliament.NET/2.0
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04]   Accept: application/json
+
+[Error] [ParliamentClient] [4a7866ab-5567-4cf1-9a26-b2e895b68f04] ========== HTTP RESPONSE (1162ms) ==========
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] Status: 500 Internal Server Error
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] Headers:
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04]   Server: cloudflare
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04]   CF-RAY: 9a078bbc0bc55781-LHR
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] Content Headers:
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04]   Content-Type: text/plain; charset=UTF-8
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04]   Content-Length: 15
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] Body (15 chars):
+[4a7866ab-5567-4cf1-9a26-b2e895b68f04] error code: 500
+```
+
+### Log Levels
+
+- **Debug**: Successful requests (2xx, 3xx) and full request details
+- **Warning**: Client errors (4xx)
+- **Error**: Server errors (5xx)
+
+### Verbose Logging
+
+When `EnableVerboseLogging = true`:
+- Full request bodies are logged
+- Full response bodies are logged (up to 5,000 chars for success, 10,000 chars for errors)
+- All headers are included
+
+When `EnableVerboseLogging = false`:
+- Error responses (4xx, 5xx) still show full body for diagnostics
+- Successful responses show minimal information
+- Headers are always logged
+
+## API Reference
+
+### Petitions API
+
+- `GetAsync`: List petitions
+- `GetByIdAsync`: Get specific petition
+- `GetArchivedAsync`: List archived petitions
+- `GetArchivedByIdAsync`: Get specific archived petition
+- `GetAllAsync`: Stream all petitions (extension method)
+- `GetAllListAsync`: Materialize all petitions as a list (extension method)
+
+### Members API
+
+- `SearchAsync`: Search for members
+- `GetByIdAsync`: Get member details
+- `SearchConstituenciesAsync`: Search constituencies
+- `GetConstituencyByIdAsync`: Get constituency details
+
+### Bills API (PLANNED)
+
+- `GetBillsAsync`: List bills
+- `GetBillByIdAsync`: Get specific bill
+- `GetBillStagesAsync`: Get stages of a bill
+- `GetSessionsAsync`: Get sessions of a bill
+
+### Committees API (PLANNED)
+
+- `GetCommitteesAsync`: List committees
+- `GetCommitteeByIdAsync`: Get specific committee
+- `GetCommitteeInquiriesAsync`: Get inquiries of a committee
+
+### Divisions APIs (PLANNED)
+
+- `GetDivisionsAsync`: List divisions (Commons and Lords)
+- `GetDivisionByIdAsync`: Get specific division (Commons and Lords)
+
+See API documentation for detailed usage.
+
+## Troubleshooting
+
+Common issues and solutions:
+
+- **500 Internal Server Error**: Server-side problem, try again later. API status pages may provide more info.
+- **404 Not Found**: Petition, member, or other resource not found. Check ID and try again.
+- **401 Unauthorized**: Authentication failed. Check API key or other credentials.
+- **Validation errors**: Check data sent to API matches expected formats (e.g., dates, IDs).
+
+Enable verbose logging to get more details on request/response and diagnose issues.
+
+## Development
+
+### Building from Source
 
 ```bash
 git clone https://github.com/panoramicdata/Uk.Parliament.git
@@ -294,7 +412,7 @@ dotnet build
 dotnet test
 ```
 
-## Test Suite
+### Test Suite
 
 The library includes comprehensive tests:
 
@@ -327,6 +445,8 @@ See [MASTER_PLAN.md](MASTER_PLAN.md) for detailed implementation roadmap.
 ## Documentation
 
 - [MASTER_PLAN.md](MASTER_PLAN.md) - Complete project roadmap
+- [LOGGING_AND_DIAGNOSTICS.md](LOGGING_AND_DIAGNOSTICS.md) - Comprehensive logging guide
+- [500_ERROR_ANALYSIS.md](500_ERROR_ANALYSIS.md) - Committees API 500 error investigation
 - [PARLIAMENT_APIS.md](PARLIAMENT_APIS.md) - Overview of all UK Parliament APIs
 - [REFIT.md](REFIT.md) - Migration to Refit architecture
 - [TEST_SUITE_OVERVIEW.md](TEST_SUITE_OVERVIEW.md) - Comprehensive test documentation

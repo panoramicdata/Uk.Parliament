@@ -1,0 +1,14 @@
+# NuGet API Key
+#
+# INSTRUCTIONS:
+# 1. Replace this entire file content with your actual NuGet API key
+# 2. Get your API key from: https://www.nuget.org/account/apikeys
+# 3. This file is in .gitignore and will NOT be committed to git
+# 4. Keep this file secure and do not share it
+#
+# Example format (your key will look similar):
+# oy2abc123def456ghi789jkl012mno345pqr678stu
+#
+# Simply paste your key on a single line below (delete these instructions):
+
+YOUR_NUGET_API_KEY_HERE

@@ -1,8 +1,12 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="500_ERROR_ANALYSIS.md" />
     <File Path="global.json" />
     <File Path="LICENSE" />
+    <File Path="MASTER_PLAN.md" />
+    <File Path="nuget-key.example.txt" />
+    <File Path="nuget-key.txt" />
     <File Path="PARLIAMENT_APIS.md" />
     <File Path="README.md" />
     <File Path="REFIT.md" />

@@ -163,6 +163,12 @@ PublishScripts/
 *.nuget.props
 *.nuget.targets
 
+# NuGet package output directory
+nupkg/
+
+# NuGet API Key (DO NOT COMMIT!)
+nuget-key.txt
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
