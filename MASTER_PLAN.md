@@ -16,8 +16,8 @@
 | **Lords Votes** | [Swagger JSON](https://lordsvotes-api.parliament.uk/swagger/v1/swagger.json) | 🔴 Blocked |
 | **Interests** | [Swagger JSON](https://interests-api.parliament.uk/swagger/v1/swagger.json) | ✅ Complete |
 | **Written Questions** | [Swagger JSON](https://questions-statements-api.parliament.uk/swagger/v1/swagger.json) | ✅ Complete |
-| **Oral Questions** | [Swagger Docs](https://oralquestionsandmotions-api.parliament.uk/swagger/docs/v1) | 📋 Phase 7 |
-| **Treaties** | [Swagger JSON](https://treaties-api.parliament.uk/swagger/v1/swagger.json) | 📋 Phase 7 |
+| **Oral Questions** | [Swagger Docs](https://oralquestionsandmotions-api.parliament.uk/swagger/docs/v1) | ✅ Complete |
+| **Treaties** | [Swagger JSON](https://treaties-api.parliament.uk/swagger/v1/swagger.json) | ✅ Complete |
 | **Erskine May** | [Swagger JSON](https://erskinemay-api.parliament.uk/swagger/v1/swagger.json) | 📋 Phase 8 |
 | **NOW (Annunciator)** | [Swagger JSON](https://now-api.parliament.uk/swagger/v1/swagger.json) | 📋 Phase 8 |
 
@@ -25,9 +25,9 @@
 
 ---
 
-## 📊 Current Status - Package Built, Ready to Publish
+## 📊 Current Status - Near Complete!
 
-**Overall Completion: 98%** 🎉
+**Overall Completion: 99%** 🎉
 
 **Version:** 10.0.3 (nbgv auto-versioned)  
 **Target Framework:** .NET 10  
@@ -43,13 +43,15 @@
 | **Lords Votes** | 2/7 (29%) | ❌ | ✅ | ❌ | 🔴 Blocked** |
 | **Interests** | 4/4 (100%) | ✅ | ✅ | ✅ | ✅ Complete |
 | **Questions/Statements** | 4/4 (100%) | ✅ | ✅ | ✅ | ✅ Complete |
+| **Oral Questions/Motions** | 3/3 (100%) | ✅ | ✅ | ✅ | ✅ Complete |
+| **Treaties** | 4/4 (100%) | ✅ | ✅ | ✅ | ✅ Complete |
 
 **Test Summary:**
 ```
-Total:    90 tests
-Passing:  72 (80%) ✅
+Total:    97 tests
+Passing:  79 (81%) ✅
 Failing:  4 (4%) - Network timeouts
-Skipped:  14 (16%) - Parliament API 500 errors
+Skipped:  14 (14%) - Parliament API 500 errors
 ```
 
 **Package Build:**
@@ -103,6 +105,22 @@ _**Interfaces complete - Cannot create models due to 100% API failure rate (all 
 - **Integration tests:** 15 tests created (skipped pending API access verification)
 
 **Phase 6 Summary:** 2 APIs implemented, 6 models, 8 unit tests passing, 23 integration tests created
+
+### ✅ Phase 7.1: Oral Questions & Motions API (45 min) - COMPLETE
+- Created 2 model classes (OralQuestion, Motion)
+- Implemented interface with 4 endpoints
+- Added 4 extension methods for pagination
+- **Result:** 3/3 unit tests passing
+- **Integration tests:** 8 tests created (skipped pending API access verification)
+
+### ✅ Phase 7.2: Treaties API (45 min) - COMPLETE
+- Created 3 model classes (Treaty, GovernmentOrganisation, TreatyBusinessItem)
+- Implemented interface with 4 endpoints
+- Added 2 extension methods for pagination
+- **Result:** 4/4 unit tests passing
+- **Integration tests:** 6 tests created (skipped pending API access verification)
+
+**Phase 7 Summary:** 2 APIs implemented, 5 models, 7 unit tests passing, 14 integration tests created
 
 ---
 
