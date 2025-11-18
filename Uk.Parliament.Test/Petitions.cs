@@ -1,5 +1,4 @@
 using Uk.Parliament.Extensions;
-using Uk.Parliament.Models;
 
 namespace Uk.Parliament.Test;
 
@@ -79,7 +78,7 @@ public class Petitions
 		_ = response.Data.Id.Should().Be(ValidPetitionId);
 		_ = response.Data.Attributes.Should().NotBeNull();
 		_ = response.Data.Attributes.Action.Should().NotBeNullOrWhiteSpace();
-		_ = response.Data.Attributes.SignatureCount.Should().BeGreaterThan(0);
+		_ = response.Data.Attributes.SignatureCount.Should().BePositive();
 	}
 
 	[Fact]

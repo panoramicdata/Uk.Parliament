@@ -11,20 +11,19 @@ public class Department
 	/// Department acronym
 	/// </summary>
 	[JsonPropertyName("acronym")]
-	public string Acronym { get; set; }
+	public required string Acronym { get; set; }
 
 	/// <summary>
 	/// Department name
 	/// </summary>
 	[JsonPropertyName("name")]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <summary>
 	/// Department URL
 	/// </summary>
 	[JsonPropertyName("url")]
-	public string Url { get; set; }
-
+	public required string Url { get; set; }
 	/// <inheritdoc />
 	public override string ToString() => $"{Acronym}: {Name}";
 }

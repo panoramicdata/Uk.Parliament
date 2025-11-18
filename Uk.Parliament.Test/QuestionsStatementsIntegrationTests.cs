@@ -1,5 +1,3 @@
-using System;
-using Xunit;
 using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Questions;
 
@@ -28,7 +26,7 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BeGreaterThan(0);
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -119,12 +117,15 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 			pageSize: 5))
 		{
 			questions.Add(question);
-			if (questions.Count >= 10) break; // Limit for test
+			if (questions.Count >= 10)
+			{
+				break; // Limit for test
+			}
 		}
 
 		// Assert
 		_ = questions.Should().NotBeEmpty();
-		_ = questions.Count.Should().BeGreaterThanOrEqualTo(5);
+		_ = questions.Should().HaveCountGreaterThanOrEqualTo(5);
 	}
 
 	#endregion
@@ -140,7 +141,7 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BeGreaterThan(0);
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -193,12 +194,15 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 			pageSize: 5))
 		{
 			statements.Add(statement);
-			if (statements.Count >= 10) break; // Limit for test
+			if (statements.Count >= 10)
+			{
+				break; // Limit for test
+			}
 		}
 
 		// Assert
 		_ = statements.Should().NotBeEmpty();
-		_ = statements.Count.Should().BeGreaterThanOrEqualTo(5);
+		_ = statements.Should().HaveCountGreaterThanOrEqualTo(5);
 	}
 
 	#endregion
@@ -236,7 +240,10 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 			pageSize: 5))
 		{
 			reports.Add(report);
-			if (reports.Count >= 10) break; // Limit for test
+			if (reports.Count >= 10)
+			{
+				break; // Limit for test
+			}
 		}
 
 		// Assert
@@ -424,7 +431,7 @@ public class QuestionsStatementsApiUnitTests
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.TotalResults.Should().Be(1);
-		_ = result.Items.Should().HaveCount(1);
+		_ = result.Items.Should().ContainSingle();
 		_ = result.Items[0].Value.QuestionCount.Should().Be(50);
 		_ = result.Items[0].Value.StatementCount.Should().Be(10);
 	}

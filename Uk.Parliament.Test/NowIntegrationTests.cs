@@ -1,5 +1,3 @@
-using System;
-using Xunit;
 using Uk.Parliament.Models.Now;
 
 namespace Uk.Parliament.Test;

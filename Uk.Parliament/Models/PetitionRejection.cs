@@ -11,13 +11,13 @@ public class PetitionRejection
 	/// The rejection code
 	/// </summary>
 	[JsonPropertyName("code")]
-	public string Code { get; set; }
+	public required string Code { get; set; }
 
 	/// <summary>
 	/// The rejection details
 	/// </summary>
 	[JsonPropertyName("details")]
-	public string Details { get; set; }
+	public required string Details { get; set; }
 
 	/// <inheritdoc />
 	public override string ToString() => $"{Code}: {Details}";

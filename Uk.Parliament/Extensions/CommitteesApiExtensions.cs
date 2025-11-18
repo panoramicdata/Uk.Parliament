@@ -24,7 +24,7 @@ public static class CommitteesApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int skip = 0;
+		var skip = 0;
 
 		while (true)
 		{

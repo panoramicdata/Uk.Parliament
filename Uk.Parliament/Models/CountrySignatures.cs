@@ -8,22 +8,22 @@ namespace Uk.Parliament.Models;
 public class CountrySignatures
 {
 	/// <summary>
-	/// Name
+	/// Country name
 	/// </summary>
 	[JsonPropertyName("name")]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <summary>
-	/// Code
+	/// Country code
 	/// </summary>
 	[JsonPropertyName("code")]
-	public string Code { get; set; }
+	public required string Code { get; set; }
 
 	/// <summary>
 	/// Signature count
 	/// </summary>
 	[JsonPropertyName("signature_count")]
-	public int SignatureCount { get; set; }
+	public required int SignatureCount { get; set; }
 
 	/// <inheritdoc />
 	public override string ToString() => $"{Name} ({Code}): {SignatureCount} signatures";

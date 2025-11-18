@@ -1,4 +1,3 @@
-using Xunit;
 using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Interests;
 
@@ -55,7 +54,7 @@ public class InterestsIntegrationTests : IDisposable
 		_ = result.Should().NotBeEmpty();
 		_ = result.Should().AllSatisfy(category =>
 		{
-			_ = category.Id.Should().BeGreaterThan(0);
+			_ = category.Id.Should().BePositive();
 			_ = category.Name.Should().NotBeNullOrEmpty();
 		});
 	}
@@ -69,7 +68,7 @@ public class InterestsIntegrationTests : IDisposable
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BeGreaterThan(0);
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -114,12 +113,15 @@ public class InterestsIntegrationTests : IDisposable
 		await foreach (var interest in _client.Interests.GetAllInterestsAsync(pageSize: 5))
 		{
 			interests.Add(interest);
-			if (interests.Count >= 10) break; // Limit for test
+			if (interests.Count >= 10)
+			{
+				break; // Limit for test
+			}
 		}
 
 		// Assert
 		_ = interests.Should().NotBeEmpty();
-		_ = interests.Count.Should().BeGreaterThanOrEqualTo(5);
+		_ = interests.Should().HaveCountGreaterThanOrEqualTo(5);
 	}
 
 	public void Dispose()
@@ -176,7 +178,7 @@ public class InterestsApiUnitTests
 		_ = result.Should().NotBeNull();
 		_ = result.MemberId.Should().Be(172);
 		_ = result.MemberName.Should().Be("Test Member");
-		_ = result.Categories.Should().HaveCount(1);
+		_ = result.Categories.Should().ContainSingle();
 	}
 
 	[Fact]

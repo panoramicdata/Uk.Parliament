@@ -1,7 +1,7 @@
+using Refit;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Refit;
 using Uk.Parliament.Models;
 using Uk.Parliament.Models.Questions;
 
@@ -60,15 +60,15 @@ public interface IQuestionsStatementsApi
 	/// <summary>
 	/// Get a written question by date and UIN
 	/// </summary>
-	/// <param name="date">Date the question was tabled</param>
+	/// <param name="questionDate">Date the question was tabled</param>
 	/// <param name="uin">Unique Identifier Number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written question details</returns>
 	[Get("/api/writtenquestions/questions/{date}/{uin}")]
 	Task<WrittenQuestion> GetWrittenQuestionByDateAndUinAsync(
-		DateTime date,
+		DateTime questionDate,
 		string uin,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get written statements with optional filtering
@@ -107,13 +107,13 @@ public interface IQuestionsStatementsApi
 	/// <summary>
 	/// Get a written statement by date and UIN
 	/// </summary>
-	/// <param name="date">Date the statement was made</param>
+	/// <param name="statementDate">Date the statement was made</param>
 	/// <param name="uin">Unique Identifier Number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written statement details</returns>
 	[Get("/api/writtenstatements/statements/{date}/{uin}")]
 	Task<WrittenStatement> GetWrittenStatementByDateAndUinAsync(
-		DateTime date,
+		DateTime statementDate,
 		string uin,
 		CancellationToken cancellationToken = default);
 

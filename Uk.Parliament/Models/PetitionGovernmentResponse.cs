@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -14,19 +14,19 @@ public class PetitionGovernmentResponse
 	/// The date the government responded
 	/// </summary>
 	[JsonPropertyName("responded_on")]
-	public string RespondedOn { get; set; }
+	public required string RespondedOn { get; set; }
 
 	/// <summary>
 	/// The summary
 	/// </summary>
 	[JsonPropertyName("summary")]
-	public string Summary { get; set; }
+	public required string Summary { get; set; }
 
 	/// <summary>
 	/// The details
 	/// </summary>
 	[JsonPropertyName("details")]
-	public string Details { get; set; }
+	public required string Details { get; set; }
 
 	/// <summary>
 	/// When the response was created

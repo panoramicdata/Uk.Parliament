@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,7 +6,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Uk.Parliament;
 
@@ -46,7 +46,7 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 		try
 		{
 			response = await base.SendAsync(request, cancellationToken);
-			
+
 			if (_logger != null)
 			{
 				await LogResponseAsync(response, stopwatch.Elapsed);
@@ -67,7 +67,7 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 		sb.AppendLine("========== HTTP REQUEST ==========");
 		sb.AppendLine($"{request.Method} {request.RequestUri}");
 		sb.AppendLine("Headers:");
-		
+
 		foreach (var header in request.Headers)
 		{
 			sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
@@ -84,8 +84,8 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 			var content = await request.Content.ReadAsStringAsync();
 			if (!string.IsNullOrEmpty(content))
 			{
-				sb.AppendLine("Body:");
-				sb.AppendLine(content);
+				_ = sb.AppendLine("Body:");
+				_ = sb.AppendLine(content);
 			}
 		}
 
@@ -95,10 +95,10 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 	private async Task LogResponseAsync(HttpResponseMessage response, TimeSpan elapsed)
 	{
 		var sb = new StringBuilder();
-		sb.AppendLine($"========== HTTP RESPONSE ({elapsed.TotalMilliseconds:F0}ms) ==========");
-		sb.AppendLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}");
-		sb.AppendLine("Headers:");
-		
+		_ = sb.AppendLine($"========== HTTP RESPONSE ({elapsed.TotalMilliseconds:F0}ms) ==========")
+			.AppendLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}")
+			.AppendLine("Headers:");
+
 		foreach (var header in response.Headers)
 		{
 			sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
@@ -130,9 +130,9 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 
 		// Use Error level for 5xx, Warning for 4xx, Debug for 2xx/3xx
 		var logLevel = (int)response.StatusCode >= 500 ? LogLevel.Error :
-		               (int)response.StatusCode >= 400 ? LogLevel.Warning :
-		               LogLevel.Debug;
-		
+					   (int)response.StatusCode >= 400 ? LogLevel.Warning :
+					   LogLevel.Debug;
+
 		_logger?.Log(logLevel, "{ResponseLog}", sb.ToString());
 	}
 }

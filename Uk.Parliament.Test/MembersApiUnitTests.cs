@@ -94,7 +94,7 @@ public class MembersApiUnitTests
 		var result = await mockApi.Object.SearchConstituenciesAsync(take: 1);
 
 		// Assert
-		_ = result.Items.Should().HaveCount(1);
+		_ = result.Items.Should().ContainSingle();
 		_ = result.Items[0].Value.Name.Should().Be("Test Constituency");
 	}
 

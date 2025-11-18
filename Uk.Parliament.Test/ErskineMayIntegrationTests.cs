@@ -1,5 +1,3 @@
-using System;
-using Xunit;
 using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.ErskineMay;
 
@@ -28,7 +26,7 @@ public class ErskineMayIntegrationTests : IDisposable
 		_ = result.Should().NotBeEmpty();
 		_ = result.Should().AllSatisfy(part =>
 		{
-			_ = part.PartNumber.Should().BeGreaterThan(0);
+			_ = part.PartNumber.Should().BePositive();
 			_ = part.Title.Should().NotBeNullOrEmpty();
 		});
 	}
@@ -100,7 +98,10 @@ public class ErskineMayIntegrationTests : IDisposable
 		await foreach (var section in _client.ErskineMay.GetAllSectionsAsync(chapterNumber: 1, pageSize: 5))
 		{
 			sections.Add(section);
-			if (sections.Count >= 10) break;
+			if (sections.Count >= 10)
+			{
+				break;
+			}
 		}
 
 		// Assert

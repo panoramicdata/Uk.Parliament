@@ -11,13 +11,13 @@ public class RegionSignatures
 	/// The region name
 	/// </summary>
 	[JsonPropertyName("name")]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <summary>
 	/// The ONS code
 	/// </summary>
 	[JsonPropertyName("ons_code")]
-	public string OnsCode { get; set; }
+	public required string OnsCode { get; set; }
 
 	/// <summary>
 	/// The signature count

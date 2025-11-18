@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
 using Uk.Parliament.Models.ErskineMay;
 
@@ -26,7 +25,7 @@ public static class ErskineMayApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int skip = 0;
+		var skip = 0;
 
 		while (true)
 		{
@@ -66,7 +65,7 @@ public static class ErskineMayApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int skip = 0;
+		var skip = 0;
 
 		while (true)
 		{

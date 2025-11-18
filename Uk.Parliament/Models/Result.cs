@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Uk.Parliament.Models;
 
@@ -17,34 +17,36 @@ public class Result<T>
 	/// If the result is OK, this will contain the data.
 	/// Otherwise, null.
 	/// </summary>
-	public T Data { get; }
-
-	/// <summary>
-	/// Constructor
-	/// </summary>
-	/// <param name="data"></param>
-	public Result(T data)
-	{
-		Ok = true;
-		Data = data;
-	}
-
-	/// <summary>
-	/// Constructor
-	/// </summary>
-	/// <param name="exception"></param>
-	public Result(Exception exception)
-	{
-		Ok = false;
-		Exception = exception;
-	}
+	public T? Data { get; }
 
 	/// <summary>
 	/// If the result is not OK, this will contain the exception.
 	/// Otherwise, null.
 	/// </summary>
-	public Exception Exception { get; }
+	public Exception? Exception { get; }
+
+	/// <summary>
+	/// Constructor for successful result
+	/// </summary>
+	/// <param name="data">The result data</param>
+	public Result(T data)
+	{
+		Ok = true;
+		Data = data;
+		Exception = null;
+	}
+
+	/// <summary>
+	/// Constructor for error result
+	/// </summary>
+	/// <param name="exception">The exception</param>
+	public Result(Exception exception)
+	{
+		Ok = false;
+		Data = default;
+		Exception = exception;
+	}
 
 	/// <inheritdoc />
-	public override string ToString() => Ok ? Data.ToString() : Exception.ToString();
+	public override string ToString() => Ok ? Data?.ToString() ?? string.Empty : Exception?.ToString() ?? string.Empty;
 }

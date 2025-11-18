@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models;
 
@@ -10,7 +11,8 @@ public class Query
 	/// <summary>
 	///  The query text
 	/// </summary>
-	public string Text { get; set; }
+	[JsonPropertyName("q")]
+	public required string Text { get; set; }
 
 	/// <summary>
 	/// The maximum number to take

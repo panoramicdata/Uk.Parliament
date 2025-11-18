@@ -37,7 +37,7 @@ public static class QuestionsStatementsApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int skip = 0;
+		var skip = 0;
 
 		while (true)
 		{
@@ -139,7 +139,7 @@ public static class QuestionsStatementsApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int skip = 0;
+		var skip = 0;
 
 		while (true)
 		{
@@ -230,7 +230,7 @@ public static class QuestionsStatementsApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int skip = 0;
+		var skip = 0;
 
 		while (true)
 		{

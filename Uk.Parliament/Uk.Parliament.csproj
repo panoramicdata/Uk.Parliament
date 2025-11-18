@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<Copyright>Panoramic Data Limited 2025</Copyright>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
 		<!-- Package Metadata -->
 		<PackageId>Uk.Parliament</PackageId>

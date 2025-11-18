@@ -113,9 +113,9 @@ public class PetitionsApiMockTests
 		var mockApi = new Mock<IPetitionsApi>();
 		var expectedPetitions = new List<Petition>
 		{
-			new() { Id = 1, Type = "petition", Attributes = new() { Action = "Test Petition 1" },
+			new() { Id = 1, Type = "petition", Attributes = new() {  Action = "Test Petition 1", Background = "Background 1", AdditionalDetails = "Details 1", State = PetitionState.Open, SignatureCount = 100, CreatedAt = DateTime.UtcNow },
 			Links = new Links() },
-			new() { Id = 2, Type = "petition", Attributes = new() { Action = "Test Petition 2" },
+			new() { Id = 2, Type = "petition", Attributes = new() { Action = "Test Petition 2", Background = "Background 2", AdditionalDetails = "Details 2", State = PetitionState.Open, SignatureCount = 200, CreatedAt = DateTime.UtcNow },
 			Links = new Links() }
 		};
 
@@ -151,7 +151,11 @@ public class PetitionsApiMockTests
 			Attributes = new PetitionAttributes
 			{
 				Action = "Test Action",
-				SignatureCount = 1000
+				Background = "Test Background",
+				AdditionalDetails = "Test Details",
+				State = PetitionState.Open,
+				SignatureCount = 1000,
+				CreatedAt = DateTime.UtcNow
 			},
 			Links = new Links()
 		};
@@ -179,7 +183,7 @@ public class PetitionsApiMockTests
 		var mockApi = new Mock<IPetitionsApi>();
 		var expectedPetitions = new List<Petition>
 		{
-			new() { Id = 1, Type = "petition", Attributes = new() { State = PetitionState.Closed },
+			new() { Id = 1, Type = "petition", Attributes = new() { Action = "Archived Petition", Background = "Background", AdditionalDetails = "Details", State = PetitionState.Closed, SignatureCount = 500, CreatedAt = DateTime.UtcNow },
 			Links = new Links() }
 		};
 
@@ -199,7 +203,7 @@ public class PetitionsApiMockTests
 		var result = await mockApi.Object.GetArchivedAsync();
 
 		// Assert
-		_ = result.Data.Should().HaveCount(1);
+		_ = result.Data.Should().ContainSingle();
 		_ = result.Data[0].Attributes.State.Should().Be(PetitionState.Closed);
 	}
 }
@@ -221,9 +225,9 @@ public class PetitionsApiExtensionsTests
 			{
 				Data =
 				[
-					new() { Id = 1, Attributes = new() { Action = "Petition 1" },
+					new() { Id = 1, Attributes = new() { Action = "Petition 1", Background = "BG1", AdditionalDetails = "AD1", State = PetitionState.Open, SignatureCount = 1, CreatedAt = DateTime.UtcNow },
 			Links = new Links(), Type = "Type" },
-					new() { Id = 2, Attributes = new() { Action = "Petition 2" },
+					new() { Id = 2, Attributes = new() { Action = "Petition 2", Background = "BG2", AdditionalDetails = "AD2", State = PetitionState.Open, SignatureCount = 2, CreatedAt = DateTime.UtcNow },
 			Links = new Links(), Type = "Type" }
 				],
 				Links = new Links()
@@ -235,7 +239,7 @@ public class PetitionsApiExtensionsTests
 			{
 				Data =
 				[
-					new() { Id = 3, Attributes = new() { Action = "Petition 3" },
+					new() { Id = 3, Attributes = new() { Action = "Petition 3", Background = "BG3", AdditionalDetails = "AD3", State = PetitionState.Open, SignatureCount = 3, CreatedAt = DateTime.UtcNow },
 			Links = new Links(), Type = "Type" }
 				],
 				Links = new Links()
@@ -267,8 +271,8 @@ public class PetitionsApiExtensionsTests
 			{
 				Data =
 				[
-					new() { Id = 1, Attributes = new() { Action = "Petition 1" }, Links = new Links(), Type = "Type"  },
-					new() {Id = 2, Attributes = new() { Action = "Petition 2" }, Links = new Links(), Type = "Type"}
+					new() { Id = 1, Attributes = new() { Action = "Petition 1", Background = "BG", AdditionalDetails = "AD", State = PetitionState.Open, SignatureCount = 1, CreatedAt = DateTime.UtcNow }, Links = new Links(), Type = "Type"  },
+					new() {Id = 2, Attributes = new() { Action = "Petition 2", Background = "BG", AdditionalDetails = "AD", State = PetitionState.Open, SignatureCount = 2, CreatedAt = DateTime.UtcNow }, Links = new Links(), Type = "Type"}
 				],
 				Links = new Links()
 			});

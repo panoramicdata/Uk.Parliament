@@ -20,7 +20,7 @@ public class Members
 		_ = response.Should().NotBeNull();
 		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BeGreaterThan(0);
+		_ = response.TotalResults.Should().BePositive();
 	}
 
 	[Fact]
@@ -57,7 +57,7 @@ public class Members
 		_ = response.Should().NotBeNull();
 		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BeGreaterThan(0);
+		_ = response.TotalResults.Should().BePositive();
 	}
 
 	[Fact]
@@ -151,7 +151,7 @@ public class Members
 		_ = response.Should().NotBeNull();
 		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BeGreaterThan(0);
+		_ = response.TotalResults.Should().BePositive();
 	}
 
 	[Fact]
@@ -171,7 +171,7 @@ public class Members
 		_ = response.Items.Should().AllSatisfy(item =>
 		{
 			_ = item.Value.Name.Should().NotBeNullOrWhiteSpace();
-			_ = item.Value.Id.Should().BeGreaterThan(0);
+			_ = item.Value.Id.Should().BePositive();
 		});
 	}
 
@@ -215,7 +215,7 @@ public class Members
 		}
 
 		// Assert
-		_ = count.Should().BeGreaterThan(0);
+		_ = count.Should().BePositive();
 	}
 
 	[Fact]

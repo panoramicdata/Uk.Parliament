@@ -1,5 +1,3 @@
-using System;
-using Xunit;
 using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.OralQuestions;
 
@@ -28,7 +26,7 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BeGreaterThan(0);
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -78,12 +76,15 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 			pageSize: 5))
 		{
 			questions.Add(question);
-			if (questions.Count >= 10) break;
+			if (questions.Count >= 10)
+			{
+				break;
+			}
 		}
 
 		// Assert
 		_ = questions.Should().NotBeEmpty();
-		_ = questions.Count.Should().BeGreaterThanOrEqualTo(5);
+		_ = questions.Should().HaveCountGreaterThanOrEqualTo(5);
 	}
 
 	#endregion
@@ -99,7 +100,7 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BeGreaterThan(0);
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -146,12 +147,15 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 			pageSize: 5))
 		{
 			motions.Add(motion);
-			if (motions.Count >= 10) break;
+			if (motions.Count >= 10)
+			{
+				break;
+			}
 		}
 
 		// Assert
 		_ = motions.Should().NotBeEmpty();
-		_ = motions.Count.Should().BeGreaterThanOrEqualTo(5);
+		_ = motions.Should().HaveCountGreaterThanOrEqualTo(5);
 	}
 
 	#endregion
@@ -279,7 +283,7 @@ public class OralQuestionsMotionsApiUnitTests
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.TotalResults.Should().Be(1);
-		_ = result.Items.Should().HaveCount(1);
+		_ = result.Items.Should().ContainSingle();
 		_ = result.Items[0].Value.SignatureCount.Should().Be(50);
 	}
 }

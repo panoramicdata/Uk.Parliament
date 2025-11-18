@@ -28,7 +28,7 @@ public static class PetitionsApiExtensions
 		int pageSize = 50,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		int page = 1;
+		var page = 1;
 
 		while (true)
 		{

@@ -11,13 +11,13 @@ public class Topic
 	/// Topic code
 	/// </summary>
 	[JsonPropertyName("code")]
-	public string Code { get; set; }
+	public required string Code { get; set; }
 
 	/// <summary>
 	/// Topic name
 	/// </summary>
 	[JsonPropertyName("name")]
-	public string Name { get; set; }
+	public required string Name { get; set; }
 
 	/// <inheritdoc />
 	public override string ToString() => $"{Code}: {Name}";

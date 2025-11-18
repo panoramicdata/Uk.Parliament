@@ -1,5 +1,3 @@
-using System.Linq;
-using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using Uk.Parliament.Extensions;
 using Xunit.Abstractions;
@@ -47,7 +45,7 @@ public class CommitteesIntegrationTests
 		_ = response.Should().NotBeNull();
 		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BeGreaterThan(0);
+		_ = response.TotalResults.Should().BePositive();
 	}
 
 	[Fact]
@@ -79,7 +77,7 @@ public class CommitteesIntegrationTests
 		_ = response.Items.Should().AllSatisfy(committee =>
 		{
 			_ = committee.Name.Should().NotBeNullOrWhiteSpace();
-			_ = committee.Id.Should().BeGreaterThan(0);
+			_ = committee.Id.Should().BePositive();
 		});
 	}
 

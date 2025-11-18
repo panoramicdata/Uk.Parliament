@@ -20,7 +20,7 @@ public class BillsIntegrationTests
 		_ = response.Should().NotBeNull();
 		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BeGreaterThan(0);
+		_ = response.TotalResults.Should().BePositive();
 	}
 
 	[Fact]

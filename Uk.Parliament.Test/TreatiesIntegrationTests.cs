@@ -1,5 +1,3 @@
-using System;
-using Xunit;
 using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Treaties;
 
@@ -26,7 +24,7 @@ public class TreatiesIntegrationTests : IDisposable
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BeGreaterThan(0);
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -88,7 +86,7 @@ public class TreatiesIntegrationTests : IDisposable
 		_ = result.Should().NotBeEmpty();
 		_ = result.Should().AllSatisfy(org =>
 		{
-			_ = org.Id.Should().BeGreaterThan(0);
+			_ = org.Id.Should().BePositive();
 			_ = org.Name.Should().NotBeNullOrEmpty();
 		});
 	}
@@ -103,12 +101,15 @@ public class TreatiesIntegrationTests : IDisposable
 		await foreach (var treaty in _client.Treaties.GetAllTreatiesAsync(pageSize: 5))
 		{
 			treaties.Add(treaty);
-			if (treaties.Count >= 10) break;
+			if (treaties.Count >= 10)
+			{
+				break;
+			}
 		}
 
 		// Assert
 		_ = treaties.Should().NotBeEmpty();
-		_ = treaties.Count.Should().BeGreaterThanOrEqualTo(5);
+		_ = treaties.Should().HaveCountGreaterThanOrEqualTo(5);
 	}
 
 	public void Dispose()
@@ -237,7 +238,7 @@ public class TreatiesApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().HaveCount(1);
+		_ = result.Should().ContainSingle();
 		_ = result[0].BusinessItemType.Should().Be("Debate");
 	}
 }

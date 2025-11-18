@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models;
 
@@ -11,41 +11,41 @@ public class PetitionDebate
 	/// The date on which the petition was debated
 	/// </summary>
 	[JsonPropertyName("debated_on")]
-	public string DebatedOn { get; set; }
+	public required string DebatedOn { get; set; }
 
 	/// <summary>
 	/// The transcript URL
 	/// </summary>
 	[JsonPropertyName("transcript_url")]
-	public string TranscriptUrl { get; set; }
+	public required string TranscriptUrl { get; set; }
 
 	/// <summary>
 	/// The video URL
 	/// </summary>
 	[JsonPropertyName("video_url")]
-	public string VideoUrl { get; set; }
+	public string? VideoUrl { get; set; }
 
 	/// <summary>
 	/// The debate pack URL
 	/// </summary>
 	[JsonPropertyName("debate_pack_url")]
-	public string DebatePackUrl { get; set; }
+	public string? DebatePackUrl { get; set; }
 
 	/// <summary>
 	/// The public engagement URL
 	/// </summary>
 	[JsonPropertyName("public_engagement_url")]
-	public string PublicEngagementUrl { get; set; }
+	public string? PublicEngagementUrl { get; set; }
 
 	/// <summary>
 	/// The debate summary URL
 	/// </summary>
 	[JsonPropertyName("debate_summary_url")]
-	public string DebateSummaryUrl { get; set; }
+	public string? DebateSummaryUrl { get; set; }
 
 	/// <summary>
 	/// The overview
 	/// </summary>
 	[JsonPropertyName("overview")]
-	public string Overview { get; set; }
+	public string? Overview { get; set; }
 }
