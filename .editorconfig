@@ -1,4 +1,24 @@
+File: .editorconfig
+````````
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
 [*]
+indent_style = tab
+indent_size = 4
+end_of_line = crlf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Code style analyzers - Set all to warning level
+[*.cs]
+# All IDE code style rules set to warning
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+
 # VSSPELL: Spell checker settings from Uk.Parliament.sln.vsspell
 vsspell_section_id = 380de64fe2c54b63871cbe33f596ddb9
 vsspell_ignored_words_380de64fe2c54b63871cbe33f596ddb9 = File:Uk.Parliament.sln.vsspell.dic
