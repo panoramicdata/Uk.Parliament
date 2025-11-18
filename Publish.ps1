@@ -46,27 +46,27 @@ $ErrorActionPreference = "Stop"
 # Color functions for better output
 function Write-Success {
     param([string]$Message)
-    Write-Host "? $Message" -ForegroundColor Green
+    Write-Host "✓ $Message" -ForegroundColor Green
 }
 
 function Write-Error-Message {
     param([string]$Message)
-    Write-Host "? $Message" -ForegroundColor Red
+    Write-Host "✗ $Message" -ForegroundColor Red
 }
 
 function Write-Warning-Message {
     param([string]$Message)
-    Write-Host "??  $Message" -ForegroundColor Yellow
+    Write-Host "⚠  $Message" -ForegroundColor Yellow
 }
 
 function Write-Info {
     param([string]$Message)
-    Write-Host "??  $Message" -ForegroundColor Cyan
+    Write-Host "ℹ  $Message" -ForegroundColor Cyan
 }
 
 function Write-Step {
     param([string]$Message)
-    Write-Host "`n?? $Message" -ForegroundColor Blue
+    Write-Host "`n▶ $Message" -ForegroundColor Blue
 }
 
 # Banner
