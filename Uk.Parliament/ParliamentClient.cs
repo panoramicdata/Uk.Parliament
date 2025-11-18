@@ -56,6 +56,11 @@ public class ParliamentClient : IDisposable
 	public ILordsDivisionsApi LordsDivisions { get; }
 
 	/// <summary>
+	/// Member Interests API - Access the Register of Members' Financial Interests
+	/// </summary>
+	public IInterestsApi Interests { get; }
+
+	/// <summary>
 	/// Constructor with options (creates own HttpClient)
 	/// </summary>
 	/// <param name="options">Configuration options</param>
@@ -83,6 +88,9 @@ public class ParliamentClient : IDisposable
 		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
 		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(options.CommonsDivisionsBaseUrl, refitSettings);
 		LordsDivisions = CreateApi<ILordsDivisionsApi>(options.LordsDivisionsBaseUrl, refitSettings);
+		
+		// Interests API
+		Interests = CreateApi<IInterestsApi>(options.InterestsBaseUrl, refitSettings);
 	}
 
 	/// <summary>
@@ -111,6 +119,9 @@ public class ParliamentClient : IDisposable
 		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
 		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(httpClient, options.CommonsDivisionsBaseUrl, refitSettings);
 		LordsDivisions = CreateApi<ILordsDivisionsApi>(httpClient, options.LordsDivisionsBaseUrl, refitSettings);
+		
+		// Interests API
+		Interests = CreateApi<IInterestsApi>(httpClient, options.InterestsBaseUrl, refitSettings);
 	}
 
 	private static void ConfigureHttpClient(HttpClient httpClient, ParliamentClientOptions options)
