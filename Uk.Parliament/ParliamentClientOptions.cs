@@ -50,6 +50,16 @@ public class ParliamentClientOptions
 	public string QuestionsStatementsBaseUrl { get; set; } = "https://questions-statements-api.parliament.uk/";
 
 	/// <summary>
+	/// Base URL for the Oral Questions and Motions API
+	/// </summary>
+	public string OralQuestionsMotionsBaseUrl { get; set; } = "https://oralquestionsandmotions-api.parliament.uk/";
+
+	/// <summary>
+	/// Base URL for the Treaties API
+	/// </summary>
+	public string TreatiesBaseUrl { get; set; } = "https://treaties-api.parliament.uk/";
+
+	/// <summary>
 	/// User agent string for API requests
 	/// </summary>
 	public string UserAgent { get; set; } = "Uk.Parliament.NET/2.0";

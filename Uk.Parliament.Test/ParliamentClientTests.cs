@@ -21,8 +21,10 @@ public class ParliamentClientTests
 		_ = client.Committees.Should().NotBeNull();
 		_ = client.CommonsDivisions.Should().NotBeNull(); // Interface implemented (API has 500 errors)
 		_ = client.LordsDivisions.Should().NotBeNull(); // Interface implemented (API has 500 errors)
-		_ = client.Interests.Should().NotBeNull(); // Newly added
-		_ = client.QuestionsStatements.Should().NotBeNull(); // Newly added
+		_ = client.Interests.Should().NotBeNull(); // Phase 6.2
+		_ = client.QuestionsStatements.Should().NotBeNull(); // Phase 6.3
+		_ = client.OralQuestionsMotions.Should().NotBeNull(); // Phase 7.1
+		_ = client.Treaties.Should().NotBeNull(); // Phase 7.2
 	}
 
 	[Fact]

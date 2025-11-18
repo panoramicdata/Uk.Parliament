@@ -66,6 +66,16 @@ public class ParliamentClient : IDisposable
 	public IQuestionsStatementsApi QuestionsStatements { get; }
 
 	/// <summary>
+	/// Oral Questions and Motions API - Access oral questions and parliamentary motions
+	/// </summary>
+	public IOralQuestionsMotionsApi OralQuestionsMotions { get; }
+
+	/// <summary>
+	/// Treaties API - Access international treaties laid before Parliament
+	/// </summary>
+	public ITreatiesApi Treaties { get; }
+
+	/// <summary>
 	/// Constructor with options (creates own HttpClient)
 	/// </summary>
 	/// <param name="options">Configuration options</param>
@@ -99,6 +109,12 @@ public class ParliamentClient : IDisposable
 		
 		// Questions & Statements API
 		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(options.QuestionsStatementsBaseUrl, refitSettings);
+		
+		// Oral Questions & Motions API
+		OralQuestionsMotions = CreateApi<IOralQuestionsMotionsApi>(options.OralQuestionsMotionsBaseUrl, refitSettings);
+		
+		// Treaties API
+		Treaties = CreateApi<ITreatiesApi>(options.TreatiesBaseUrl, refitSettings);
 	}
 
 	/// <summary>
@@ -131,6 +147,8 @@ public class ParliamentClient : IDisposable
 		// Interests API
 		Interests = CreateApi<IInterestsApi>(httpClient, options.InterestsBaseUrl, refitSettings);
 		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(httpClient, options.QuestionsStatementsBaseUrl, refitSettings);
+		OralQuestionsMotions = CreateApi<IOralQuestionsMotionsApi>(httpClient, options.OralQuestionsMotionsBaseUrl, refitSettings);
+		Treaties = CreateApi<ITreatiesApi>(httpClient, options.TreatiesBaseUrl, refitSettings);
 	}
 
 	private static void ConfigureHttpClient(HttpClient httpClient, ParliamentClientOptions options)
