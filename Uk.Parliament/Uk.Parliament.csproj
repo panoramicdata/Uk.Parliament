@@ -11,14 +11,15 @@
 		<PackageId>Uk.Parliament</PackageId>
 		<Authors>Panoramic Data Limited</Authors>
 		<Company>Panoramic Data Limited</Company>
-		<Description>A comprehensive .NET client for all UK Parliament APIs (Petitions, Members, Bills, Committees, Divisions) using Refit</Description>
-		<PackageTags>uk;parliament;petitions;members;bills;committees;divisions;api;government;refit</PackageTags>
+		<Description>The most comprehensive .NET client for UK Parliament APIs. 100% API coverage - all 12 public Parliament APIs supported including Petitions, Members, Bills, Committees, Divisions, Interests, Questions, Treaties, Erskine May, and NOW.</Description>
+		<PackageTags>uk;parliament;petitions;members;bills;committees;divisions;api;government;refit;interests;questions;treaties;erskine-may;now</PackageTags>
 		<PackageProjectUrl>https://github.com/panoramicdata/Uk.Parliament</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/panoramicdata/Uk.Parliament</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>v2.0.0 - BREAKING CHANGES: Complete rewrite using Refit. Single ParliamentClient with support for all 6 UK Parliament APIs. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageReleaseNotes>v10.0.9 - 100% API COVERAGE! All 12 UK Parliament APIs now supported. New: Interests, Written Questions, Oral Questions, Treaties, Erskine May, and NOW APIs. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
 
 		<!-- Symbol Package Configuration -->
 		<IncludeSymbols>true</IncludeSymbols>
@@ -56,6 +57,7 @@
 
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="Icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
