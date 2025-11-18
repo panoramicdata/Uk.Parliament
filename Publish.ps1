@@ -107,7 +107,7 @@ Write-Step "Checking Git status (required for nbgv versioning)..."
 
 try {
     $gitStatus = git status --porcelain
-    
+
     if ($gitStatus) {
         Write-Error-Message "Git working directory is not clean. Uncommitted changes detected:"
         Write-Host $gitStatus -ForegroundColor Yellow
@@ -125,7 +125,7 @@ try {
         Write-Host "  git stash pop" -ForegroundColor White
         exit 1
     }
-    
+
     Write-Success "Git working directory is clean"
 }
 catch {
@@ -140,7 +140,7 @@ Write-Step "Getting version from nbgv..."
 try {
     $versionOutput = nbgv get-version --format json | ConvertFrom-Json
     $version = $versionOutput.NuGetPackageVersion
-    
+
     Write-Success "Version: $version"
     Write-Info "Assembly Version: $($versionOutput.AssemblyVersion)"
     Write-Info "Git Height: $($versionOutput.VersionHeight)"
@@ -154,14 +154,14 @@ catch {
 # Step 4: Run tests
 if (-not $SkipTests) {
     Write-Step "Running unit tests..."
-    
+
     $testOutput = dotnet test $testProjectPath --configuration Release --verbosity normal
-    
+
     if ($LASTEXITCODE -ne 0) {
         Write-Error-Message "Tests failed! Please fix failing tests before publishing."
         exit 1
     }
-    
+
     Write-Success "All tests passed"
 }
 else {
@@ -229,27 +229,20 @@ if (-not $version) {
 # Step 9: Publish to NuGet
 if (-not $DryRun) {
     Write-Step "Publishing to NuGet.org..."
-    
+
     Write-Host ""
     Write-Host "  Package: Uk.Parliament" -ForegroundColor White
     Write-Host "  Version: $version" -ForegroundColor White
     Write-Host "  File: $($packageFile.Name)" -ForegroundColor White
     Write-Host ""
-    
-    $confirmation = Read-Host "Are you sure you want to publish to NuGet.org? (y/n)"
-    
-    if ($confirmation -ne 'y') {
-        Write-Warning-Message "Publish cancelled by user"
-        exit 0
-    }
-    
+
     dotnet nuget push $packageFile.FullName --api-key $nugetApiKey --source https://api.nuget.org/v3/index.json
-    
+
     if ($LASTEXITCODE -ne 0) {
         Write-Error-Message "Package publish failed!"
         exit 1
     }
-    
+
     Write-Success "Package published successfully to NuGet.org!"
     Write-Info "View at: https://www.nuget.org/packages/Uk.Parliament/$version"
 }
