@@ -81,11 +81,9 @@ public class ParliamentClientOptions
 	/// <summary>
 	/// Enable debug validation (unmapped properties throw exceptions)
 	/// </summary>
-	public bool EnableDebugValidation { get; set; } =
+	public bool EnableDebugValidation { get; set; }
 #if DEBUG
-		true;
-#else
-		false;
+		= true;
 #endif
 
 	/// <summary>
@@ -96,10 +94,8 @@ public class ParliamentClientOptions
 	/// <summary>
 	/// Enable verbose HTTP logging (includes headers and body)
 	/// </summary>
-	public bool EnableVerboseLogging { get; set; } =
+	public bool EnableVerboseLogging { get; set; }
 #if DEBUG
-		true;
-#else
-		false;
+		 = true;
 #endif
 }

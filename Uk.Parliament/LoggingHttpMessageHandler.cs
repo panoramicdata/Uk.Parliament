@@ -12,18 +12,8 @@ namespace Uk.Parliament;
 /// <summary>
 /// HTTP message handler that logs requests and responses for diagnostics
 /// </summary>
-internal class LoggingHttpMessageHandler : DelegatingHandler
+internal class LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogger? logger, bool verboseLogging) : DelegatingHandler(innerHandler)
 {
-	private readonly ILogger? _logger;
-	private readonly bool _verboseLogging;
-
-	public LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogger? logger, bool verboseLogging)
-		: base(innerHandler)
-	{
-		_logger = logger;
-		_verboseLogging = verboseLogging;
-	}
-
 	protected override async Task<HttpResponseMessage> SendAsync(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
@@ -32,12 +22,12 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 		var stopwatch = Stopwatch.StartNew();
 
 		// Use scope to attach the request ID to all log entries
-		using var scope = _logger?.BeginScope(new Dictionary<string, object>
+		using var scope = logger?.BeginScope(new Dictionary<string, object>
 		{
 			["RequestId"] = requestId
 		});
 
-		if (_logger != null && _verboseLogging)
+		if (logger != null && verboseLogging)
 		{
 			await LogRequestAsync(request);
 		}
@@ -47,7 +37,7 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 		{
 			response = await base.SendAsync(request, cancellationToken);
 
-			if (_logger != null)
+			if (logger != null)
 			{
 				await LogResponseAsync(response, stopwatch.Elapsed);
 			}
@@ -56,7 +46,7 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 		}
 		catch (Exception ex)
 		{
-			_logger?.LogError(ex, "Request failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+			logger?.LogError(ex, "Request failed after {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
 			throw;
 		}
 	}
@@ -64,21 +54,21 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 	private async Task LogRequestAsync(HttpRequestMessage request)
 	{
 		var sb = new StringBuilder();
-		sb.AppendLine("========== HTTP REQUEST ==========");
-		sb.AppendLine($"{request.Method} {request.RequestUri}");
-		sb.AppendLine("Headers:");
+		_ = sb.AppendLine("========== HTTP REQUEST ==========");
+		_ = sb.AppendLine($"{request.Method} {request.RequestUri}");
+		_ = sb.AppendLine("Headers:");
 
 		foreach (var header in request.Headers)
 		{
-			sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
+			_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 		}
 
 		if (request.Content != null)
 		{
-			sb.AppendLine("Content Headers:");
+			_ = sb.AppendLine("Content Headers:");
 			foreach (var header in request.Content.Headers)
 			{
-				sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
+				_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 			}
 
 			var content = await request.Content.ReadAsStringAsync();
@@ -89,7 +79,7 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 			}
 		}
 
-		_logger?.LogDebug("{RequestLog}", sb.ToString());
+		logger?.LogDebug("{RequestLog}", sb.ToString());
 	}
 
 	private async Task LogResponseAsync(HttpResponseMessage response, TimeSpan elapsed)
@@ -101,30 +91,30 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 
 		foreach (var header in response.Headers)
 		{
-			sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
+			_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 		}
 
 		// Always log response body for errors (4xx, 5xx), even if verbose logging is off
 		var isError = !response.IsSuccessStatusCode;
-		var shouldLogBody = _verboseLogging || isError;
+		var shouldLogBody = verboseLogging || isError;
 
 		if (response.Content != null && shouldLogBody)
 		{
-			sb.AppendLine("Content Headers:");
+			_ = sb.AppendLine("Content Headers:");
 			foreach (var header in response.Content.Headers)
 			{
-				sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
+				_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
 			}
 
 			var content = await response.Content.ReadAsStringAsync();
 			if (!string.IsNullOrEmpty(content))
 			{
-				sb.AppendLine($"Body ({content.Length} chars):");
+				_ = sb.AppendLine($"Body ({content.Length} chars):");
 				// For errors, always show full content (up to 10000 chars)
 				// For success, truncate at 5000 chars if verbose logging
 				var maxLength = isError ? 10000 : 5000;
-				var displayContent = content.Length > maxLength ? content.Substring(0, maxLength) + "... (truncated)" : content;
-				sb.AppendLine(displayContent);
+				var displayContent = content.Length > maxLength ? content[..maxLength] + "... (truncated)" : content;
+				_ = sb.AppendLine(displayContent);
 			}
 		}
 
@@ -133,6 +123,6 @@ internal class LoggingHttpMessageHandler : DelegatingHandler
 					   (int)response.StatusCode >= 400 ? LogLevel.Warning :
 					   LogLevel.Debug;
 
-		_logger?.Log(logLevel, "{ResponseLog}", sb.ToString());
+		logger?.Log(logLevel, "{ResponseLog}", sb.ToString());
 	}
 }
