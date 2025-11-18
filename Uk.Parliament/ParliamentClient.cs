@@ -76,6 +76,16 @@ public class ParliamentClient : IDisposable
 	public ITreatiesApi Treaties { get; }
 
 	/// <summary>
+	/// Erskine May API - Access the authoritative guide to parliamentary procedure
+	/// </summary>
+	public IErskineMayApi ErskineMay { get; }
+
+	/// <summary>
+	/// NOW (Annunciator) API - Real-time chamber status and business information
+	/// </summary>
+	public INowApi Now { get; }
+
+	/// <summary>
 	/// Constructor with options (creates own HttpClient)
 	/// </summary>
 	/// <param name="options">Configuration options</param>
@@ -115,6 +125,12 @@ public class ParliamentClient : IDisposable
 		
 		// Treaties API
 		Treaties = CreateApi<ITreatiesApi>(options.TreatiesBaseUrl, refitSettings);
+		
+		// Erskine May API
+		ErskineMay = CreateApi<IErskineMayApi>(options.ErskineMayBaseUrl, refitSettings);
+		
+		// NOW (Annunciator) API
+		Now = CreateApi<INowApi>(options.NowBaseUrl, refitSettings);
 	}
 
 	/// <summary>
@@ -149,6 +165,8 @@ public class ParliamentClient : IDisposable
 		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(httpClient, options.QuestionsStatementsBaseUrl, refitSettings);
 		OralQuestionsMotions = CreateApi<IOralQuestionsMotionsApi>(httpClient, options.OralQuestionsMotionsBaseUrl, refitSettings);
 		Treaties = CreateApi<ITreatiesApi>(httpClient, options.TreatiesBaseUrl, refitSettings);
+		ErskineMay = CreateApi<IErskineMayApi>(httpClient, options.ErskineMayBaseUrl, refitSettings);
+		Now = CreateApi<INowApi>(httpClient, options.NowBaseUrl, refitSettings);
 	}
 
 	private static void ConfigureHttpClient(HttpClient httpClient, ParliamentClientOptions options)

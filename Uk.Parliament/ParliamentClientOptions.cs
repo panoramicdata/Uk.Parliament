@@ -60,6 +60,16 @@ public class ParliamentClientOptions
 	public string TreatiesBaseUrl { get; set; } = "https://treaties-api.parliament.uk/";
 
 	/// <summary>
+	/// Base URL for the Erskine May API
+	/// </summary>
+	public string ErskineMayBaseUrl { get; set; } = "https://erskinemay-api.parliament.uk/";
+
+	/// <summary>
+	/// Base URL for the NOW (Annunciator) API
+	/// </summary>
+	public string NowBaseUrl { get; set; } = "https://now-api.parliament.uk/";
+
+	/// <summary>
 	/// User agent string for API requests
 	/// </summary>
 	public string UserAgent { get; set; } = "Uk.Parliament.NET/2.0";

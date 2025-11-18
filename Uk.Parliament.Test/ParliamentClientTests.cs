@@ -25,6 +25,8 @@ public class ParliamentClientTests
 		_ = client.QuestionsStatements.Should().NotBeNull(); // Phase 6.3
 		_ = client.OralQuestionsMotions.Should().NotBeNull(); // Phase 7.1
 		_ = client.Treaties.Should().NotBeNull(); // Phase 7.2
+		_ = client.ErskineMay.Should().NotBeNull(); // Phase 8.1
+		_ = client.Now.Should().NotBeNull(); // Phase 8.2
 	}
 
 	[Fact]
