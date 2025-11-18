@@ -24,3 +24,17 @@ using System.Diagnostics.CodeAnalysis;
 	"CA1852:Seal internal types",
 	Justification = "Test helper classes don't require sealing"
 )]
+
+// CA1305: StringBuilder locale warnings - not applicable for test logging
+[assembly: SuppressMessage(
+	"Globalization",
+	"CA1305:Specify IFormatProvider",
+	Justification = "Test output doesn't require culture-specific formatting"
+)]
+
+// CA1816: Dispose warnings - not critical for test infrastructure
+[assembly: SuppressMessage(
+	"Usage",
+	"CA1816:Dispose methods should call SuppressFinalize",
+	Justification = "Test helper disposal doesn't require finalization suppression"
+)]

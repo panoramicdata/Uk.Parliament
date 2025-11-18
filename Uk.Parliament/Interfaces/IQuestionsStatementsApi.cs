@@ -60,15 +60,15 @@ public interface IQuestionsStatementsApi
 	/// <summary>
 	/// Get a written question by date and UIN
 	/// </summary>
-	/// <param name="questionDate">Date the question was tabled</param>
+	/// <param name="date">Date the question was tabled</param>
 	/// <param name="uin">Unique Identifier Number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written question details</returns>
 	[Get("/api/writtenquestions/questions/{date}/{uin}")]
 	Task<WrittenQuestion> GetWrittenQuestionByDateAndUinAsync(
-		DateTime questionDate,
+		DateTime date,
 		string uin,
-		CancellationToken cancellationToken);
+		CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Get written statements with optional filtering
@@ -107,13 +107,13 @@ public interface IQuestionsStatementsApi
 	/// <summary>
 	/// Get a written statement by date and UIN
 	/// </summary>
-	/// <param name="statementDate">Date the statement was made</param>
+	/// <param name="date">Date the statement was made</param>
 	/// <param name="uin">Unique Identifier Number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written statement details</returns>
 	[Get("/api/writtenstatements/statements/{date}/{uin}")]
 	Task<WrittenStatement> GetWrittenStatementByDateAndUinAsync(
-		DateTime statementDate,
+		DateTime date,
 		string uin,
 		CancellationToken cancellationToken = default);
 
