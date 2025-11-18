@@ -15,6 +15,7 @@ public class ParliamentClient : IDisposable
 {
 	private readonly HttpClient? _ownedHttpClient;
 	private readonly bool _disposeHttpClient;
+	private readonly ParliamentClientOptions? _options;
 
 	/// <summary>
 	/// Petitions API - Access public petitions to Parliament
@@ -22,19 +23,19 @@ public class ParliamentClient : IDisposable
 	public IPetitionsApi Petitions { get; }
 
 	/// <summary>
-	/// Members API - Access information about MPs and Lords (placeholder for future implementation)
+	/// Members API - Access information about MPs and Lords
 	/// </summary>
-	public IMembersApi? Members { get; }
+	public IMembersApi Members { get; }
 
 	/// <summary>
-	/// Bills API - Access parliamentary legislation information (placeholder for future implementation)
+	/// Bills API - Access parliamentary legislation information
 	/// </summary>
-	public IBillsApi? Bills { get; }
+	public IBillsApi Bills { get; }
 
 	/// <summary>
-	/// Committees API - Access parliamentary committee information (placeholder for future implementation)
+	/// Committees API - Access parliamentary committee information
 	/// </summary>
-	public ICommitteesApi? Committees { get; }
+	public ICommitteesApi Committees { get; }
 
 	/// <summary>
 	/// Commons Divisions API - Access House of Commons voting records (placeholder for future implementation)
@@ -53,6 +54,7 @@ public class ParliamentClient : IDisposable
 	public ParliamentClient(ParliamentClientOptions? options = null)
 	{
 		options ??= new ParliamentClientOptions();
+		_options = options;
 
 		_ownedHttpClient = new HttpClient
 		{
@@ -64,13 +66,13 @@ public class ParliamentClient : IDisposable
 
 		var refitSettings = GetRefitSettings(options);
 
-		// Initialize only the implemented API interfaces
+		// Initialize implemented API interfaces
 		Petitions = CreateApi<IPetitionsApi>(options.PetitionsBaseUrl, refitSettings);
+		Members = CreateApi<IMembersApi>(options.MembersBaseUrl, refitSettings);
+		Bills = CreateApi<IBillsApi>(options.BillsBaseUrl, refitSettings);
+		Committees = CreateApi<ICommitteesApi>(options.CommitteesBaseUrl, refitSettings);
 		
 		// Placeholder APIs - will be null until implemented
-		// Members = CreateApi<IMembersApi>(options.MembersBaseUrl, refitSettings);
-		// Bills = CreateApi<IBillsApi>(options.BillsBaseUrl, refitSettings);
-		// Committees = CreateApi<ICommitteesApi>(options.CommitteesBaseUrl, refitSettings);
 		// CommonsDivisions = CreateApi<ICommonsDivisionsApi>(options.CommonsDivisionsBaseUrl, refitSettings);
 		// LordsDivisions = CreateApi<ILordsDivisionsApi>(options.LordsDivisionsBaseUrl, refitSettings);
 	}
@@ -92,13 +94,13 @@ public class ParliamentClient : IDisposable
 
 		var refitSettings = GetRefitSettings(options);
 
-		// Initialize only the implemented API interfaces
+		// Initialize implemented API interfaces
 		Petitions = CreateApi<IPetitionsApi>(httpClient, options.PetitionsBaseUrl, refitSettings);
+		Members = CreateApi<IMembersApi>(httpClient, options.MembersBaseUrl, refitSettings);
+		Bills = CreateApi<IBillsApi>(httpClient, options.BillsBaseUrl, refitSettings);
+		Committees = CreateApi<ICommitteesApi>(httpClient, options.CommitteesBaseUrl, refitSettings);
 		
 		// Placeholder APIs - will be null until implemented
-		// Members = CreateApi<IMembersApi>(httpClient, options.MembersBaseUrl, refitSettings);
-		// Bills = CreateApi<IBillsApi>(httpClient, options.BillsBaseUrl, refitSettings);
-		// Committees = CreateApi<ICommitteesApi>(httpClient, options.CommitteesBaseUrl, refitSettings);
 		// CommonsDivisions = CreateApi<ICommonsDivisionsApi>(httpClient, options.CommonsDivisionsBaseUrl, refitSettings);
 		// LordsDivisions = CreateApi<ILordsDivisionsApi>(httpClient, options.LordsDivisionsBaseUrl, refitSettings);
 	}
@@ -118,7 +120,14 @@ public class ParliamentClient : IDisposable
 			throw new InvalidOperationException("Cannot create API without owned HttpClient");
 		}
 
-		var httpClient = new HttpClient()
+		// Create handler chain with logging
+		HttpMessageHandler handler = new HttpClientHandler();
+		if (_options?.Logger != null)
+		{
+			handler = new LoggingHttpMessageHandler(handler, _options.Logger, _options.EnableVerboseLogging);
+		}
+
+		var httpClient = new HttpClient(handler)
 		{
 			BaseAddress = new Uri(baseUrl),
 			Timeout = _ownedHttpClient.Timeout

@@ -1,9 +1,4 @@
-using FluentAssertions;
-using Moq;
-using Uk.Parliament;
 using Uk.Parliament.Extensions;
-using Uk.Parliament.Interfaces;
-using Uk.Parliament.Models;
 
 namespace Uk.Parliament.Test;
 
@@ -21,10 +16,10 @@ public class ParliamentClientTests
 		// Assert
 		_ = client.Should().NotBeNull();
 		_ = client.Petitions.Should().NotBeNull();
+		_ = client.Members.Should().NotBeNull();
+		_ = client.Bills.Should().NotBeNull();
+		_ = client.Committees.Should().NotBeNull(); // Now implemented!
 		// Placeholder APIs are null until implemented
-		_ = client.Members.Should().BeNull();
-		_ = client.Bills.Should().BeNull();
-		_ = client.Committees.Should().BeNull();
 		_ = client.CommonsDivisions.Should().BeNull();
 		_ = client.LordsDivisions.Should().BeNull();
 	}

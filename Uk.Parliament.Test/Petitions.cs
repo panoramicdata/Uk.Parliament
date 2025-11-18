@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Uk.Parliament.Extensions;
 using Uk.Parliament.Models;
 

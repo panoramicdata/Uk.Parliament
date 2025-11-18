@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 using Refit;
 
 namespace Uk.Parliament;
@@ -52,6 +53,21 @@ public class ParliamentClientOptions
 	/// Enable debug validation (unmapped properties throw exceptions)
 	/// </summary>
 	public bool EnableDebugValidation { get; set; } =
+#if DEBUG
+		true;
+#else
+		false;
+#endif
+
+	/// <summary>
+	/// Logger for HTTP request/response diagnostics
+	/// </summary>
+	public ILogger? Logger { get; set; }
+
+	/// <summary>
+	/// Enable verbose HTTP logging (includes headers and body)
+	/// </summary>
+	public bool EnableVerboseLogging { get; set; } =
 #if DEBUG
 		true;
 #else
