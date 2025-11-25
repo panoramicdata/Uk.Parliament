@@ -57,8 +57,20 @@ public class DailyReport
 	public string? HtmlUrl { get; set; }
 
 	/// <summary>
+	/// URL to the report (alternative to documentUrl)
+	/// </summary>
+	[JsonPropertyName("url")]
+	public string? Url { get; set; }
+
+	/// <summary>
 	/// Whether the report has been published
 	/// </summary>
 	[JsonPropertyName("isPublished")]
 	public bool IsPublished { get; set; }
+
+	/// <summary>
+	/// File size in bytes (for downloadable reports)
+	/// </summary>
+	[JsonPropertyName("fileSizeBytes")]
+	public long? FileSizeBytes { get; set; }
 }

@@ -88,6 +88,18 @@ public class WrittenQuestion
 	public DateTime? DateAnswered { get; set; }
 
 	/// <summary>
+	/// Date the answer was corrected
+	/// </summary>
+	[JsonPropertyName("dateAnswerCorrected")]
+	public DateTime? DateAnswerCorrected { get; set; }
+
+	/// <summary>
+	/// Date the holding answer was provided
+	/// </summary>
+	[JsonPropertyName("dateHoldingAnswer")]
+	public DateTime? DateHoldingAnswer { get; set; }
+
+	/// <summary>
 	/// Question text
 	/// </summary>
 	[JsonPropertyName("questionText")]
@@ -100,10 +112,46 @@ public class WrittenQuestion
 	public string? AnswerText { get; set; }
 
 	/// <summary>
+	/// Original answer text (before correction)
+	/// </summary>
+	[JsonPropertyName("originalAnswerText")]
+	public string? OriginalAnswerText { get; set; }
+
+	/// <summary>
+	/// Comparable answer text (normalized/formatted for comparison)
+	/// </summary>
+	[JsonPropertyName("comparableAnswerText")]
+	public string? ComparableAnswerText { get; set; }
+
+	/// <summary>
 	/// Whether the question has been answered
 	/// </summary>
 	[JsonPropertyName("isAnswered")]
 	public bool IsAnswered { get; set; }
+
+	/// <summary>
+	/// Whether the answer is a holding answer
+	/// </summary>
+	[JsonPropertyName("answerIsHolding")]
+	public bool AnswerIsHolding { get; set; }
+
+	/// <summary>
+	/// Whether the answer is a correction
+	/// </summary>
+	[JsonPropertyName("answerIsCorrection")]
+	public bool AnswerIsCorrection { get; set; }
+
+	/// <summary>
+	/// Member ID who corrected the answer
+	/// </summary>
+	[JsonPropertyName("correctingMemberId")]
+	public int? CorrectingMemberId { get; set; }
+
+	/// <summary>
+	/// Name of member who corrected the answer
+	/// </summary>
+	[JsonPropertyName("correctingMember")]
+	public string? CorrectingMember { get; set; }
 
 	/// <summary>
 	/// Whether the question is named day
@@ -140,4 +188,22 @@ public class WrittenQuestion
 	/// </summary>
 	[JsonPropertyName("groupedQuestions")]
 	public List<int>? GroupedQuestions { get; set; }
+
+	/// <summary>
+	/// Dates for grouped questions
+	/// </summary>
+	[JsonPropertyName("groupedQuestionsDates")]
+	public List<DateTime>? GroupedQuestionsDates { get; set; }
+
+	/// <summary>
+	/// Number of attachments
+	/// </summary>
+	[JsonPropertyName("attachmentCount")]
+	public int AttachmentCount { get; set; }
+
+	/// <summary>
+	/// List of attachments
+	/// </summary>
+	[JsonPropertyName("attachments")]
+	public List<object>? Attachments { get; set; }
 }

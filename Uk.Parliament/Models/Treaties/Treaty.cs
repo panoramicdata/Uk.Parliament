@@ -29,6 +29,12 @@ public class Treaty
 	public string? CommandPaperNumber { get; set; }
 
 	/// <summary>
+	/// Command paper prefix (e.g., "CP", "Cm")
+	/// </summary>
+	[JsonPropertyName("commandPaperPrefix")]
+	public string? CommandPaperPrefix { get; set; }
+
+	/// <summary>
 	/// Treaty title
 	/// </summary>
 	[JsonPropertyName("title")]
@@ -41,6 +47,12 @@ public class Treaty
 	public string? TreatySeries { get; set; }
 
 	/// <summary>
+	/// Treaty series membership information
+	/// </summary>
+	[JsonPropertyName("treatySeriesMembership")]
+	public object? TreatySeriesMembership { get; set; }
+
+	/// <summary>
 	/// Government organization responsible
 	/// </summary>
 	[JsonPropertyName("leadGovernmentOrganisationId")]
@@ -51,6 +63,24 @@ public class Treaty
 	/// </summary>
 	[JsonPropertyName("leadGovernmentOrganisation")]
 	public string? LeadGovernmentOrganisation { get; set; }
+
+	/// <summary>
+	/// Lead department (alternative to leadGovernmentOrganisation)
+	/// </summary>
+	[JsonPropertyName("leadDepartment")]
+	public string? LeadDepartment { get; set; }
+
+	/// <summary>
+	/// Date treaty was laid before Commons
+	/// </summary>
+	[JsonPropertyName("commonsLayingDate")]
+	public DateTime? CommonsLayingDate { get; set; }
+
+	/// <summary>
+	/// Date treaty was laid before Lords
+	/// </summary>
+	[JsonPropertyName("lordsLayingDate")]
+	public DateTime? LordsLayingDate { get; set; }
 
 	/// <summary>
 	/// Date treaty was laid before Parliament

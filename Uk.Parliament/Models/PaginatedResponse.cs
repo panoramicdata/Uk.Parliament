@@ -34,6 +34,12 @@ public class PaginatedResponse<T>
 	public int Take { get; set; }
 
 	/// <summary>
+	/// Items per page (alternative to take in some APIs)
+	/// </summary>
+	[JsonPropertyName("itemsPerPage")]
+	public int? ItemsPerPage { get; set; }
+
+	/// <summary>
 	/// Paging information (alternative to skip/take in some APIs)
 	/// </summary>
 	[JsonPropertyName("PagingInfo")]

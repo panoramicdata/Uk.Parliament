@@ -21,10 +21,34 @@ public class WrittenStatement
 	public required string Uin { get; set; }
 
 	/// <summary>
+	/// Notice number for the statement
+	/// </summary>
+	[JsonPropertyName("noticeNumber")]
+	public string? NoticeNumber { get; set; }
+
+	/// <summary>
 	/// Member who made the statement
 	/// </summary>
 	[JsonPropertyName("makingMemberId")]
 	public int MakingMemberId { get; set; }
+
+	/// <summary>
+	/// Alternative member ID property
+	/// </summary>
+	[JsonPropertyName("memberId")]
+	public int? MemberId { get; set; }
+
+	/// <summary>
+	/// Member object (alternative to makingMember string)
+	/// </summary>
+	[JsonPropertyName("member")]
+	public object? Member { get; set; }
+
+	/// <summary>
+	/// Member role (e.g., "Minister", "Secretary of State")
+	/// </summary>
+	[JsonPropertyName("memberRole")]
+	public string? MemberRole { get; set; }
 
 	/// <summary>
 	/// Name of the member who made the statement
@@ -37,6 +61,18 @@ public class WrittenStatement
 	/// </summary>
 	[JsonPropertyName("house")]
 	public required string House { get; set; }
+
+	/// <summary>
+	/// Answering body ID
+	/// </summary>
+	[JsonPropertyName("answeringBodyId")]
+	public int? AnsweringBodyId { get; set; }
+
+	/// <summary>
+	/// Answering body name
+	/// </summary>
+	[JsonPropertyName("answeringBodyName")]
+	public string? AnsweringBodyName { get; set; }
 
 	/// <summary>
 	/// Department that issued the statement
@@ -61,6 +97,12 @@ public class WrittenStatement
 	/// </summary>
 	[JsonPropertyName("statementText")]
 	public required string StatementText { get; set; }
+
+	/// <summary>
+	/// Text (alternative to statementText)
+	/// </summary>
+	[JsonPropertyName("text")]
+	public string? Text { get; set; }
 
 	/// <summary>
 	/// Related document URL

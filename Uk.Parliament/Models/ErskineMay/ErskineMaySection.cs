@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.ErskineMay;
@@ -32,6 +33,12 @@ public class ErskineMaySection
 	public string? Title { get; set; }
 
 	/// <summary>
+	/// Title chain (breadcrumb of titles)
+	/// </summary>
+	[JsonPropertyName("titleChain")]
+	public string? TitleChain { get; set; }
+
+	/// <summary>
 	/// Section content/text
 	/// </summary>
 	[JsonPropertyName("content")]
@@ -48,4 +55,10 @@ public class ErskineMaySection
 	/// </summary>
 	[JsonPropertyName("hasSubsections")]
 	public bool HasSubsections { get; set; }
+
+	/// <summary>
+	/// Subsections within this section
+	/// </summary>
+	[JsonPropertyName("subSections")]
+	public List<ErskineMaySection>? SubSections { get; set; }
 }

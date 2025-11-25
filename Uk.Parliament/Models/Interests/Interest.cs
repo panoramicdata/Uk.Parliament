@@ -204,6 +204,30 @@ public class InterestField
 	public string? Name { get; set; }
 
 	/// <summary>
+	/// Field description
+	/// </summary>
+	[JsonPropertyName("description")]
+	public string? Description { get; set; }
+
+	/// <summary>
+	/// Field type
+	/// </summary>
+	[JsonPropertyName("type")]
+	public string? Type { get; set; }
+
+	/// <summary>
+	/// Field type information (detailed type info)
+	/// </summary>
+	[JsonPropertyName("typeInfo")]
+	public object? TypeInfo { get; set; }
+
+	/// <summary>
+	/// Field values (for multi-value fields)
+	/// </summary>
+	[JsonPropertyName("values")]
+	public List<string>? Values { get; set; }
+
+	/// <summary>
 	/// Field value (can be string, number, or boolean)
 	/// </summary>
 	[JsonPropertyName("value")]

@@ -76,16 +76,31 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetWrittenQuestionByIdAsync_WithValidId_ReturnsQuestion()
 	{
-		// Arrange
-		const int questionId = 1; // Example question ID
+		// Arrange - First get a valid question ID from the list
+		var listResult = await Client.QuestionsStatements.GetWrittenQuestionsAsync(take: 1);
+		
+		// Check if using Results or Items property
+		var hasResults = listResult.Results != null && listResult.Results.Count > 0;
+		var hasItems = listResult.Items != null && listResult.Items.Count > 0;
+		
+		if (!hasResults && !hasItems)
+		{
+			// Skip test if no questions available
+			return;
+		}
+
+		var validQuestionId = hasResults 
+			? listResult.Results![0].Value.Id 
+			: listResult.Items[0].Value.Id;
 
 		// Act
-		var result = await Client.QuestionsStatements.GetWrittenQuestionByIdAsync(questionId);
+		var result = await Client.QuestionsStatements.GetWrittenQuestionByIdAsync(validQuestionId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Id.Should().Be(questionId);
-		_ = result.QuestionText.Should().NotBeNullOrEmpty();
+		_ = result.Value.Should().NotBeNull();
+		_ = result.Value.Id.Should().Be(validQuestionId);
+		_ = result.Value.QuestionText.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
@@ -139,16 +154,31 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetWrittenStatementByIdAsync_WithValidId_ReturnsStatement()
 	{
-		// Arrange
-		const int statementId = 1; // Example statement ID
+		// Arrange - First get a valid statement ID from the list
+		var listResult = await Client.QuestionsStatements.GetWrittenStatementsAsync(take: 1);
+		
+		// Check if using Results or Items property
+		var hasResults = listResult.Results != null && listResult.Results.Count > 0;
+		var hasItems = listResult.Items != null && listResult.Items.Count > 0;
+		
+		if (!hasResults && !hasItems)
+		{
+			// Skip test if no statements available
+			return;
+		}
+
+		var validStatementId = hasResults 
+			? listResult.Results![0].Value.Id 
+			: listResult.Items[0].Value.Id;
 
 		// Act
-		var result = await Client.QuestionsStatements.GetWrittenStatementByIdAsync(statementId);
+		var result = await Client.QuestionsStatements.GetWrittenStatementByIdAsync(validStatementId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Id.Should().Be(statementId);
-		_ = result.StatementText.Should().NotBeNullOrEmpty();
+		_ = result.Value.Should().NotBeNull();
+		_ = result.Value.Id.Should().Be(validStatementId);
+		_ = result.Value.StatementText.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]

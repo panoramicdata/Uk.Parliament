@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Interests;
@@ -20,10 +21,34 @@ public class InterestCategory
 	public required string Name { get; set; }
 
 	/// <summary>
+	/// Category number (e.g., "1", "2a")
+	/// </summary>
+	[JsonPropertyName("number")]
+	public string? Number { get; set; }
+
+	/// <summary>
 	/// Category description
 	/// </summary>
 	[JsonPropertyName("description")]
 	public string? Description { get; set; }
+
+	/// <summary>
+	/// Parent category IDs
+	/// </summary>
+	[JsonPropertyName("parentCategoryIds")]
+	public List<int>? ParentCategoryIds { get; set; }
+
+	/// <summary>
+	/// Category type (Commons/Lords)
+	/// </summary>
+	[JsonPropertyName("type")]
+	public string? Type { get; set; }
+
+	/// <summary>
+	/// Links related to this category
+	/// </summary>
+	[JsonPropertyName("links")]
+	public List<object>? Links { get; set; }
 
 	/// <summary>
 	/// Sort order for display

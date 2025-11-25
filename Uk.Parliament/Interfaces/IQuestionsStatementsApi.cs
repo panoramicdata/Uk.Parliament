@@ -53,7 +53,7 @@ public interface IQuestionsStatementsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written question details</returns>
 	[Get("/api/writtenquestions/questions/{id}")]
-	Task<WrittenQuestion> GetWrittenQuestionByIdAsync(
+	Task<ValueWrapper<WrittenQuestion>> GetWrittenQuestionByIdAsync(
 		int id,
 		CancellationToken cancellationToken = default);
 
@@ -65,7 +65,7 @@ public interface IQuestionsStatementsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written question details</returns>
 	[Get("/api/writtenquestions/questions/{date}/{uin}")]
-	Task<WrittenQuestion> GetWrittenQuestionByDateAndUinAsync(
+	Task<ValueWrapper<WrittenQuestion>> GetWrittenQuestionByDateAndUinAsync(
 		DateTime date,
 		string uin,
 		CancellationToken cancellationToken = default);
@@ -100,7 +100,7 @@ public interface IQuestionsStatementsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written statement details</returns>
 	[Get("/api/writtenstatements/statements/{id}")]
-	Task<WrittenStatement> GetWrittenStatementByIdAsync(
+	Task<ValueWrapper<WrittenStatement>> GetWrittenStatementByIdAsync(
 		int id,
 		CancellationToken cancellationToken = default);
 
@@ -112,7 +112,7 @@ public interface IQuestionsStatementsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Written statement details</returns>
 	[Get("/api/writtenstatements/statements/{date}/{uin}")]
-	Task<WrittenStatement> GetWrittenStatementByDateAndUinAsync(
+	Task<ValueWrapper<WrittenStatement>> GetWrittenStatementByDateAndUinAsync(
 		DateTime date,
 		string uin,
 		CancellationToken cancellationToken = default);

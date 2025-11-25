@@ -14,6 +14,12 @@ public class ErskineMaySearchResult
 	public int Id { get; set; }
 
 	/// <summary>
+	/// Section ID (alternative property name)
+	/// </summary>
+	[JsonPropertyName("sectionId")]
+	public int? SectionId { get; set; }
+
+	/// <summary>
 	/// Section number
 	/// </summary>
 	[JsonPropertyName("sectionNumber")]
@@ -24,6 +30,18 @@ public class ErskineMaySearchResult
 	/// </summary>
 	[JsonPropertyName("title")]
 	public string? Title { get; set; }
+
+	/// <summary>
+	/// Section title (alternative property name)
+	/// </summary>
+	[JsonPropertyName("sectionTitle")]
+	public string? SectionTitle { get; set; }
+
+	/// <summary>
+	/// Section title chain (breadcrumb of section titles)
+	/// </summary>
+	[JsonPropertyName("sectionTitleChain")]
+	public string? SectionTitleChain { get; set; }
 
 	/// <summary>
 	/// Content excerpt/snippet
@@ -38,10 +56,22 @@ public class ErskineMaySearchResult
 	public string? PartTitle { get; set; }
 
 	/// <summary>
+	/// Part number
+	/// </summary>
+	[JsonPropertyName("partNumber")]
+	public int? PartNumber { get; set; }
+
+	/// <summary>
 	/// Chapter title
 	/// </summary>
 	[JsonPropertyName("chapterTitle")]
 	public string? ChapterTitle { get; set; }
+
+	/// <summary>
+	/// Chapter number
+	/// </summary>
+	[JsonPropertyName("chapterNumber")]
+	public int? ChapterNumber { get; set; }
 
 	/// <summary>
 	/// Relevance score
