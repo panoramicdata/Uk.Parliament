@@ -52,18 +52,18 @@ public static class OralQuestionsMotionsApiExtensions
 				pageSize,
 				cancellationToken);
 
-			if (response?.Items is null || response.Items.Count == 0)
+			if (response?.Response is null || response.Response.Count == 0)
 			{
 				yield break;
 			}
 
-			foreach (var item in response.Items)
+			foreach (var item in response.Response)
 			{
-				yield return item.Value;
+				yield return item;
 			}
 
 			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
+			if (response.Response.Count < pageSize || skip + pageSize >= response.PagingInfo.Total)
 			{
 				yield break;
 			}
@@ -153,18 +153,18 @@ public static class OralQuestionsMotionsApiExtensions
 				pageSize,
 				cancellationToken);
 
-			if (response?.Items is null || response.Items.Count == 0)
+			if (response?.Response is null || response.Response.Count == 0)
 			{
 				yield break;
 			}
 
-			foreach (var item in response.Items)
+			foreach (var item in response.Response)
 			{
-				yield return item.Value;
+				yield return item;
 			}
 
 			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
+			if (response.Response.Count < pageSize || skip + pageSize >= response.PagingInfo.Total)
 			{
 				yield break;
 			}

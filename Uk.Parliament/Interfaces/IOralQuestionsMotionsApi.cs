@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Refit;
-using Uk.Parliament.Models;
 using Uk.Parliament.Models.OralQuestions;
 
 namespace Uk.Parliament.Interfaces;
@@ -29,7 +28,7 @@ public interface IOralQuestionsMotionsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of oral questions</returns>
 	[Get("/oralquestions/list")]
-	Task<PaginatedResponse<OralQuestion>> GetOralQuestionsAsync(
+	Task<OralQuestionsResponse<OralQuestion>> GetOralQuestionsAsync(
 		[Query] int? askingMemberId = null,
 		[Query] string? answeringDepartment = null,
 		[Query] string? house = null,
@@ -65,7 +64,7 @@ public interface IOralQuestionsMotionsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of motions</returns>
 	[Get("/motions/list")]
-	Task<PaginatedResponse<Motion>> GetMotionsAsync(
+	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
 		[Query] int? proposingMemberId = null,
 		[Query] string? house = null,
 		[Query] DateTime? dateFrom = null,

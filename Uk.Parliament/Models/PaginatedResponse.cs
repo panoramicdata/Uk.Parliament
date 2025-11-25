@@ -34,6 +34,12 @@ public class PaginatedResponse<T>
 	public int Take { get; set; }
 
 	/// <summary>
+	/// Paging information (alternative to skip/take in some APIs)
+	/// </summary>
+	[JsonPropertyName("PagingInfo")]
+	public PagingInfo? PagingInfo { get; set; }
+
+	/// <summary>
 	/// The list of items with their values
 	/// </summary>
 	[JsonPropertyName("items")]
@@ -50,6 +56,24 @@ public class PaginatedResponse<T>
 	/// </summary>
 	[JsonPropertyName("resultType")]
 	public string? ResultType { get; set; }
+}
+
+/// <summary>
+/// Paging information for paginated responses
+/// </summary>
+public class PagingInfo
+{
+	/// <summary>
+	/// Number of results skipped
+	/// </summary>
+	[JsonPropertyName("skip")]
+	public int Skip { get; set; }
+
+	/// <summary>
+	/// Number of results taken
+	/// </summary>
+	[JsonPropertyName("take")]
+	public int Take { get; set; }
 }
 
 /// <summary>

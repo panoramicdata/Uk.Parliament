@@ -43,7 +43,7 @@ public class Committee
 	/// Lead house (for joint committees)
 	/// </summary>
 	[JsonPropertyName("leadHouse")]
-	public string? LeadHouse { get; set; }
+	public LeadHouse? LeadHouse { get; set; }
 
 	/// <summary>
 	/// Committee category
@@ -100,10 +100,10 @@ public class Committee
 	public DateTime? DateLordsAppointed { get; set; }
 
 	/// <summary>
-	/// Departments being scrutinised (simplified - can be complex objects)
+	/// Departments being scrutinised
 	/// </summary>
 	[JsonPropertyName("scrutinisingDepartments")]
-	public List<string>? ScrutinisingDepartments { get; set; }
+	public List<ScrutinisingDepartment>? ScrutinisingDepartments { get; set; }
 
 	/// <summary>
 	/// Whether this is the lead committee
@@ -122,6 +122,42 @@ public class Committee
 	/// </summary>
 	[JsonPropertyName("contact")]
 	public CommitteeContact? Contact { get; set; }
+}
+
+/// <summary>
+/// Lead house information for joint committees
+/// </summary>
+public class LeadHouse
+{
+	/// <summary>
+	/// Whether Commons is the lead house
+	/// </summary>
+	[JsonPropertyName("isCommons")]
+	public bool IsCommons { get; set; }
+
+	/// <summary>
+	/// Whether Lords is the lead house
+	/// </summary>
+	[JsonPropertyName("isLords")]
+	public bool IsLords { get; set; }
+}
+
+/// <summary>
+/// Department being scrutinised by a committee
+/// </summary>
+public class ScrutinisingDepartment
+{
+	/// <summary>
+	/// Department identifier
+	/// </summary>
+	[JsonPropertyName("departmentId")]
+	public int DepartmentId { get; set; }
+
+	/// <summary>
+	/// Department name
+	/// </summary>
+	[JsonPropertyName("name")]
+	public string Name { get; set; } = string.Empty;
 }
 
 /// <summary>

@@ -11,78 +11,174 @@ public class OralQuestion
 	/// <summary>
 	/// Question identifier
 	/// </summary>
-	[JsonPropertyName("id")]
+	[JsonPropertyName("Id")]
 	public int Id { get; set; }
 
 	/// <summary>
 	/// Unique Identifier Number (UIN)
 	/// </summary>
-	[JsonPropertyName("uin")]
-	public required string Uin { get; set; }
+	[JsonPropertyName("UIN")]
+	public int Uin { get; set; }
 
 	/// <summary>
-	/// Member who asked the question
+	/// Question type
 	/// </summary>
-	[JsonPropertyName("askingMemberId")]
-	public int AskingMemberId { get; set; }
-
-	/// <summary>
-	/// Name of the member who asked
-	/// </summary>
-	[JsonPropertyName("askingMember")]
-	public string? AskingMember { get; set; }
-
-	/// <summary>
-	/// House where question was asked (Commons/Lords)
-	/// </summary>
-	[JsonPropertyName("house")]
-	public required string House { get; set; }
-
-	/// <summary>
-	/// Department responsible for answering
-	/// </summary>
-	[JsonPropertyName("answeringDepartment")]
-	public string? AnsweringDepartment { get; set; }
-
-	/// <summary>
-	/// Date the question was asked
-	/// </summary>
-	[JsonPropertyName("dateAsked")]
-	public DateTime DateAsked { get; set; }
+	[JsonPropertyName("QuestionType")]
+	public int QuestionType { get; set; }
 
 	/// <summary>
 	/// Question text
 	/// </summary>
-	[JsonPropertyName("questionText")]
-	public required string QuestionText { get; set; }
+	[JsonPropertyName("QuestionText")]
+	public string QuestionText { get; set; } = string.Empty;
 
 	/// <summary>
-	/// Type of oral question (e.g., "Topical", "Named Day")
+	/// Question status
 	/// </summary>
-	[JsonPropertyName("questionType")]
-	public string? QuestionType { get; set; }
+	[JsonPropertyName("Status")]
+	public int Status { get; set; }
 
 	/// <summary>
-	/// Whether the question has been answered
+	/// Question number
 	/// </summary>
-	[JsonPropertyName("isAnswered")]
-	public bool IsAnswered { get; set; }
+	[JsonPropertyName("Number")]
+	public int Number { get; set; }
 
 	/// <summary>
-	/// Whether the question was withdrawn
+	/// Date the question was tabled
 	/// </summary>
-	[JsonPropertyName("isWithdrawn")]
-	public bool IsWithdrawn { get; set; }
+	[JsonPropertyName("TabledWhen")]
+	public DateTime? TabledWhen { get; set; }
 
 	/// <summary>
-	/// Related document URL
+	/// Date removed from "to be asked"
 	/// </summary>
-	[JsonPropertyName("documentUrl")]
-	public string? DocumentUrl { get; set; }
+	[JsonPropertyName("RemovedFromToBeAskedWhen")]
+	public DateTime? RemovedFromToBeAskedWhen { get; set; }
 
 	/// <summary>
-	/// Hansard reference
+	/// Declarable interest detail
 	/// </summary>
-	[JsonPropertyName("hansardReference")]
-	public string? HansardReference { get; set; }
+	[JsonPropertyName("DeclarableInterestDetail")]
+	public string? DeclarableInterestDetail { get; set; }
+
+	/// <summary>
+	/// Hansard link
+	/// </summary>
+	[JsonPropertyName("HansardLink")]
+	public string? HansardLink { get; set; }
+
+	/// <summary>
+	/// Date when the question will be/was answered
+	/// </summary>
+	[JsonPropertyName("AnsweringWhen")]
+	public DateTime? AnsweringWhen { get; set; }
+
+	/// <summary>
+	/// Answering body ID
+	/// </summary>
+	[JsonPropertyName("AnsweringBodyId")]
+	public int? AnsweringBodyId { get; set; }
+
+	/// <summary>
+	/// Answering body name
+	/// </summary>
+	[JsonPropertyName("AnsweringBody")]
+	public string? AnsweringBody { get; set; }
+
+	/// <summary>
+	/// Answering minister title
+	/// </summary>
+	[JsonPropertyName("AnsweringMinisterTitle")]
+	public string? AnsweringMinisterTitle { get; set; }
+
+	/// <summary>
+	/// Member who asked the question
+	/// </summary>
+	[JsonPropertyName("AskingMember")]
+	public OralQuestionMember? AskingMember { get; set; }
+
+	/// <summary>
+	/// Minister answering the question
+	/// </summary>
+	[JsonPropertyName("AnsweringMinister")]
+	public OralQuestionMember? AnsweringMinister { get; set; }
+
+	/// <summary>
+	/// ID of member who asked
+	/// </summary>
+	[JsonPropertyName("AskingMemberId")]
+	public int AskingMemberId { get; set; }
+
+	/// <summary>
+	/// ID of answering minister
+	/// </summary>
+	[JsonPropertyName("AnsweringMinisterId")]
+	public int? AnsweringMinisterId { get; set; }
+}
+
+/// <summary>
+/// Represents a member in an oral question context
+/// </summary>
+public class OralQuestionMember
+{
+	/// <summary>
+	/// MNIS member ID
+	/// </summary>
+	[JsonPropertyName("MnisId")]
+	public int MnisId { get; set; }
+
+	/// <summary>
+	/// PIMS member ID
+	/// </summary>
+	[JsonPropertyName("PimsId")]
+	public int? PimsId { get; set; }
+
+	/// <summary>
+	/// Member name
+	/// </summary>
+	[JsonPropertyName("Name")]
+	public string? Name { get; set; }
+
+	/// <summary>
+	/// How the member should be listed
+	/// </summary>
+	[JsonPropertyName("ListAs")]
+	public string? ListAs { get; set; }
+
+	/// <summary>
+	/// Member's constituency
+	/// </summary>
+	[JsonPropertyName("Constituency")]
+	public string? Constituency { get; set; }
+
+	/// <summary>
+	/// Member status
+	/// </summary>
+	[JsonPropertyName("Status")]
+	public string? Status { get; set; }
+
+	/// <summary>
+	/// Member's party
+	/// </summary>
+	[JsonPropertyName("Party")]
+	public string? Party { get; set; }
+
+	/// <summary>
+	/// Party ID
+	/// </summary>
+	[JsonPropertyName("PartyId")]
+	public int? PartyId { get; set; }
+
+	/// <summary>
+	/// Party colour
+	/// </summary>
+	[JsonPropertyName("PartyColour")]
+	public string? PartyColour { get; set; }
+
+	/// <summary>
+	/// Photo URL
+	/// </summary>
+	[JsonPropertyName("PhotoUrl")]
+	public string? PhotoUrl { get; set; }
 }

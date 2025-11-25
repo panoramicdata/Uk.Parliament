@@ -18,7 +18,10 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var result = await Client.OralQuestionsMotions.GetOralQuestionsAsync(take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result);
+		_ = result.Should().NotBeNull();
+		_ = result.Success.Should().BeTrue();
+		_ = result.Response.Should().NotBeNull();
+		_ = result.PagingInfo.Total.Should().BePositive();
 	}
 
 	[Fact]
@@ -33,14 +36,16 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 			take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
+		_ = result.Should().NotBeNull();
+		_ = result.Success.Should().BeTrue();
+		_ = result.Response.Should().AllSatisfy(q => q.AskingMemberId.Should().Be(memberId));
 	}
 
 	[Fact]
 	public async Task GetOralQuestionByIdAsync_WithValidId_ReturnsQuestion()
 	{
 		// Arrange
-		const int questionId = 1;
+		const int questionId = 1207;
 
 		// Act
 		var result = await Client.OralQuestionsMotions.GetOralQuestionByIdAsync(questionId);
@@ -57,7 +62,6 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		// Act
 		var questions = await CollectStreamedItemsAsync(
 			Client.OralQuestionsMotions.GetAllOralQuestionsAsync(
-				house: "Commons",
 				pageSize: 5));
 
 		// Assert
@@ -75,7 +79,10 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var result = await Client.OralQuestionsMotions.GetMotionsAsync(take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result);
+		_ = result.Should().NotBeNull();
+		_ = result.Success.Should().BeTrue();
+		_ = result.Response.Should().NotBeNull();
+		_ = result.PagingInfo.Total.Should().BePositive();
 	}
 
 	[Fact]
@@ -87,7 +94,9 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 			take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result, static item => _ = item.Value.IsActive.Should().BeTrue());
+		_ = result.Should().NotBeNull();
+		_ = result.Success.Should().BeTrue();
+		_ = result.Response.Should().AllSatisfy(static m => m.IsActive.Should().BeTrue());
 	}
 
 	[Fact]
@@ -111,7 +120,6 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		// Act
 		var motions = await CollectStreamedItemsAsync(
 			Client.OralQuestionsMotions.GetAllMotionsAsync(
-				house: "Commons",
 				pageSize: 5));
 
 		// Assert
@@ -141,32 +149,26 @@ public class OralQuestionsMotionsApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IOralQuestionsMotionsApi>();
-		var expectedResponse = new PaginatedResponse<OralQuestion>
+		var expectedResponse = new OralQuestionsResponse<OralQuestion>
 		{
-			TotalResults = 2,
-			Items =
+			PagingInfo = new OralQuestionsPagingInfo { Total = 2, Skip = 0, Take = 10 },
+			StatusCode = 200,
+			Success = true,
+			Response =
 			[
-				new ValueWrapper<OralQuestion>
+				new OralQuestion
 				{
-					Value = new OralQuestion
-					{
-						Id = 1,
-						Uin = "OQ123",
-						House = "Commons",
-						QuestionText = "Test oral question 1",
-						DateAsked = DateTime.Now.AddDays(-1)
-					}
+					Id = 1,
+					Uin = 123,
+					QuestionText = "Test oral question 1",
+					TabledWhen = DateTime.Now.AddDays(-1)
 				},
-				new ValueWrapper<OralQuestion>
+				new OralQuestion
 				{
-					Value = new OralQuestion
-					{
-						Id = 2,
-						Uin = "OQ124",
-						House = "Commons",
-						QuestionText = "Test oral question 2",
-						DateAsked = DateTime.Now
-					}
+					Id = 2,
+					Uin = 124,
+					QuestionText = "Test oral question 2",
+					TabledWhen = DateTime.Now
 				}
 			]
 		};
@@ -188,8 +190,8 @@ public class OralQuestionsMotionsApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.TotalResults.Should().Be(2);
-		_ = result.Items.Should().HaveCount(2);
+		_ = result.PagingInfo.Total.Should().Be(2);
+		_ = result.Response.Should().HaveCount(2);
 	}
 
 	[Fact]
@@ -197,24 +199,23 @@ public class OralQuestionsMotionsApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IOralQuestionsMotionsApi>();
-		var expectedResponse = new PaginatedResponse<Motion>
+		var expectedResponse = new OralQuestionsResponse<Motion>
 		{
-			TotalResults = 1,
-			Items =
+			PagingInfo = new OralQuestionsPagingInfo { Total = 1, Skip = 0, Take = 10 },
+			StatusCode = 200,
+			Success = true,
+			Response =
 			[
-				new ValueWrapper<Motion>
+				new Motion
 				{
-					Value = new Motion
-					{
-						Id = 1,
-						Reference = "EDM123",
-						House = "Commons",
-						Title = "Test Motion",
-						MotionText = "This is a test motion",
-						DateTabled = DateTime.Now.AddDays(-5),
-						SignatureCount = 50,
-						IsActive = true
-					}
+					Id = 1,
+					Reference = "EDM123",
+					House = "Commons",
+					Title = "Test Motion",
+					MotionText = "This is a test motion",
+					DateTabled = DateTime.Now.AddDays(-5),
+					SignatureCount = 50,
+					IsActive = true
 				}
 			]
 		};
@@ -236,8 +237,8 @@ public class OralQuestionsMotionsApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.TotalResults.Should().Be(1);
-		_ = result.Items.Should().ContainSingle();
-		_ = result.Items[0].Value.SignatureCount.Should().Be(50);
+		_ = result.PagingInfo.Total.Should().Be(1);
+		_ = result.Response.Should().ContainSingle();
+		_ = result.Response[0].SignatureCount.Should().Be(50);
 	}
 }
