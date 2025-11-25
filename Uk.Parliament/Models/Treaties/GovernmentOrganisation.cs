@@ -17,7 +17,7 @@ public class GovernmentOrganisation
 	/// Organization name
 	/// </summary>
 	[JsonPropertyName("name")]
-	public required string Name { get; set; }
+	public string? Name { get; set; }
 
 	/// <summary>
 	/// Organization abbreviation/acronym

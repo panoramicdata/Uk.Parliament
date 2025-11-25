@@ -20,7 +20,7 @@ public interface IInterestsApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of interest categories</returns>
 	[Get("/api/v1/Categories")]
-	Task<List<InterestCategory>> GetCategoriesAsync(
+	Task<InterestsResponse<InterestCategory>> GetCategoriesAsync(
 		CancellationToken cancellationToken = default);
 
 	/// <summary>

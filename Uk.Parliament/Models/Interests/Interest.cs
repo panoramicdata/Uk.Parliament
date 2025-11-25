@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Interests;
@@ -43,7 +44,7 @@ public class Interest
 	/// Updated dates
 	/// </summary>
 	[JsonPropertyName("updatedDates")]
-	public string? UpdatedDates { get; set; }
+	public List<DateTime>? UpdatedDates { get; set; }
 
 	/// <summary>
 	/// Category information
@@ -112,10 +113,11 @@ public class InterestCategoryInfo
 	public int Id { get; set; }
 
 	/// <summary>
-	/// Category number
+	/// Category number (can be string like "1a" or numeric)
 	/// </summary>
 	[JsonPropertyName("number")]
-	public int Number { get; set; }
+	[JsonConverter(typeof(NumberOrStringConverter))]
+	public string? Number { get; set; }
 
 	/// <summary>
 	/// Category name
@@ -202,8 +204,71 @@ public class InterestField
 	public string? Name { get; set; }
 
 	/// <summary>
-	/// Field value
+	/// Field value (can be string, number, or boolean)
 	/// </summary>
 	[JsonPropertyName("value")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Value { get; set; }
+}
+
+/// <summary>
+/// JSON converter that handles string, number, and boolean values
+/// </summary>
+internal class AnyValueToStringConverter : JsonConverter<string?>
+{
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		if (reader.TokenType == JsonTokenType.Null)
+			return null;
+
+		if (reader.TokenType == JsonTokenType.String)
+			return reader.GetString();
+
+		if (reader.TokenType == JsonTokenType.Number)
+			return reader.GetInt64().ToString();
+
+		if (reader.TokenType == JsonTokenType.True)
+			return "true";
+
+		if (reader.TokenType == JsonTokenType.False)
+			return "false";
+
+		throw new JsonException($"Unexpected token type: {reader.TokenType}");
+	}
+
+	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+	{
+		if (value == null)
+			writer.WriteNullValue();
+		else
+			writer.WriteStringValue(value);
+	}
+}
+
+/// <summary>
+/// JSON converter that handles both number and string values
+/// </summary>
+internal class NumberOrStringConverter : JsonConverter<string?>
+{
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		if (reader.TokenType == JsonTokenType.Null)
+			return null;
+
+		if (reader.TokenType == JsonTokenType.String)
+			return reader.GetString();
+
+		if (reader.TokenType == JsonTokenType.Number)
+			return reader.GetInt64().ToString();
+
+		throw new JsonException($"Unexpected token type: {reader.TokenType}");
+	}
+
+	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+	{
+		if (value == null)
+			writer.WriteNullValue();
+		else
+			writer.WriteStringValue(value);
+	}
 }

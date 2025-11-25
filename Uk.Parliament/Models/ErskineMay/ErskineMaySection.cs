@@ -17,7 +17,7 @@ public class ErskineMaySection
 	/// Section number
 	/// </summary>
 	[JsonPropertyName("sectionNumber")]
-	public required string SectionNumber { get; set; }
+	public string? SectionNumber { get; set; }
 
 	/// <summary>
 	/// Chapter number this section belongs to
@@ -29,13 +29,13 @@ public class ErskineMaySection
 	/// Section title/heading
 	/// </summary>
 	[JsonPropertyName("title")]
-	public required string Title { get; set; }
+	public string? Title { get; set; }
 
 	/// <summary>
 	/// Section content/text
 	/// </summary>
 	[JsonPropertyName("content")]
-	public required string Content { get; set; }
+	public string? Content { get; set; }
 
 	/// <summary>
 	/// References to other sections

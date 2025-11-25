@@ -38,7 +38,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
 		// Arrange
-		const int treatyId = 1;
+		const string treatyId = "1";
 
 		// Act
 		var result = await Client.Treaties.GetTreatyByIdAsync(treatyId);
@@ -53,7 +53,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
 		// Arrange
-		const int treatyId = 1;
+		const string treatyId = "1";
 
 		// Act
 		var result = await Client.Treaties.GetTreatyBusinessItemsAsync(treatyId);
@@ -70,11 +70,11 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().NotBeEmpty();
-		_ = result.Should().AllSatisfy(org =>
+		_ = result.Items.Should().NotBeEmpty();
+		_ = result.Items.Should().AllSatisfy(org =>
 		{
-			_ = org.Id.Should().BePositive();
-			_ = org.Name.Should().NotBeNullOrEmpty();
+			_ = org.Value.Id.Should().BePositive();
+			_ = org.Value.Name.Should().NotBeNullOrEmpty();
 		});
 	}
 
@@ -119,7 +119,7 @@ public class TreatiesApiUnitTests
 				{
 					Value = new Treaty
 					{
-						Id = 1,
+						Id = "1",
 						CommandPaperNumber = "CP 123",
 						Title = "Test Treaty 1",
 						Status = "In Force",
@@ -130,7 +130,7 @@ public class TreatiesApiUnitTests
 				{
 					Value = new Treaty
 					{
-						Id = 2,
+						Id = "2",
 						CommandPaperNumber = "CP 124",
 						Title = "Test Treaty 2",
 						Status = "Not Yet In Force",
@@ -165,23 +165,33 @@ public class TreatiesApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<ITreatiesApi>();
-		var expectedOrgs = new List<GovernmentOrganisation>
+		var expectedResponse = new PaginatedResponse<GovernmentOrganisation>
 		{
-			new() { Id = 1, Name = "Foreign, Commonwealth & Development Office", Abbreviation = "FCDO", IsActive = true },
-			new() { Id = 2, Name = "Department for Business and Trade", Abbreviation = "DBT", IsActive = true }
+			TotalResults = 2,
+			Items =
+			[
+				new ValueWrapper<GovernmentOrganisation>
+				{
+					Value = new GovernmentOrganisation { Id = 1, Name = "Foreign, Commonwealth & Development Office", Abbreviation = "FCDO", IsActive = true }
+				},
+				new ValueWrapper<GovernmentOrganisation>
+				{
+					Value = new GovernmentOrganisation { Id = 2, Name = "Department for Business and Trade", Abbreviation = "DBT", IsActive = true }
+				}
+			]
 		};
 
 		_ = mockApi.Setup(x => x.GetGovernmentOrganisationsAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedOrgs);
+			.ReturnsAsync(expectedResponse);
 
 		// Act
 		var result = await mockApi.Object.GetGovernmentOrganisationsAsync();
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().HaveCount(2);
-		_ = result[0].Name.Should().Be("Foreign, Commonwealth & Development Office");
-		_ = result[1].Abbreviation.Should().Be("DBT");
+		_ = result.Items.Should().HaveCount(2);
+		_ = result.Items[0].Value.Name.Should().Be("Foreign, Commonwealth & Development Office");
+		_ = result.Items[1].Value.Abbreviation.Should().Be("DBT");
 	}
 
 	[Fact]
@@ -194,18 +204,18 @@ public class TreatiesApiUnitTests
 			new()
 			{
 				Id = 1,
-				TreatyId = 1,
+				TreatyId = "1",
 				BusinessItemType = "Debate",
 				House = "Commons",
 				Date = DateTime.Now.AddDays(-10)
 			}
 		};
 
-		_ = mockApi.Setup(x => x.GetTreatyBusinessItemsAsync(1, It.IsAny<CancellationToken>()))
+		_ = mockApi.Setup(x => x.GetTreatyBusinessItemsAsync("1", It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedItems);
 
 		// Act
-		var result = await mockApi.Object.GetTreatyBusinessItemsAsync(1);
+		var result = await mockApi.Object.GetTreatyBusinessItemsAsync("1");
 
 		// Assert
 		_ = result.Should().NotBeNull();

@@ -18,13 +18,13 @@ public class TreatyBusinessItem
 	/// Treaty identifier this business item relates to
 	/// </summary>
 	[JsonPropertyName("treatyId")]
-	public int TreatyId { get; set; }
+	public string TreatyId { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Type of business item (e.g., "Debate", "Motion", "Vote")
 	/// </summary>
 	[JsonPropertyName("businessItemType")]
-	public required string BusinessItemType { get; set; }
+	public string? BusinessItemType { get; set; }
 
 	/// <summary>
 	/// Date of the business item
@@ -36,7 +36,7 @@ public class TreatyBusinessItem
 	/// House where business item occurred
 	/// </summary>
 	[JsonPropertyName("house")]
-	public required string House { get; set; }
+	public string? House { get; set; }
 
 	/// <summary>
 	/// Description/title of the business item

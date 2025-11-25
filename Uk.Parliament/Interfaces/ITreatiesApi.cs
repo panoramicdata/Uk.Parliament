@@ -47,7 +47,7 @@ public interface ITreatiesApi
 	/// <returns>Treaty details</returns>
 	[Get("/api/Treaty/{id}")]
 	Task<Treaty> GetTreatyByIdAsync(
-		int id,
+		string id,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -58,7 +58,7 @@ public interface ITreatiesApi
 	/// <returns>List of business items related to the treaty</returns>
 	[Get("/api/Treaty/{treatyId}/BusinessItem")]
 	Task<List<TreatyBusinessItem>> GetTreatyBusinessItemsAsync(
-		int treatyId,
+		string treatyId,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -67,6 +67,6 @@ public interface ITreatiesApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of government organizations</returns>
 	[Get("/api/GovernmentOrganisation")]
-	Task<List<GovernmentOrganisation>> GetGovernmentOrganisationsAsync(
+	Task<PaginatedResponse<GovernmentOrganisation>> GetGovernmentOrganisationsAsync(
 		CancellationToken cancellationToken = default);
 }

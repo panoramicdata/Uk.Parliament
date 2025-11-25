@@ -16,8 +16,8 @@ public class InterestsIntegrationTests : IntegrationTestBase
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().NotBeEmpty();
-		_ = result.Should().AllSatisfy(category =>
+		_ = result.Items.Should().NotBeEmpty();
+		_ = result.Items.Should().AllSatisfy(category =>
 		{
 			_ = category.Id.Should().BePositive();
 			_ = category.Name.Should().NotBeNullOrEmpty();
@@ -96,23 +96,27 @@ public class InterestsApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IInterestsApi>();
-		var expectedCategories = new List<InterestCategory>
+		var expectedResponse = new InterestsResponse<InterestCategory>
 		{
-			new() { Id = 1, Name = "Employment", Description = "Paid employment" },
-			new() { Id = 2, Name = "Donations", Description = "Donations and gifts" }
+			TotalResults = 2,
+			Items =
+			[
+				new InterestCategory { Id = 1, Name = "Employment", Description = "Paid employment" },
+				new InterestCategory { Id = 2, Name = "Donations", Description = "Donations and gifts" }
+			]
 		};
 
 		_ = mockApi.Setup(x => x.GetCategoriesAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedCategories);
+			.ReturnsAsync(expectedResponse);
 
 		// Act
 		var result = await mockApi.Object.GetCategoriesAsync();
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().HaveCount(2);
-		_ = result[0].Name.Should().Be("Employment");
-		_ = result[1].Name.Should().Be("Donations");
+		_ = result.Items.Should().HaveCount(2);
+		_ = result.Items[0].Name.Should().Be("Employment");
+		_ = result.Items[1].Name.Should().Be("Donations");
 	}
 
 	[Fact]

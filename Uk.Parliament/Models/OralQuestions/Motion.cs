@@ -18,7 +18,7 @@ public class Motion
 	/// Reference number for the motion
 	/// </summary>
 	[JsonPropertyName("reference")]
-	public required string Reference { get; set; }
+	public string? Reference { get; set; }
 
 	/// <summary>
 	/// Member who proposed the motion
@@ -36,7 +36,7 @@ public class Motion
 	/// House where motion was proposed (Commons/Lords)
 	/// </summary>
 	[JsonPropertyName("house")]
-	public required string House { get; set; }
+	public string? House { get; set; }
 
 	/// <summary>
 	/// Date the motion was tabled
@@ -48,13 +48,13 @@ public class Motion
 	/// Motion title/subject
 	/// </summary>
 	[JsonPropertyName("title")]
-	public required string Title { get; set; }
+	public string? Title { get; set; }
 
 	/// <summary>
 	/// Motion text/content
 	/// </summary>
 	[JsonPropertyName("motionText")]
-	public required string MotionText { get; set; }
+	public string? MotionText { get; set; }
 
 	/// <summary>
 	/// Type of motion (e.g., "Early Day Motion", "Amendment")

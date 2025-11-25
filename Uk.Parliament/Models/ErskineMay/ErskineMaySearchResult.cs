@@ -17,13 +17,13 @@ public class ErskineMaySearchResult
 	/// Section number
 	/// </summary>
 	[JsonPropertyName("sectionNumber")]
-	public required string SectionNumber { get; set; }
+	public string? SectionNumber { get; set; }
 
 	/// <summary>
 	/// Section title
 	/// </summary>
 	[JsonPropertyName("title")]
-	public required string Title { get; set; }
+	public string? Title { get; set; }
 
 	/// <summary>
 	/// Content excerpt/snippet
