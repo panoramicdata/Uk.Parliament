@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Refit;
@@ -10,47 +10,31 @@ namespace Uk.Parliament.Interfaces;
 /// UK Parliament NOW (Annunciator) API client using Refit
 /// </summary>
 /// <remarks>
-/// Provides real-time information about chamber activities
+/// Provides real-time information about chamber annunciator displays
 /// </remarks>
 public interface INowApi
 {
 	/// <summary>
-	/// Get current status of the House of Commons
+	/// Get current annunciator message for a specific annunciator
 	/// </summary>
+	/// <param name="annunciator">Annunciator identifier (e.g., "commons", "lords")</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Commons chamber status</returns>
-	[Get("/api/Now/Commons")]
-	Task<ChamberStatus> GetCommonsStatusAsync(
+	/// <returns>Current annunciator message</returns>
+	[Get("/api/Message/message/{annunciator}/current")]
+	Task<AnnunciatorMessage> GetCurrentMessageAsync(
+		string annunciator,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get current status of the House of Lords
+	/// Get annunciator message for a specific annunciator and date
 	/// </summary>
+	/// <param name="annunciator">Annunciator identifier (e.g., "commons", "lords")</param>
+	/// <param name="date">Date in format YYYY-MM-DD</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Lords chamber status</returns>
-	[Get("/api/Now/Lords")]
-	Task<ChamberStatus> GetLordsStatusAsync(
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Get upcoming business items for a house
-	/// </summary>
-	/// <param name="house">House identifier (Commons/Lords)</param>
-	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of upcoming business items</returns>
-	[Get("/api/Now/{house}/Business")]
-	Task<List<BusinessItem>> GetUpcomingBusinessAsync(
-		string house,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Get current business item for a house
-	/// </summary>
-	/// <param name="house">House identifier (Commons/Lords)</param>
-	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Current business item</returns>
-	[Get("/api/Now/{house}/Current")]
-	Task<BusinessItem?> GetCurrentBusinessAsync(
-		string house,
+	/// <returns>Annunciator message for the specified date</returns>
+	[Get("/api/Message/message/{annunciator}/{date}")]
+	Task<AnnunciatorMessage> GetMessageByDateAsync(
+		string annunciator,
+		string date,
 		CancellationToken cancellationToken = default);
 }

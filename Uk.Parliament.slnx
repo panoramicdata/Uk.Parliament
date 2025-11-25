@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
+    <File Path="API_ISSUES.md" />
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="MASTER_PLAN.md" />

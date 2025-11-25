@@ -13,13 +13,13 @@ namespace Uk.Parliament.Extensions;
 public static class InterestsApiExtensions
 {
 	/// <summary>
-	/// Get all interests by automatically paginating through all results
+	/// Get all interests as an async enumerable
+	/// Note: The Interests API returns all results at once, this method just wraps it for consistency
 	/// </summary>
 	/// <param name="api">The interests API</param>
 	/// <param name="searchTerm">Optional search term</param>
 	/// <param name="categoryId">Optional category filter</param>
 	/// <param name="memberId">Optional member filter</param>
-	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all interests</returns>
 	public static async IAsyncEnumerable<Interest> GetAllInterestsAsync(
@@ -27,32 +27,13 @@ public static class InterestsApiExtensions
 		string? searchTerm = null,
 		int? categoryId = null,
 		int? memberId = null,
-		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var skip = 0;
+		var interests = await api.SearchInterestsAsync(memberId, categoryId, searchTerm, cancellationToken);
 
-		while (true)
+		foreach (var interest in interests)
 		{
-			var response = await api.SearchInterestsAsync(searchTerm, categoryId, memberId, skip, pageSize, cancellationToken);
-
-			if (response?.Items is null || response.Items.Count == 0)
-			{
-				yield break;
-			}
-
-			foreach (var item in response.Items)
-			{
-				yield return item.Value;
-			}
-
-			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
+			yield return interest;
 		}
 	}
 
@@ -63,24 +44,15 @@ public static class InterestsApiExtensions
 	/// <param name="searchTerm">Optional search term</param>
 	/// <param name="categoryId">Optional category filter</param>
 	/// <param name="memberId">Optional member filter</param>
-	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all interests</returns>
-	public static async Task<List<Interest>> GetAllInterestsListAsync(
+	public static Task<List<Interest>> GetAllInterestsListAsync(
 		this IInterestsApi api,
 		string? searchTerm = null,
 		int? categoryId = null,
 		int? memberId = null,
-		int pageSize = 20,
 		CancellationToken cancellationToken = default)
 	{
-		var allInterests = new List<Interest>();
-
-		await foreach (var interest in api.GetAllInterestsAsync(searchTerm, categoryId, memberId, pageSize, cancellationToken))
-		{
-			allInterests.Add(interest);
-		}
-
-		return allInterests;
+		return api.SearchInterestsAsync(memberId, categoryId, searchTerm, cancellationToken);
 	}
 }

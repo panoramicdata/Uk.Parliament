@@ -45,29 +45,20 @@ public class ErskineMayApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IErskineMayApi>();
-		var expectedResponse = new PaginatedResponse<ErskineMaySearchResult>
+		var expectedResponse = new List<ErskineMaySearchResult>
 		{
-			TotalResults = 1,
-			Items =
-			[
-				new ValueWrapper<ErskineMaySearchResult>
-				{
-					Value = new ErskineMaySearchResult
-					{
-						Id = 1,
-						SectionNumber = "1.1",
-						Title = "Test Section",
-						Excerpt = "This is a test excerpt",
-						Score = 0.95
-					}
-				}
-			]
+			new()
+			{
+				Id = 1,
+				SectionNumber = "1.1",
+				Title = "Test Section",
+				Excerpt = "This is a test excerpt",
+				Score = 0.95
+			}
 		};
 
 		_ = mockApi.Setup(x => x.SearchAsync(
 			It.IsAny<string>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedResponse);
 
@@ -76,7 +67,7 @@ public class ErskineMayApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.TotalResults.Should().Be(1);
-		_ = result.Items[0].Value.Score.Should().Be(0.95);
+		_ = result.Should().ContainSingle();
+		_ = result[0].Score.Should().Be(0.95);
 	}
 }

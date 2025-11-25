@@ -20,59 +20,62 @@ public interface IErskineMayApi
 	/// </summary>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of Erskine May parts</returns>
-	[Get("/api/Parts")]
+	[Get("/api/Part")]
 	Task<List<ErskineMayPart>> GetPartsAsync(
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get chapters for a specific part
+	/// Get a specific part by number
 	/// </summary>
 	/// <param name="partNumber">Part number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of chapters in the part</returns>
-	[Get("/api/Parts/{partNumber}/Chapters")]
-	Task<List<ErskineMayChapter>> GetChaptersAsync(
+	/// <returns>Part details</returns>
+	[Get("/api/Part/{partNumber}")]
+	Task<ErskineMayPart> GetPartAsync(
 		int partNumber,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get sections for a specific chapter
+	/// Get a specific chapter by number
 	/// </summary>
 	/// <param name="chapterNumber">Chapter number</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Paginated list of sections</returns>
-	[Get("/api/Chapters/{chapterNumber}/Sections")]
-	Task<PaginatedResponse<ErskineMaySection>> GetSectionsAsync(
+	/// <returns>Chapter details</returns>
+	[Get("/api/Chapter/{chapterNumber}")]
+	Task<ErskineMayChapter> GetChapterAsync(
 		int chapterNumber,
-		[Query] int? skip = null,
-		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Get a specific section by ID
 	/// </summary>
-	/// <param name="id">Section identifier</param>
+	/// <param name="sectionId">Section identifier</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Section details</returns>
-	[Get("/api/Sections/{id}")]
+	[Get("/api/Section/{sectionId}")]
 	Task<ErskineMaySection> GetSectionByIdAsync(
-		int id,
+		int sectionId,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Search Erskine May content
+	/// Search for sections
 	/// </summary>
 	/// <param name="searchTerm">Search term</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Paginated search results</returns>
-	[Get("/api/Search")]
-	Task<PaginatedResponse<ErskineMaySearchResult>> SearchAsync(
-		[Query] string searchTerm,
-		[Query] int? skip = null,
-		[Query] int? take = null,
+	/// <returns>List of matching sections</returns>
+	[Get("/api/Search/SectionSearchResults/{searchTerm}")]
+	Task<List<ErskineMaySearchResult>> SearchAsync(
+		string searchTerm,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Search for paragraphs
+	/// </summary>
+	/// <param name="searchTerm">Search term</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of matching paragraphs</returns>
+	[Get("/api/Search/ParagraphSearchResults/{searchTerm}")]
+	Task<List<ErskineMaySearchResult>> SearchParagraphsAsync(
+		string searchTerm,
 		CancellationToken cancellationToken = default);
 }

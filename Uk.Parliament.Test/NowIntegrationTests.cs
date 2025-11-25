@@ -13,45 +13,40 @@ public class NowIntegrationTests : IDisposable
 	}
 
 	[Fact]
-	public async Task GetCommonsStatusAsync_ReturnsStatus()
+	public async Task GetCurrentMessageAsync_ForCommons_ReturnsMessage()
 	{
 		// Act
-		var result = await _client.Now.GetCommonsStatusAsync();
+		var result = await _client.Now.GetCurrentMessageAsync("commons");
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.House.Should().Be("Commons");
+		_ = result.Id.Should().BePositive();
+		_ = result.Slides.Should().NotBeNull();
 	}
 
 	[Fact]
-	public async Task GetLordsStatusAsync_ReturnsStatus()
+	public async Task GetCurrentMessageAsync_ForLords_ReturnsMessage()
 	{
 		// Act
-		var result = await _client.Now.GetLordsStatusAsync();
+		var result = await _client.Now.GetCurrentMessageAsync("lords");
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.House.Should().Be("Lords");
+		_ = result.Id.Should().BePositive();
+		_ = result.Slides.Should().NotBeNull();
 	}
 
 	[Fact]
-	public async Task GetUpcomingBusinessAsync_ForCommons_ReturnsBusinessItems()
+	public async Task GetMessageByDateAsync_ForCommonsToday_ReturnsMessage()
 	{
+		// Arrange
+		var today = DateTime.Now.ToString("yyyy-MM-dd");
+
 		// Act
-		var result = await _client.Now.GetUpcomingBusinessAsync("Commons");
+		var result = await _client.Now.GetMessageByDateAsync("commons", today);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-	}
-
-	[Fact]
-	public async Task GetCurrentBusinessAsync_ForCommons_ReturnsCurrentBusiness()
-	{
-		// Act
-		var result = await _client.Now.GetCurrentBusinessAsync("Commons");
-
-		// Assert - can be null if chamber not sitting
-		// Just verify no exception thrown
 	}
 
 	public void Dispose()

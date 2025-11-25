@@ -10,7 +10,7 @@ namespace Uk.Parliament.Interfaces;
 /// UK Parliament Oral Questions and Motions API client using Refit
 /// </summary>
 /// <remarks>
-/// Provides access to oral questions and parliamentary motions
+/// Provides access to oral questions and Early Day Motions
 /// </remarks>
 public interface IOralQuestionsMotionsApi
 {
@@ -40,18 +40,7 @@ public interface IOralQuestionsMotionsApi
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get a specific oral question by ID
-	/// </summary>
-	/// <param name="id">Question identifier</param>
-	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Oral question details</returns>
-	[Get("/oralquestions/{id}")]
-	Task<OralQuestion> GetOralQuestionByIdAsync(
-		int id,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Get motions with optional filtering
+	/// Get Early Day Motions with optional filtering
 	/// </summary>
 	/// <param name="proposingMemberId">Filter by member who proposed</param>
 	/// <param name="house">Filter by house (Commons/Lords)</param>
@@ -62,8 +51,8 @@ public interface IOralQuestionsMotionsApi
 	/// <param name="skip">Number of results to skip</param>
 	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Paginated list of motions</returns>
-	[Get("/motions/list")]
+	/// <returns>Paginated list of Early Day Motions</returns>
+	[Get("/EarlyDayMotions/list")]
 	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
 		[Query] int? proposingMemberId = null,
 		[Query] string? house = null,
@@ -76,12 +65,12 @@ public interface IOralQuestionsMotionsApi
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get a specific motion by ID
+	/// Get a specific Early Day Motion by ID
 	/// </summary>
 	/// <param name="id">Motion identifier</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Motion details</returns>
-	[Get("/motions/{id}")]
+	[Get("/EarlyDayMotion/{id}")]
 	Task<Motion> GetMotionByIdAsync(
 		int id,
 		CancellationToken cancellationToken = default);

@@ -18,95 +18,66 @@ public class NowApiUnitTests
 	}
 
 	[Fact]
-	public async Task GetCommonsStatusAsync_WithMock_ReturnsExpectedData()
+	public async Task GetCurrentMessageAsync_WithMock_ReturnsExpectedData()
 	{
 		// Arrange
 		var mockApi = new Mock<INowApi>();
-		var expectedStatus = new ChamberStatus
+		var expectedMessage = new AnnunciatorMessage
 		{
-			House = "Commons",
-			IsSitting = true,
-			SessionDate = DateTime.Today,
-			CurrentBusiness = "Prime Minister's Questions",
-			IsInRecess = false
+			Id = 123,
+			AnnunciatorType = "CommonsMain",
+			PublishTime = DateTime.Now,
+			ShowCommonsBell = true,
+			ShowLordsBell = false,
+			Slides =
+			[
+				new AnnunciatorSlide
+				{
+					Id = 1,
+					Lines = "Test slide content",
+					Type = "Generic",
+					CarouselOrder = 1
+				}
+			]
 		};
 
-		_ = mockApi.Setup(x => x.GetCommonsStatusAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedStatus);
+		_ = mockApi.Setup(x => x.GetCurrentMessageAsync("commons", It.IsAny<CancellationToken>()))
+			.ReturnsAsync(expectedMessage);
 
 		// Act
-		var result = await mockApi.Object.GetCommonsStatusAsync();
+		var result = await mockApi.Object.GetCurrentMessageAsync("commons");
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.House.Should().Be("Commons");
-		_ = result.IsSitting.Should().BeTrue();
-		_ = result.CurrentBusiness.Should().Be("Prime Minister's Questions");
+		_ = result.Id.Should().Be(123);
+		_ = result.Slides.Should().ContainSingle();
+		_ = result.ShowCommonsBell.Should().BeTrue();
 	}
 
 	[Fact]
-	public async Task GetUpcomingBusinessAsync_WithMock_ReturnsExpectedData()
+	public async Task GetMessageByDateAsync_WithMock_ReturnsMessage()
 	{
 		// Arrange
 		var mockApi = new Mock<INowApi>();
-		var expectedBusiness = new List<BusinessItem>
+		var expectedMessage = new AnnunciatorMessage
 		{
-			new()
-			{
-				Id = 1,
-				House = "Commons",
-				Description = "Question Time",
-				BusinessType = "Questions",
-				OrderNumber = 1,
-				IsActive = false
-			},
-			new()
-			{
-				Id = 2,
-				House = "Commons",
-				Description = "Ten Minute Rule Motion",
-				BusinessType = "Motion",
-				OrderNumber = 2,
-				IsActive = false
-			}
+			Id = 456,
+			AnnunciatorType = "LordsMain",
+			PublishTime = DateTime.Now.AddDays(-1),
+			ShowCommonsBell = false,
+			ShowLordsBell = true,
+			Slides = []
 		};
 
-		_ = mockApi.Setup(x => x.GetUpcomingBusinessAsync("Commons", It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedBusiness);
+		_ = mockApi.Setup(x => x.GetMessageByDateAsync("lords", "2024-01-01", It.IsAny<CancellationToken>()))
+			.ReturnsAsync(expectedMessage);
 
 		// Act
-		var result = await mockApi.Object.GetUpcomingBusinessAsync("Commons");
+		var result = await mockApi.Object.GetMessageByDateAsync("lords", "2024-01-01");
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().HaveCount(2);
-		_ = result[0].Description.Should().Be("Question Time");
-	}
-
-	[Fact]
-	public async Task GetCurrentBusinessAsync_WithMock_ReturnsCurrentItem()
-	{
-		// Arrange
-		var mockApi = new Mock<INowApi>();
-		var expectedItem = new BusinessItem
-		{
-			Id = 1,
-			House = "Lords",
-			Description = "Debate on Second Reading",
-			BusinessType = "Debate",
-			OrderNumber = 3,
-			IsActive = true
-		};
-
-		_ = mockApi.Setup(x => x.GetCurrentBusinessAsync("Lords", It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedItem);
-
-		// Act
-		var result = await mockApi.Object.GetCurrentBusinessAsync("Lords");
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result!.IsActive.Should().BeTrue();
-		_ = result.Description.Should().Be("Debate on Second Reading");
+		_ = result.Id.Should().Be(456);
+		_ = result.ShowLordsBell.Should().BeTrue();
 	}
 }

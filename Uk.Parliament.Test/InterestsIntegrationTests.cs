@@ -8,36 +8,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class InterestsIntegrationTests : IntegrationTestBase
 {
-
-	[Fact] // Remove Skip - API should be working
-	public async Task GetMemberInterestsAsync_WithValidMemberId_ReturnsInterests()
-	{
-		// Arrange
-		const int memberId = 172; // A known MP
-
-		// Act
-		var result = await Client.Interests.GetMemberInterestsAsync(memberId);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.MemberId.Should().Be(memberId);
-		_ = result.Categories.Should().NotBeNull();
-	}
-
 	[Fact]
-	public async Task GetMemberInterestsAsync_WithInvalidMemberId_ThrowsApiException()
-	{
-		// Arrange
-		const int invalidMemberId = -1;
-
-		// Act
-		var act = async () => await Client.Interests.GetMemberInterestsAsync(invalidMemberId);
-
-		// Assert
-		_ = await act.Should().ThrowAsync<Refit.ApiException>();
-	}
-
-	[Fact] // Remove Skip - API should be working
 	public async Task GetCategoriesAsync_ReturnsCategories()
 	{
 		// Act
@@ -57,10 +28,11 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	public async Task SearchInterestsAsync_WithNoFilters_ReturnsResults()
 	{
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(take: 10);
+		var result = await Client.Interests.SearchInterestsAsync();
 
 		// Assert
-		AssertValidPaginatedResponse(result);
+		_ = result.Should().NotBeNull();
+		_ = result.Should().NotBeEmpty();
 	}
 
 	[Fact]
@@ -70,11 +42,10 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		const string searchTerm = "employment";
 
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(searchTerm: searchTerm, take: 10);
+		var result = await Client.Interests.SearchInterestsAsync(searchTerm: searchTerm);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
 	}
 
 	[Fact]
@@ -84,10 +55,11 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		const int categoryId = 1;
 
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId, take: 10);
+		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId);
 
 		// Assert
-		AssertValidPaginatedResponse(result, item => _ = item.Value.CategoryId.Should().Be(categoryId));
+		_ = result.Should().NotBeNull();
+		_ = result.Should().AllSatisfy(interest => interest.CategoryId.Should().Be(categoryId));
 	}
 
 	[Fact]
@@ -95,7 +67,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var interests = await CollectStreamedItemsAsync(
-			Client.Interests.GetAllInterestsAsync(pageSize: 5));
+			Client.Interests.GetAllInterestsAsync());
 
 		// Assert
 		AssertValidStreamedResults(interests);
@@ -115,41 +87,6 @@ public class InterestsApiUnitTests
 
 		// Assert
 		_ = mock.Object.Should().NotBeNull();
-	}
-
-	[Fact]
-	public async Task GetMemberInterestsAsync_WithMock_ReturnsExpectedData()
-	{
-		// Arrange
-		var mockApi = new Mock<IInterestsApi>();
-		var expectedInterests = new MemberInterests
-		{
-			MemberId = 172,
-			MemberName = "Test Member",
-			Categories =
-			[
-				new InterestCategoryWithInterests
-				{
-					Category = new InterestCategory { Id = 1, Name = "Employment", Description = "Paid employment" },
-					Interests =
-					[
-						new Interest { Id = 1, MemberId = 172, CategoryId = 1, InterestDetails = "Test employment" }
-					]
-				}
-			]
-		};
-
-		_ = mockApi.Setup(x => x.GetMemberInterestsAsync(172, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedInterests);
-
-		// Act
-		var result = await mockApi.Object.GetMemberInterestsAsync(172);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.MemberId.Should().Be(172);
-		_ = result.MemberName.Should().Be("Test Member");
-		_ = result.Categories.Should().ContainSingle();
 	}
 
 	[Fact]
@@ -181,28 +118,16 @@ public class InterestsApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IInterestsApi>();
-		var expectedResponse = new PaginatedResponse<Interest>
+		var expectedResponse = new List<Interest>
 		{
-			TotalResults = 2,
-			Items =
-			[
-				new ValueWrapper<Interest>
-				{
-					Value = new Interest { Id = 1, MemberId = 172, CategoryId = 1, InterestDetails = "Test interest 1" }
-				},
-				new ValueWrapper<Interest>
-				{
-					Value = new Interest { Id = 2, MemberId = 172, CategoryId = 1, InterestDetails = "Test interest 2" }
-				}
-			]
+			new() { Id = 1, MemberId = 172, CategoryId = 1, InterestDetails = "Test interest 1" },
+			new() { Id = 2, MemberId = 172, CategoryId = 1, InterestDetails = "Test interest 2" }
 		};
 
 		_ = mockApi.Setup(x => x.SearchInterestsAsync(
-			It.IsAny<string>(),
 			It.IsAny<int?>(),
 			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+			It.IsAny<string?>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedResponse);
 
@@ -211,7 +136,6 @@ public class InterestsApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.TotalResults.Should().Be(2);
-		_ = result.Items.Should().HaveCount(2);
+		_ = result.Should().HaveCount(2);
 	}
 }

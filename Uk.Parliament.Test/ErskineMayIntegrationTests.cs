@@ -32,31 +32,33 @@ public class ErskineMayIntegrationTests : IDisposable
 	}
 
 	[Fact]
-	public async Task GetChaptersAsync_ForValidPart_ReturnsChapters()
+	public async Task GetPartAsync_ForValidPartNumber_ReturnsPart()
 	{
 		// Arrange
 		const int partNumber = 1;
 
 		// Act
-		var result = await _client.ErskineMay.GetChaptersAsync(partNumber);
+		var result = await _client.ErskineMay.GetPartAsync(partNumber);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().NotBeEmpty();
+		_ = result.PartNumber.Should().Be(partNumber);
+		_ = result.Title.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
-	public async Task GetSectionsAsync_ForValidChapter_ReturnsSections()
+	public async Task GetChapterAsync_ForValidChapterNumber_ReturnsChapter()
 	{
 		// Arrange
 		const int chapterNumber = 1;
 
 		// Act
-		var result = await _client.ErskineMay.GetSectionsAsync(chapterNumber, skip: 0, take: 10);
+		var result = await _client.ErskineMay.GetChapterAsync(chapterNumber);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
+		_ = result.ChapterNumber.Should().Be(chapterNumber);
+		_ = result.Title.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
@@ -81,31 +83,32 @@ public class ErskineMayIntegrationTests : IDisposable
 		const string searchTerm = "voting";
 
 		// Act
-		var result = await _client.ErskineMay.SearchAsync(searchTerm, skip: 0, take: 10);
+		var result = await _client.ErskineMay.SearchAsync(searchTerm);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
+		_ = result.Should().NotBeEmpty();
 	}
 
 	[Fact]
-	public async Task GetAllSectionsAsync_StreamsResults()
+	public async Task SearchAllAsync_StreamsResults()
 	{
 		// Arrange
-		var sections = new List<ErskineMaySection>();
+		const string searchTerm = "voting";
+		var results = new List<ErskineMaySearchResult>();
 
 		// Act
-		await foreach (var section in _client.ErskineMay.GetAllSectionsAsync(chapterNumber: 1, pageSize: 5))
+		await foreach (var result in _client.ErskineMay.SearchAllAsync(searchTerm))
 		{
-			sections.Add(section);
-			if (sections.Count >= 10)
+			results.Add(result);
+			if (results.Count >= 10)
 			{
 				break;
 			}
 		}
 
 		// Assert
-		_ = sections.Should().NotBeEmpty();
+		_ = results.Should().NotBeEmpty();
 	}
 
 	public void Dispose()
