@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.ErskineMay;
@@ -8,16 +9,16 @@ namespace Uk.Parliament.Models.ErskineMay;
 public class ErskineMayChapter
 {
 	/// <summary>
-	/// Chapter number
-	/// </summary>
-	[JsonPropertyName("chapterNumber")]
-	public int ChapterNumber { get; set; }
-
-	/// <summary>
 	/// Part number this chapter belongs to
 	/// </summary>
 	[JsonPropertyName("partNumber")]
 	public int PartNumber { get; set; }
+
+	/// <summary>
+	/// Chapter number
+	/// </summary>
+	[JsonPropertyName("number")]
+	public int ChapterNumber { get; set; }
 
 	/// <summary>
 	/// Chapter title
@@ -26,14 +27,14 @@ public class ErskineMayChapter
 	public required string Title { get; set; }
 
 	/// <summary>
-	/// Chapter summary/introduction
+	/// Chapter description
 	/// </summary>
-	[JsonPropertyName("summary")]
-	public string? Summary { get; set; }
+	[JsonPropertyName("description")]
+	public string? Description { get; set; }
 
 	/// <summary>
-	/// Number of sections in this chapter
+	/// Sections in this chapter
 	/// </summary>
-	[JsonPropertyName("sectionCount")]
-	public int SectionCount { get; set; }
+	[JsonPropertyName("sections")]
+	public List<ErskineMaySection>? Sections { get; set; }
 }

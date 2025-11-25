@@ -40,13 +40,17 @@ public interface IInterestsApi
 	/// <param name="memberId">Optional member filter</param>
 	/// <param name="categoryId">Optional category filter</param>
 	/// <param name="searchTerm">Search term to filter interests</param>
+	/// <param name="skip">Number of results to skip</param>
+	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of interests matching criteria</returns>
+	/// <returns>Paginated list of interests</returns>
 	[Get("/api/v1/Interests")]
-	Task<List<Interest>> SearchInterestsAsync(
+	Task<InterestsResponse<Interest>> SearchInterestsAsync(
 		[Query] int? memberId = null,
 		[Query] int? categoryId = null,
 		[Query] string? searchTerm = null,
+		[Query] int? skip = null,
+		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>

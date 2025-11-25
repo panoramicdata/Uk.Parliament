@@ -87,7 +87,7 @@ public class ErskineMayIntegrationTests : IDisposable
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().NotBeEmpty();
+		_ = result.SearchResults.Should().NotBeEmpty();
 	}
 
 	[Fact]

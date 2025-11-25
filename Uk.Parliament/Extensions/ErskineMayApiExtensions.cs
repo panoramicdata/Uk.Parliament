@@ -13,7 +13,7 @@ public static class ErskineMayApiExtensions
 {
 	/// <summary>
 	/// Search as an async enumerable
-	/// Note: The Erskine May API returns all results at once, this method just wraps it for consistency
+	/// Note: The Erskine May API returns all results at once in SearchResults wrapper
 	/// </summary>
 	/// <param name="api">The Erskine May API</param>
 	/// <param name="searchTerm">Search term</param>
@@ -24,11 +24,14 @@ public static class ErskineMayApiExtensions
 		string searchTerm,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var results = await api.SearchAsync(searchTerm, cancellationToken);
+		var response = await api.SearchAsync(searchTerm, cancellationToken);
 
-		foreach (var result in results)
+		if (response?.SearchResults != null)
 		{
-			yield return result;
+			foreach (var result in response.SearchResults)
+			{
+				yield return result;
+			}
 		}
 	}
 }

@@ -24,8 +24,8 @@ public class ErskineMayApiUnitTests
 		var mockApi = new Mock<IErskineMayApi>();
 		var expectedParts = new List<ErskineMayPart>
 		{
-			new() { PartNumber = 1, Title = "Parliamentary Procedure", ChapterCount = 10 },
-			new() { PartNumber = 2, Title = "The House of Commons", ChapterCount = 15 }
+			new() { PartNumber = 1, Title = "Parliamentary Procedure" },
+			new() { PartNumber = 2, Title = "The House of Commons" }
 		};
 
 		_ = mockApi.Setup(x => x.GetPartsAsync(It.IsAny<CancellationToken>()))
@@ -45,15 +45,20 @@ public class ErskineMayApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IErskineMayApi>();
-		var expectedResponse = new List<ErskineMaySearchResult>
+		var expectedResponse = new ErskineMaySearchResponse
 		{
-			new()
+			SearchTerm = "test",
+			TotalResults = 1,
+			SearchResults =
 			{
-				Id = 1,
-				SectionNumber = "1.1",
-				Title = "Test Section",
-				Excerpt = "This is a test excerpt",
-				Score = 0.95
+				new()
+				{
+					Id = 1,
+					SectionNumber = "1.1",
+					Title = "Test Section",
+					Excerpt = "This is a test excerpt",
+					Score = 0.95
+				}
 			}
 		};
 
@@ -67,7 +72,8 @@ public class ErskineMayApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().ContainSingle();
-		_ = result[0].Score.Should().Be(0.95);
+		_ = result.TotalResults.Should().Be(1);
+		_ = result.SearchResults.Should().ContainSingle();
+		_ = result.SearchResults[0].Score.Should().Be(0.95);
 	}
 }

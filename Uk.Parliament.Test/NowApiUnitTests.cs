@@ -34,7 +34,17 @@ public class NowApiUnitTests
 				new AnnunciatorSlide
 				{
 					Id = 1,
-					Lines = "Test slide content",
+					Lines =
+					[
+						new SlideLine
+						{
+							DisplayOrder = 1,
+							ContentType = "Generic",
+							Style = "Text100",
+							Content = "Test slide content",
+							HorizontalAlignment = "Centre"
+						}
+					],
 					Type = "Generic",
 					CarouselOrder = 1
 				}

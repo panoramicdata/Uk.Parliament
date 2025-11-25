@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Interests;
@@ -15,50 +16,194 @@ public class Interest
 	public int Id { get; set; }
 
 	/// <summary>
-	/// Member identifier
+	/// Interest summary
 	/// </summary>
-	[JsonPropertyName("memberId")]
-	public int MemberId { get; set; }
+	[JsonPropertyName("summary")]
+	public string Summary { get; set; } = string.Empty;
 
 	/// <summary>
-	/// Category identifier
+	/// Parent interest ID if this is a child interest
 	/// </summary>
-	[JsonPropertyName("categoryId")]
-	public int CategoryId { get; set; }
-
-	/// <summary>
-	/// Interest description/details
-	/// </summary>
-	[JsonPropertyName("interest")]
-	public required string InterestDetails { get; set; }
+	[JsonPropertyName("parentInterestId")]
+	public int? ParentInterestId { get; set; }
 
 	/// <summary>
 	/// Date the interest was registered
 	/// </summary>
-	[JsonPropertyName("registeredDate")]
-	public DateTime? RegisteredDate { get; set; }
+	[JsonPropertyName("registrationDate")]
+	public DateTime? RegistrationDate { get; set; }
 
 	/// <summary>
-	/// Date the interest was last amended
+	/// Date the interest was published
 	/// </summary>
-	[JsonPropertyName("amendedDate")]
-	public DateTime? AmendedDate { get; set; }
+	[JsonPropertyName("publishedDate")]
+	public DateTime? PublishedDate { get; set; }
 
 	/// <summary>
-	/// Date the interest was deleted/removed
+	/// Updated dates
 	/// </summary>
-	[JsonPropertyName("deletedDate")]
-	public DateTime? DeletedDate { get; set; }
+	[JsonPropertyName("updatedDates")]
+	public string? UpdatedDates { get; set; }
 
 	/// <summary>
-	/// Whether the interest is currently active
+	/// Category information
 	/// </summary>
-	[JsonPropertyName("isActive")]
-	public bool IsActive { get; set; }
+	[JsonPropertyName("category")]
+	public InterestCategoryInfo Category { get; set; } = new();
 
 	/// <summary>
-	/// Sort order within category
+	/// Member information
 	/// </summary>
-	[JsonPropertyName("sortOrder")]
-	public int? SortOrder { get; set; }
+	[JsonPropertyName("member")]
+	public InterestMemberInfo Member { get; set; } = new();
+
+	/// <summary>
+	/// Fields/details
+	/// </summary>
+	[JsonPropertyName("fields")]
+	public List<InterestField>? Fields { get; set; }
+
+	/// <summary>
+	/// Links
+	/// </summary>
+	[JsonPropertyName("links")]
+	public List<InterestLink>? Links { get; set; }
+
+	/// <summary>
+	/// Whether rectified
+	/// </summary>
+	[JsonPropertyName("rectified")]
+	public bool Rectified { get; set; }
+
+	/// <summary>
+	/// Rectification details
+	/// </summary>
+	[JsonPropertyName("rectifiedDetails")]
+	public string? RectifiedDetails { get; set; }
+
+	/// <summary>
+	/// Helper property: Member ID from nested member object
+	/// </summary>
+	[JsonIgnore]
+	public int MemberId => Member?.Id ?? 0;
+
+	/// <summary>
+	/// Helper property: Category ID from nested category object
+	/// </summary>
+	[JsonIgnore]
+	public int CategoryId => Category?.Id ?? 0;
+
+	/// <summary>
+	/// Helper property: Interest details (alias for Summary)
+	/// </summary>
+	[JsonIgnore]
+	public string InterestDetails => Summary;
+}
+
+/// <summary>
+/// Category information in an interest
+/// </summary>
+public class InterestCategoryInfo
+{
+	/// <summary>
+	/// Category ID
+	/// </summary>
+	[JsonPropertyName("id")]
+	public int Id { get; set; }
+
+	/// <summary>
+	/// Category number
+	/// </summary>
+	[JsonPropertyName("number")]
+	public int Number { get; set; }
+
+	/// <summary>
+	/// Category name
+	/// </summary>
+	[JsonPropertyName("name")]
+	public string Name { get; set; } = string.Empty;
+
+	/// <summary>
+	/// Parent category IDs
+	/// </summary>
+	[JsonPropertyName("parentCategoryIds")]
+	public List<int>? ParentCategoryIds { get; set; }
+
+	/// <summary>
+	/// Type (Commons/Lords)
+	/// </summary>
+	[JsonPropertyName("type")]
+	public string? Type { get; set; }
+
+	/// <summary>
+	/// Links
+	/// </summary>
+	[JsonPropertyName("links")]
+	public List<InterestLink>? Links { get; set; }
+}
+
+/// <summary>
+/// Member information in an interest
+/// </summary>
+public class InterestMemberInfo
+{
+	/// <summary>
+	/// Member ID
+	/// </summary>
+	[JsonPropertyName("id")]
+	public int Id { get; set; }
+
+	/// <summary>
+	/// Display name
+	/// </summary>
+	[JsonPropertyName("nameDisplayAs")]
+	public string? NameDisplayAs { get; set; }
+
+	/// <summary>
+	/// List name
+	/// </summary>
+	[JsonPropertyName("nameListAs")]
+	public string? NameListAs { get; set; }
+
+	/// <summary>
+	/// House
+	/// </summary>
+	[JsonPropertyName("house")]
+	public string? House { get; set; }
+
+	/// <summary>
+	/// Member from (constituency)
+	/// </summary>
+	[JsonPropertyName("memberFrom")]
+	public string? MemberFrom { get; set; }
+
+	/// <summary>
+	/// Party
+	/// </summary>
+	[JsonPropertyName("party")]
+	public string? Party { get; set; }
+
+	/// <summary>
+	/// Links
+	/// </summary>
+	[JsonPropertyName("links")]
+	public List<InterestLink>? Links { get; set; }
+}
+
+/// <summary>
+/// Interest field
+/// </summary>
+public class InterestField
+{
+	/// <summary>
+	/// Field name
+	/// </summary>
+	[JsonPropertyName("name")]
+	public string? Name { get; set; }
+
+	/// <summary>
+	/// Field value
+	/// </summary>
+	[JsonPropertyName("value")]
+	public string? Value { get; set; }
 }

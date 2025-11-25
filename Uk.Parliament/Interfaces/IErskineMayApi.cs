@@ -62,9 +62,9 @@ public interface IErskineMayApi
 	/// </summary>
 	/// <param name="searchTerm">Search term</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of matching sections</returns>
+	/// <returns>Search response with results</returns>
 	[Get("/api/Search/SectionSearchResults/{searchTerm}")]
-	Task<List<ErskineMaySearchResult>> SearchAsync(
+	Task<ErskineMaySearchResponse> SearchAsync(
 		string searchTerm,
 		CancellationToken cancellationToken = default);
 
@@ -73,9 +73,9 @@ public interface IErskineMayApi
 	/// </summary>
 	/// <param name="searchTerm">Search term</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of matching paragraphs</returns>
+	/// <returns>Search response with results</returns>
 	[Get("/api/Search/ParagraphSearchResults/{searchTerm}")]
-	Task<List<ErskineMaySearchResult>> SearchParagraphsAsync(
+	Task<ErskineMaySearchResponse> SearchParagraphsAsync(
 		string searchTerm,
 		CancellationToken cancellationToken = default);
 }

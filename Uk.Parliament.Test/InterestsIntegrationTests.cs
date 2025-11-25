@@ -28,11 +28,12 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	public async Task SearchInterestsAsync_WithNoFilters_ReturnsResults()
 	{
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync();
+		var result = await Client.Interests.SearchInterestsAsync(take: 10);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().NotBeEmpty();
+		_ = result.Items.Should().NotBeEmpty();
+		_ = result.TotalResults.Should().BePositive();
 	}
 
 	[Fact]
@@ -42,10 +43,11 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		const string searchTerm = "employment";
 
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(searchTerm: searchTerm);
+		var result = await Client.Interests.SearchInterestsAsync(searchTerm: searchTerm, take: 10);
 
 		// Assert
 		_ = result.Should().NotBeNull();
+		_ = result.Items.Should().NotBeNull();
 	}
 
 	[Fact]
@@ -55,11 +57,11 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		const int categoryId = 1;
 
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId);
+		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId, take: 10);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().AllSatisfy(interest => interest.CategoryId.Should().Be(categoryId));
+		_ = result.Items.Should().AllSatisfy(interest => interest.Category.Id.Should().Be(categoryId));
 	}
 
 	[Fact]
@@ -67,7 +69,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var interests = await CollectStreamedItemsAsync(
-			Client.Interests.GetAllInterestsAsync());
+			Client.Interests.GetAllInterestsAsync(pageSize: 5));
 
 		// Assert
 		AssertValidStreamedResults(interests);
@@ -118,16 +120,36 @@ public class InterestsApiUnitTests
 	{
 		// Arrange
 		var mockApi = new Mock<IInterestsApi>();
-		var expectedResponse = new List<Interest>
+		var expectedResponse = new InterestsResponse<Interest>
 		{
-			new() { Id = 1, MemberId = 172, CategoryId = 1, InterestDetails = "Test interest 1" },
-			new() { Id = 2, MemberId = 172, CategoryId = 1, InterestDetails = "Test interest 2" }
+			TotalResults = 2,
+			Skip = 0,
+			Take = 10,
+			Items =
+			[
+				new()
+				{
+					Id = 1,
+					Summary = "Test interest 1",
+					Category = new InterestCategoryInfo { Id = 1, Name = "Employment" },
+					Member = new InterestMemberInfo { Id = 172, NameDisplayAs = "Test Member" }
+				},
+				new()
+				{
+					Id = 2,
+					Summary = "Test interest 2",
+					Category = new InterestCategoryInfo { Id = 1, Name = "Employment" },
+					Member = new InterestMemberInfo { Id = 172, NameDisplayAs = "Test Member" }
+				}
+			]
 		};
 
 		_ = mockApi.Setup(x => x.SearchInterestsAsync(
 			It.IsAny<int?>(),
 			It.IsAny<int?>(),
 			It.IsAny<string?>(),
+			It.IsAny<int?>(),
+			It.IsAny<int?>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedResponse);
 
@@ -136,6 +158,7 @@ public class InterestsApiUnitTests
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Should().HaveCount(2);
+		_ = result.TotalResults.Should().Be(2);
+		_ = result.Items.Should().HaveCount(2);
 	}
 }
