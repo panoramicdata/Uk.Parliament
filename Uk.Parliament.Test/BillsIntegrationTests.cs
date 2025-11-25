@@ -1,24 +1,21 @@
 using Uk.Parliament.Extensions;
+using Uk.Parliament.Models.Bills;
 
 namespace Uk.Parliament.Test;
 
 /// <summary>
 /// Integration tests for the Bills API (requires live API)
 /// </summary>
-public class BillsIntegrationTests
+public class BillsIntegrationTests : IntegrationTestBase
 {
 	[Fact]
 	public async Task GetBillsAsync_WithNoFilters_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Bills.GetBillsAsync(take: 10);
+		var response = await Client.Bills.GetBillsAsync(take: 10);
 
 		// Assert
 		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
 		_ = response.TotalResults.Should().BePositive();
 	}
@@ -27,13 +24,12 @@ public class BillsIntegrationTests
 	public async Task GetBillByIdAsync_WithValidId_ReturnsBill()
 	{
 		// Arrange
-		var client = new ParliamentClient();
 		// First, get a valid bill ID
-		var billsList = await client.Bills.GetBillsAsync(take: 1);
+		var billsList = await Client.Bills.GetBillsAsync(take: 1);
 		var billId = billsList.Items[0].BillId;
 
 		// Act
-		var bill = await client.Bills.GetBillByIdAsync(billId);
+		var bill = await Client.Bills.GetBillByIdAsync(billId);
 
 		// Assert
 		_ = bill.Should().NotBeNull();
@@ -44,12 +40,9 @@ public class BillsIntegrationTests
 	[Fact]
 	public async Task GetBillsAsync_WithPagination_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var page1 = await client.Bills.GetBillsAsync(skip: 0, take: 10);
-		var page2 = await client.Bills.GetBillsAsync(skip: 10, take: 10);
+		var page1 = await Client.Bills.GetBillsAsync(skip: 0, take: 10);
+		var page2 = await Client.Bills.GetBillsAsync(skip: 10, take: 10);
 
 		// Assert
 		_ = page1.Items.Should().NotBeEmpty();
@@ -60,15 +53,11 @@ public class BillsIntegrationTests
 	[Fact]
 	public async Task GetBillsAsync_FilterByCurrentHouse_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act - Filter by Commons
-		var response = await client.Bills.GetBillsAsync(currentHouse: "Commons", take: 10);
+		var response = await Client.Bills.GetBillsAsync(currentHouse: "Commons", take: 10);
 
 		// Assert
 		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
 		_ = response.Items.Should().AllSatisfy(bill =>
 		{
@@ -79,70 +68,54 @@ public class BillsIntegrationTests
 	[Fact]
 	public async Task GetBillsAsync_WithSearchTerm_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Bills.GetBillsAsync(searchTerm: "Bill", take: 10);
+		var response = await Client.Bills.GetBillsAsync(searchTerm: "Bill", take: 10);
 
 		// Assert
 		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
+		_ = response.TotalResults.Should().BePositive();
 	}
 
 	[Fact]
 	public async Task GetBillTypesAsync_ReturnsTypes()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Bills.GetBillTypesAsync();
+		var result = await Client.Bills.GetBillTypesAsync();
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.Items.Should().AllSatisfy(type =>
+		_ = result.Should().NotBeNull();
+		_ = result.Items.Should().NotBeEmpty();
+		_ = result.Items.Should().AllSatisfy(billType =>
 		{
-			_ = type.Name.Should().NotBeNullOrWhiteSpace();
-			_ = type.Category.Should().NotBeNullOrWhiteSpace();
+			_ = billType.Name.Should().NotBeNullOrWhiteSpace();
+			_ = billType.Category.Should().NotBeNullOrWhiteSpace();
 		});
 	}
 
 	[Fact]
 	public async Task GetAllBillsAsync_StreamingResults_Works()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-		var count = 0;
-
 		// Act
-		await foreach (var bill in client.Bills.GetAllBillsAsync(currentHouse: "Commons", pageSize: 10))
+		var bills = await CollectStreamedItemsAsync(
+			Client.Bills.GetAllBillsAsync(currentHouse: "Commons", pageSize: 10),
+			maxItems: 25);
+
+		// Assert
+		_ = bills.Should().NotBeEmpty();
+		_ = bills.Should().HaveCountGreaterThanOrEqualTo(25);
+		_ = bills.Should().AllSatisfy(bill =>
 		{
 			_ = bill.Should().NotBeNull();
 			_ = bill.ShortTitle.Should().NotBeNullOrWhiteSpace();
-			count++;
-
-			if (count >= 25)
-			{
-				break; // Test pagination by getting at least 3 pages
-			}
-		}
-
-		// Assert
-		_ = count.Should().BeGreaterThanOrEqualTo(25);
+		});
 	}
 
 	[Fact]
 	public async Task GetAllBillsListAsync_RetrievesMultiplePages()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var allBills = await client.Bills.GetAllBillsListAsync(
+		var allBills = await Client.Bills.GetAllBillsListAsync(
 			currentHouse: "Lords",
 			pageSize: 15);
 
@@ -160,12 +133,11 @@ public class BillsIntegrationTests
 	public async Task GetBillByIdAsync_HasCurrentStage()
 	{
 		// Arrange
-		var client = new ParliamentClient();
-		var billsList = await client.Bills.GetBillsAsync(take: 1);
+		var billsList = await Client.Bills.GetBillsAsync(take: 1);
 		var billId = billsList.Items[0].BillId;
 
 		// Act
-		var bill = await client.Bills.GetBillByIdAsync(billId);
+		var bill = await Client.Bills.GetBillByIdAsync(billId);
 
 		// Assert
 		_ = bill.CurrentStage.Should().NotBeNull();

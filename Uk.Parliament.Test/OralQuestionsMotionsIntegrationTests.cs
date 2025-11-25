@@ -6,14 +6,8 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Oral Questions and Motions API
 /// </summary>
-public class OralQuestionsMotionsIntegrationTests : IDisposable
+public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 {
-	private readonly ParliamentClient _client;
-
-	public OralQuestionsMotionsIntegrationTests()
-	{
-		_client = new ParliamentClient();
-	}
 
 	#region Oral Questions Tests
 
@@ -21,12 +15,10 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 	public async Task GetOralQuestionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await _client.OralQuestionsMotions.GetOralQuestionsAsync(take: 10);
+		var result = await Client.OralQuestionsMotions.GetOralQuestionsAsync(take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BePositive();
+		AssertValidPaginatedResponse(result);
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -36,17 +28,12 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 		const int memberId = 172;
 
 		// Act
-		var result = await _client.OralQuestionsMotions.GetOralQuestionsAsync(
+		var result = await Client.OralQuestionsMotions.GetOralQuestionsAsync(
 			askingMemberId: memberId,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
-		{
-			_ = item.Value.AskingMemberId.Should().Be(memberId);
-		});
+		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -56,7 +43,7 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 		const int questionId = 1;
 
 		// Act
-		var result = await _client.OralQuestionsMotions.GetOralQuestionByIdAsync(questionId);
+		var result = await Client.OralQuestionsMotions.GetOralQuestionByIdAsync(questionId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -67,24 +54,14 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetAllOralQuestionsAsync_StreamsResults()
 	{
-		// Arrange
-		var questions = new List<OralQuestion>();
-
 		// Act
-		await foreach (var question in _client.OralQuestionsMotions.GetAllOralQuestionsAsync(
-			house: "Commons",
-			pageSize: 5))
-		{
-			questions.Add(question);
-			if (questions.Count >= 10)
-			{
-				break;
-			}
-		}
+		var questions = await CollectStreamedItemsAsync(
+			Client.OralQuestionsMotions.GetAllOralQuestionsAsync(
+				house: "Commons",
+				pageSize: 5));
 
 		// Assert
-		_ = questions.Should().NotBeEmpty();
-		_ = questions.Should().HaveCountGreaterThanOrEqualTo(5);
+		AssertValidStreamedResults(questions);
 	}
 
 	#endregion
@@ -95,26 +72,22 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 	public async Task GetMotionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await _client.OralQuestionsMotions.GetMotionsAsync(take: 10);
+		var result = await Client.OralQuestionsMotions.GetMotionsAsync(take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BePositive();
+		AssertValidPaginatedResponse(result);
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetMotionsAsync_FilterByActive_ReturnsActiveMotions()
 	{
 		// Act
-		var result = await _client.OralQuestionsMotions.GetMotionsAsync(
+		var result = await Client.OralQuestionsMotions.GetMotionsAsync(
 			isActive: true,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.IsActive.Should().BeTrue();
 		});
@@ -127,7 +100,7 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 		const int motionId = 1;
 
 		// Act
-		var result = await _client.OralQuestionsMotions.GetMotionByIdAsync(motionId);
+		var result = await Client.OralQuestionsMotions.GetMotionByIdAsync(motionId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -138,33 +111,17 @@ public class OralQuestionsMotionsIntegrationTests : IDisposable
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetAllMotionsAsync_StreamsResults()
 	{
-		// Arrange
-		var motions = new List<Motion>();
-
 		// Act
-		await foreach (var motion in _client.OralQuestionsMotions.GetAllMotionsAsync(
-			house: "Commons",
-			pageSize: 5))
-		{
-			motions.Add(motion);
-			if (motions.Count >= 10)
-			{
-				break;
-			}
-		}
+		var motions = await CollectStreamedItemsAsync(
+			Client.OralQuestionsMotions.GetAllMotionsAsync(
+				house: "Commons",
+				pageSize: 5));
 
 		// Assert
-		_ = motions.Should().NotBeEmpty();
-		_ = motions.Should().HaveCountGreaterThanOrEqualTo(5);
+		AssertValidStreamedResults(motions);
 	}
 
 	#endregion
-
-	public void Dispose()
-	{
-		_client.Dispose();
-		GC.SuppressFinalize(this);
-	}
 }
 
 /// <summary>

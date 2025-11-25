@@ -6,25 +6,17 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Treaties API
 /// </summary>
-public class TreatiesIntegrationTests : IDisposable
+public class TreatiesIntegrationTests : IntegrationTestBase
 {
-	private readonly ParliamentClient _client;
-
-	public TreatiesIntegrationTests()
-	{
-		_client = new ParliamentClient();
-	}
 
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetTreatiesAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await _client.Treaties.GetTreatiesAsync(take: 10);
+		var result = await Client.Treaties.GetTreatiesAsync(take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BePositive();
+		AssertValidPaginatedResponse(result);
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -34,14 +26,12 @@ public class TreatiesIntegrationTests : IDisposable
 		const string status = "In Force";
 
 		// Act
-		var result = await _client.Treaties.GetTreatiesAsync(
+		var result = await Client.Treaties.GetTreatiesAsync(
 			status: status,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.Status.Should().Be(status);
 		});
@@ -54,7 +44,7 @@ public class TreatiesIntegrationTests : IDisposable
 		const int treatyId = 1;
 
 		// Act
-		var result = await _client.Treaties.GetTreatyByIdAsync(treatyId);
+		var result = await Client.Treaties.GetTreatyByIdAsync(treatyId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -69,7 +59,7 @@ public class TreatiesIntegrationTests : IDisposable
 		const int treatyId = 1;
 
 		// Act
-		var result = await _client.Treaties.GetTreatyBusinessItemsAsync(treatyId);
+		var result = await Client.Treaties.GetTreatyBusinessItemsAsync(treatyId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -79,7 +69,7 @@ public class TreatiesIntegrationTests : IDisposable
 	public async Task GetGovernmentOrganisationsAsync_ReturnsOrganisations()
 	{
 		// Act
-		var result = await _client.Treaties.GetGovernmentOrganisationsAsync();
+		var result = await Client.Treaties.GetGovernmentOrganisationsAsync();
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -94,28 +84,12 @@ public class TreatiesIntegrationTests : IDisposable
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetAllTreatiesAsync_StreamsResults()
 	{
-		// Arrange
-		var treaties = new List<Treaty>();
-
 		// Act
-		await foreach (var treaty in _client.Treaties.GetAllTreatiesAsync(pageSize: 5))
-		{
-			treaties.Add(treaty);
-			if (treaties.Count >= 10)
-			{
-				break;
-			}
-		}
+		var treaties = await CollectStreamedItemsAsync(
+			Client.Treaties.GetAllTreatiesAsync(pageSize: 5));
 
 		// Assert
-		_ = treaties.Should().NotBeEmpty();
-		_ = treaties.Should().HaveCountGreaterThanOrEqualTo(5);
-	}
-
-	public void Dispose()
-	{
-		_client.Dispose();
-		GC.SuppressFinalize(this);
+		AssertValidStreamedResults(treaties);
 	}
 }
 

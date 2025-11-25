@@ -6,14 +6,8 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Member Interests API
 /// </summary>
-public class InterestsIntegrationTests : IDisposable
+public class InterestsIntegrationTests : IntegrationTestBase
 {
-	private readonly ParliamentClient _client;
-
-	public InterestsIntegrationTests()
-	{
-		_client = new ParliamentClient();
-	}
 
 	[Fact] // Remove Skip - API should be working
 	public async Task GetMemberInterestsAsync_WithValidMemberId_ReturnsInterests()
@@ -22,7 +16,7 @@ public class InterestsIntegrationTests : IDisposable
 		const int memberId = 172; // A known MP
 
 		// Act
-		var result = await _client.Interests.GetMemberInterestsAsync(memberId);
+		var result = await Client.Interests.GetMemberInterestsAsync(memberId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -37,7 +31,7 @@ public class InterestsIntegrationTests : IDisposable
 		const int invalidMemberId = -1;
 
 		// Act
-		var act = async () => await _client.Interests.GetMemberInterestsAsync(invalidMemberId);
+		var act = async () => await Client.Interests.GetMemberInterestsAsync(invalidMemberId);
 
 		// Assert
 		_ = await act.Should().ThrowAsync<Refit.ApiException>();
@@ -47,7 +41,7 @@ public class InterestsIntegrationTests : IDisposable
 	public async Task GetCategoriesAsync_ReturnsCategories()
 	{
 		// Act
-		var result = await _client.Interests.GetCategoriesAsync();
+		var result = await Client.Interests.GetCategoriesAsync();
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -63,12 +57,10 @@ public class InterestsIntegrationTests : IDisposable
 	public async Task SearchInterestsAsync_WithNoFilters_ReturnsResults()
 	{
 		// Act
-		var result = await _client.Interests.SearchInterestsAsync(take: 10);
+		var result = await Client.Interests.SearchInterestsAsync(take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BePositive();
+		AssertValidPaginatedResponse(result);
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -78,7 +70,7 @@ public class InterestsIntegrationTests : IDisposable
 		const string searchTerm = "employment";
 
 		// Act
-		var result = await _client.Interests.SearchInterestsAsync(searchTerm: searchTerm, take: 10);
+		var result = await Client.Interests.SearchInterestsAsync(searchTerm: searchTerm, take: 10);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -92,12 +84,10 @@ public class InterestsIntegrationTests : IDisposable
 		const int categoryId = 1;
 
 		// Act
-		var result = await _client.Interests.SearchInterestsAsync(categoryId: categoryId, take: 10);
+		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId, take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.CategoryId.Should().Be(categoryId);
 		});
@@ -106,28 +96,12 @@ public class InterestsIntegrationTests : IDisposable
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetAllInterestsAsync_StreamsResults()
 	{
-		// Arrange
-		var interests = new List<Interest>();
-
 		// Act
-		await foreach (var interest in _client.Interests.GetAllInterestsAsync(pageSize: 5))
-		{
-			interests.Add(interest);
-			if (interests.Count >= 10)
-			{
-				break; // Limit for test
-			}
-		}
+		var interests = await CollectStreamedItemsAsync(
+			Client.Interests.GetAllInterestsAsync(pageSize: 5));
 
 		// Assert
-		_ = interests.Should().NotBeEmpty();
-		_ = interests.Should().HaveCountGreaterThanOrEqualTo(5);
-	}
-
-	public void Dispose()
-	{
-		_client.Dispose();
-		GC.SuppressFinalize(this);
+		AssertValidStreamedResults(interests);
 	}
 }
 

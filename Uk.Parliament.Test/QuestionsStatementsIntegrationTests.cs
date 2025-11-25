@@ -6,14 +6,8 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Written Questions and Statements API
 /// </summary>
-public class QuestionsStatementsIntegrationTests : IDisposable
+public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 {
-	private readonly ParliamentClient _client;
-
-	public QuestionsStatementsIntegrationTests()
-	{
-		_client = new ParliamentClient();
-	}
 
 	#region Written Questions Tests
 
@@ -21,12 +15,10 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 	public async Task GetWrittenQuestionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenQuestionsAsync(take: 10);
+		var result = await Client.QuestionsStatements.GetWrittenQuestionsAsync(take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BePositive();
+		AssertValidPaginatedResponse(result);
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -36,14 +28,12 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		const int memberId = 172; // Example member ID
 
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenQuestionsAsync(
+		var result = await Client.QuestionsStatements.GetWrittenQuestionsAsync(
 			askingMemberId: memberId,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.AskingMemberId.Should().Be(memberId);
 		});
@@ -57,15 +47,13 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		var toDate = DateTime.Now;
 
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenQuestionsAsync(
+		var result = await Client.QuestionsStatements.GetWrittenQuestionsAsync(
 			tabledWhenFrom: fromDate,
 			tabledWhenTo: toDate,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.DateTabled.Should().BeOnOrAfter(fromDate);
 			_ = item.Value.DateTabled.Should().BeOnOrBefore(toDate);
@@ -76,14 +64,12 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 	public async Task GetWrittenQuestionsAsync_FilterByAnswered_ReturnsAnsweredQuestions()
 	{
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenQuestionsAsync(
+		var result = await Client.QuestionsStatements.GetWrittenQuestionsAsync(
 			isAnswered: true,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.IsAnswered.Should().BeTrue();
 			_ = item.Value.AnswerText.Should().NotBeNullOrEmpty();
@@ -97,7 +83,7 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		const int questionId = 1; // Example question ID
 
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenQuestionByIdAsync(questionId);
+		var result = await Client.QuestionsStatements.GetWrittenQuestionByIdAsync(questionId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -108,24 +94,14 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetAllWrittenQuestionsAsync_StreamsResults()
 	{
-		// Arrange
-		var questions = new List<WrittenQuestion>();
-
 		// Act
-		await foreach (var question in _client.QuestionsStatements.GetAllWrittenQuestionsAsync(
-			house: "Commons",
-			pageSize: 5))
-		{
-			questions.Add(question);
-			if (questions.Count >= 10)
-			{
-				break; // Limit for test
-			}
-		}
+		var questions = await CollectStreamedItemsAsync(
+			Client.QuestionsStatements.GetAllWrittenQuestionsAsync(
+				house: "Commons",
+				pageSize: 5));
 
 		// Assert
-		_ = questions.Should().NotBeEmpty();
-		_ = questions.Should().HaveCountGreaterThanOrEqualTo(5);
+		AssertValidStreamedResults(questions);
 	}
 
 	#endregion
@@ -136,12 +112,10 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 	public async Task GetWrittenStatementsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenStatementsAsync(take: 10);
+		var result = await Client.QuestionsStatements.GetWrittenStatementsAsync(take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.TotalResults.Should().BePositive();
+		AssertValidPaginatedResponse(result);
 	}
 
 	[Fact(Skip = "Integration test - requires live API")]
@@ -152,15 +126,13 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		var toDate = DateTime.Now;
 
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenStatementsAsync(
+		var result = await Client.QuestionsStatements.GetWrittenStatementsAsync(
 			madeWhenFrom: fromDate,
 			madeWhenTo: toDate,
 			take: 10);
 
 		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().NotBeNull();
-		_ = result.Items.Should().AllSatisfy(item =>
+		AssertValidPaginatedResponse(result, item =>
 		{
 			_ = item.Value.DateMade.Should().BeOnOrAfter(fromDate);
 			_ = item.Value.DateMade.Should().BeOnOrBefore(toDate);
@@ -174,7 +146,7 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		const int statementId = 1; // Example statement ID
 
 		// Act
-		var result = await _client.QuestionsStatements.GetWrittenStatementByIdAsync(statementId);
+		var result = await Client.QuestionsStatements.GetWrittenStatementByIdAsync(statementId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -185,24 +157,14 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 	[Fact(Skip = "Integration test - requires live API")]
 	public async Task GetAllWrittenStatementsAsync_StreamsResults()
 	{
-		// Arrange
-		var statements = new List<WrittenStatement>();
-
 		// Act
-		await foreach (var statement in _client.QuestionsStatements.GetAllWrittenStatementsAsync(
-			house: "Commons",
-			pageSize: 5))
-		{
-			statements.Add(statement);
-			if (statements.Count >= 10)
-			{
-				break; // Limit for test
-			}
-		}
+		var statements = await CollectStreamedItemsAsync(
+			Client.QuestionsStatements.GetAllWrittenStatementsAsync(
+				house: "Commons",
+				pageSize: 5));
 
 		// Assert
-		_ = statements.Should().NotBeEmpty();
-		_ = statements.Should().HaveCountGreaterThanOrEqualTo(5);
+		AssertValidStreamedResults(statements);
 	}
 
 	#endregion
@@ -217,7 +179,7 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 		var toDate = DateTime.Now;
 
 		// Act
-		var result = await _client.QuestionsStatements.GetDailyReportsAsync(
+		var result = await Client.QuestionsStatements.GetDailyReportsAsync(
 			dateFrom: fromDate,
 			dateTo: toDate,
 			take: 10);
@@ -231,32 +193,19 @@ public class QuestionsStatementsIntegrationTests : IDisposable
 	public async Task GetAllDailyReportsAsync_StreamsResults()
 	{
 		// Arrange
-		var reports = new List<DailyReport>();
 		var fromDate = DateTime.Now.AddDays(-30);
 
 		// Act
-		await foreach (var report in _client.QuestionsStatements.GetAllDailyReportsAsync(
-			dateFrom: fromDate,
-			pageSize: 5))
-		{
-			reports.Add(report);
-			if (reports.Count >= 10)
-			{
-				break; // Limit for test
-			}
-		}
+		var reports = await CollectStreamedItemsAsync(
+			Client.QuestionsStatements.GetAllDailyReportsAsync(
+				dateFrom: fromDate,
+				pageSize: 5));
 
 		// Assert
 		_ = reports.Should().NotBeEmpty();
 	}
 
 	#endregion
-
-	public void Dispose()
-	{
-		_client.Dispose();
-		GC.SuppressFinalize(this);
-	}
 }
 
 /// <summary>
