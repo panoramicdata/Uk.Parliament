@@ -69,9 +69,9 @@ public interface IOralQuestionsMotionsApi
 	/// </summary>
 	/// <param name="id">Motion identifier</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Motion details</returns>
+	/// <returns>Motion details wrapped in response</returns>
 	[Get("/EarlyDayMotion/{id}")]
-	Task<Motion> GetMotionByIdAsync(
+	Task<OralQuestionsResponse<Motion>> GetMotionByIdAsync(
 		int id,
 		CancellationToken cancellationToken = default);
 }

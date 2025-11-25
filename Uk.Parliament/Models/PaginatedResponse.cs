@@ -46,6 +46,12 @@ public class PaginatedResponse<T>
 	public List<ValueWrapper<T>> Items { get; set; } = new();
 
 	/// <summary>
+	/// The list of results (used by Questions/Statements API - also uses ValueWrapper)
+	/// </summary>
+	[JsonPropertyName("results")]
+	public List<ValueWrapper<T>>? Results { get; set; }
+
+	/// <summary>
 	/// Links for pagination
 	/// </summary>
 	[JsonPropertyName("links")]

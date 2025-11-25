@@ -37,26 +37,30 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
-		// Arrange
-		const string treatyId = "1";
+		// Arrange - First get a valid treaty ID from the list
+		var listResult = await Client.Treaties.GetTreatiesAsync(take: 1);
+		listResult.Items.Should().NotBeEmpty("Need at least one treaty to test GetById");
+		var validTreatyId = listResult.Items[0].Value.Id;
 
 		// Act
-		var result = await Client.Treaties.GetTreatyByIdAsync(treatyId);
+		var result = await Client.Treaties.GetTreatyByIdAsync(validTreatyId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Id.Should().Be(treatyId);
+		_ = result.Id.Should().Be(validTreatyId);
 		_ = result.Title.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
-		// Arrange
-		const string treatyId = "1";
+		// Arrange - First get a valid treaty ID from the list
+		var listResult = await Client.Treaties.GetTreatiesAsync(take: 1);
+		listResult.Items.Should().NotBeEmpty("Need at least one treaty to test GetBusinessItems");
+		var validTreatyId = listResult.Items[0].Value.Id;
 
 		// Act
-		var result = await Client.Treaties.GetTreatyBusinessItemsAsync(treatyId);
+		var result = await Client.Treaties.GetTreatyBusinessItemsAsync(validTreatyId);
 
 		// Assert
 		_ = result.Should().NotBeNull();

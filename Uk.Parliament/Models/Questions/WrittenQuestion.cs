@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Questions;
@@ -57,6 +58,18 @@ public class WrittenQuestion
 	public string? AnsweringDepartment { get; set; }
 
 	/// <summary>
+	/// ID of the answering body/department
+	/// </summary>
+	[JsonPropertyName("answeringBodyId")]
+	public int? AnsweringBodyId { get; set; }
+
+	/// <summary>
+	/// Name of the answering body/department
+	/// </summary>
+	[JsonPropertyName("answeringBodyName")]
+	public string? AnsweringBodyName { get; set; }
+
+	/// <summary>
 	/// Date the question was tabled
 	/// </summary>
 	[JsonPropertyName("dateTabled")]
@@ -105,6 +118,12 @@ public class WrittenQuestion
 	public bool IsWithdrawn { get; set; }
 
 	/// <summary>
+	/// Whether the asking member has a registered interest
+	/// </summary>
+	[JsonPropertyName("memberHasInterest")]
+	public bool MemberHasInterest { get; set; }
+
+	/// <summary>
 	/// Heading/subject of the question
 	/// </summary>
 	[JsonPropertyName("heading")]
@@ -115,4 +134,10 @@ public class WrittenQuestion
 	/// </summary>
 	[JsonPropertyName("documentUrl")]
 	public string? DocumentUrl { get; set; }
+
+	/// <summary>
+	/// Grouped questions (if this question is grouped with others)
+	/// </summary>
+	[JsonPropertyName("groupedQuestions")]
+	public List<int>? GroupedQuestions { get; set; }
 }

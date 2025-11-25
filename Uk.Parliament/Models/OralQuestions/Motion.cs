@@ -81,6 +81,12 @@ public class Motion
 	public bool IsWithdrawn { get; set; }
 
 	/// <summary>
+	/// Motion status (e.g., "Active", "Closed", "Withdrawn")
+	/// </summary>
+	[JsonPropertyName("Status")]
+	public string? Status { get; set; }
+
+	/// <summary>
 	/// Related document URL
 	/// </summary>
 	[JsonPropertyName("documentUrl")]

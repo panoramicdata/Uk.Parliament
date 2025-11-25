@@ -16,6 +16,12 @@ public class Treaty
 	public string Id { get; set; } = string.Empty;
 
 	/// <summary>
+	/// Treaty name (alternative to title)
+	/// </summary>
+	[JsonPropertyName("name")]
+	public string? Name { get; set; }
+
+	/// <summary>
 	/// Command paper number (e.g., "CP 123" or numeric value)
 	/// </summary>
 	[JsonPropertyName("commandPaperNumber")]
@@ -99,6 +105,12 @@ public class Treaty
 	/// </summary>
 	[JsonPropertyName("subject")]
 	public string? Subject { get; set; }
+
+	/// <summary>
+	/// URI/identifier for the treaty
+	/// </summary>
+	[JsonPropertyName("uri")]
+	public string? Uri { get; set; }
 }
 
 /// <summary>

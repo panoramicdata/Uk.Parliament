@@ -1,20 +1,14 @@
 # Uk.Parliament
 
-<p align="center">
-  <img src="Uk.Parliament/Icon.png" alt="UK Parliament .NET Library" width="128" height="128">
-</p>
+![UK Parliament .NET Library](Uk.Parliament/Icon.png)
 
-<p align="center">
-  <strong>The most comprehensive .NET library for UK Parliament APIs</strong><br>
-  100% API coverage - All 12 public Parliament APIs supported
-</p>
+**The most comprehensive .NET library for UK Parliament APIs**  
+100% API coverage - All 12 public Parliament APIs supported
 
-<p align="center">
-  <a href="https://www.nuget.org/packages/Uk.Parliament/"><img src="https://img.shields.io/nuget/v/Uk.Parliament.svg" alt="NuGet"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="https://dotnet.microsoft.com/download"><img src="https://img.shields.io/badge/.NET-10.0-purple.svg" alt=".NET 10"></a>
-  <a href="https://app.codacy.com/gh/panoramicdata/Uk.Parliament/dashboard"><img src="https://app.codacy.com/project/badge/Grade/c1099bcad8314dca94fd6215de4a7862" alt="Codacy Badge"></a>
-</p>
+[![NuGet](https://img.shields.io/nuget/v/Uk.Parliament.svg)](https://www.nuget.org/packages/Uk.Parliament/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1099bcad8314dca94fd6215de4a7862)](https://app.codacy.com/gh/panoramicdata/Uk.Parliament/dashboard)
 
 ---
 

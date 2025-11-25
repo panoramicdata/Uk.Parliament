@@ -89,16 +89,20 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetMotionByIdAsync_WithValidId_ReturnsMotion()
 	{
-		// Arrange
-		const int motionId = 1;
+		// Arrange - First get a valid motion ID from the list
+		var listResult = await Client.OralQuestionsMotions.GetMotionsAsync(take: 1);
+		listResult.Response.Should().NotBeEmpty("Need at least one motion to test GetById");
+		var validMotionId = listResult.Response[0].Id;
 
 		// Act
-		var result = await Client.OralQuestionsMotions.GetMotionByIdAsync(motionId);
+		var result = await Client.OralQuestionsMotions.GetMotionByIdAsync(validMotionId);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-		_ = result.Id.Should().Be(motionId);
-		_ = result.MotionText.Should().NotBeNullOrEmpty();
+		_ = result.Success.Should().BeTrue();
+		_ = result.Response.Should().NotBeEmpty();
+		_ = result.Response[0].Id.Should().Be(validMotionId);
+		_ = result.Response[0].MotionText.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
@@ -227,5 +231,44 @@ public class OralQuestionsMotionsApiUnitTests
 		_ = result.PagingInfo.Total.Should().Be(1);
 		_ = result.Response.Should().ContainSingle();
 		_ = result.Response[0].SignatureCount.Should().Be(50);
+	}
+
+	[Fact]
+	public async Task GetMotionByIdAsync_WithMock_ReturnsMotion()
+	{
+		// Arrange
+		var mockApi = new Mock<IOralQuestionsMotionsApi>();
+		var expectedResponse = new OralQuestionsResponse<Motion>
+		{
+			PagingInfo = new OralQuestionsPagingInfo { Total = 1, Skip = 0, Take = 1 },
+			StatusCode = 200,
+			Success = true,
+			Response =
+			[
+				new Motion
+				{
+					Id = 123,
+					Reference = "EDM123",
+					House = "Commons",
+					Title = "Test Motion",
+					MotionText = "This is a test motion",
+					DateTabled = DateTime.Now.AddDays(-5),
+					SignatureCount = 50,
+					IsActive = true
+				}
+			]
+		};
+
+		_ = mockApi.Setup(x => x.GetMotionByIdAsync(123, It.IsAny<CancellationToken>()))
+			.ReturnsAsync(expectedResponse);
+
+		// Act
+		var result = await mockApi.Object.GetMotionByIdAsync(123);
+
+		// Assert
+		_ = result.Should().NotBeNull();
+		_ = result.Success.Should().BeTrue();
+		_ = result.Response.Should().ContainSingle();
+		_ = result.Response[0].Id.Should().Be(123);
 	}
 }
