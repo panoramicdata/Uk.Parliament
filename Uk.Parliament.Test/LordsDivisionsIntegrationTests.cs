@@ -1,5 +1,5 @@
-using Xunit.Abstractions;
 using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
 
 namespace Uk.Parliament.Test;
 
@@ -11,20 +11,13 @@ namespace Uk.Parliament.Test;
 /// These tests are skipped until Parliament resolves the server-side issues.
 /// See 500_ERROR_ANALYSIS.md for full details and diagnostic logs.
 /// </remarks>
-public class LordsDivisionsIntegrationTests
+public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
 {
-	private readonly ITestOutputHelper _output;
-
-	public LordsDivisionsIntegrationTests(ITestOutputHelper output)
-	{
-		_output = output;
-	}
-
 	private ParliamentClient CreateClient()
 	{
-		var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
+		var loggerFactory = new XUnitLoggerFactory(output, LogLevel.Debug);
 		var logger = loggerFactory.CreateLogger("ParliamentClient");
-		
+
 		return new ParliamentClient(new ParliamentClientOptions
 		{
 			Logger = logger,
@@ -33,7 +26,7 @@ public class LordsDivisionsIntegrationTests
 		});
 	}
 
-	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
+	[Fact]
 	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
 	{
 		// Arrange
@@ -47,7 +40,7 @@ public class LordsDivisionsIntegrationTests
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
+	[Fact]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 	{
 		// Arrange
@@ -61,7 +54,7 @@ public class LordsDivisionsIntegrationTests
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
+	[Fact]
 	public async Task GetDivisionGroupedByPartyAsync_WithValidId_ReturnsGroupedVotes()
 	{
 		// Arrange
@@ -75,7 +68,7 @@ public class LordsDivisionsIntegrationTests
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
+	[Fact]
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
 	{
 		// Arrange
@@ -89,19 +82,19 @@ public class LordsDivisionsIntegrationTests
 		await Task.CompletedTask;
 	}
 
-	[Fact(Skip = "Lords Divisions API returns 500 errors - Parliament API infrastructure issue")]
+	[Fact]
 	public async Task GetDivisionsAsync_WithPagination_Succeeds()
 	{
 		// Arrange
 		var client = CreateClient();
 
 		// Act
-		// var page1 = await client.LordsDivisions.GetDivisionsAsync(skip: 0, take: 10);
-		// var page2 = await client.LordsDivisions.GetDivisionsAsync(skip: 10, take: 10);
+		var page1 = await client.LordsDivisions.GetDivisionsAsync(skip: 0, take: 10);
+		var page2 = await client.LordsDivisions.GetDivisionsAsync(skip: 10, take: 10);
 
 		// Assert
-		// page1.Should().NotBeNull();
-		// page2.Should().NotBeNull();
+		_ = page1.Should().NotBeNull();
+		_ = page2.Should().NotBeNull();
 		await Task.CompletedTask;
 	}
 }

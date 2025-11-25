@@ -7,19 +7,9 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// ILogger implementation that writes to xUnit ITestOutputHelper
 /// </summary>
-public class XUnitLogger : ILogger
+public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel minLevel = LogLevel.Debug) : ILogger
 {
-	private readonly ITestOutputHelper _output;
-	private readonly string _categoryName;
-	private readonly LogLevel _minLevel;
 	private readonly Stack<object> _scopes = new();
-
-	public XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel minLevel = LogLevel.Debug)
-	{
-		_output = output;
-		_categoryName = categoryName;
-		_minLevel = minLevel;
-	}
 
 	public IDisposable? BeginScope<TState>(TState state) where TState : notnull
 	{
@@ -27,7 +17,7 @@ public class XUnitLogger : ILogger
 		return new ScopeDisposable(() => _scopes.Pop());
 	}
 
-	public bool IsEnabled(LogLevel logLevel) => logLevel >= _minLevel;
+	public bool IsEnabled(LogLevel logLevel) => logLevel >= minLevel;
 
 	public void Log<TState>(
 		LogLevel logLevel,
@@ -45,7 +35,7 @@ public class XUnitLogger : ILogger
 		var scopeInfo = GetScopeInformation();
 		
 		var logBuilder = new StringBuilder();
-		logBuilder.Append($"[{logLevel}] [{_categoryName}]");
+		logBuilder.Append($"[{logLevel}] [{categoryName}]");
 		
 		if (!string.IsNullOrEmpty(scopeInfo))
 		{
@@ -54,11 +44,11 @@ public class XUnitLogger : ILogger
 		
 		logBuilder.Append($" {message}");
 		
-		_output.WriteLine(logBuilder.ToString());
+		output.WriteLine(logBuilder.ToString());
 		
 		if (exception != null)
 		{
-			_output.WriteLine($"Exception: {exception}");
+			output.WriteLine($"Exception: {exception}");
 		}
 	}
 
@@ -97,18 +87,11 @@ public class XUnitLogger : ILogger
 		return scopeBuilder.ToString();
 	}
 
-	private class ScopeDisposable : IDisposable
+	private class ScopeDisposable(Action onDispose) : IDisposable
 	{
-		private readonly Action _onDispose;
-
-		public ScopeDisposable(Action onDispose)
-		{
-			_onDispose = onDispose;
-		}
-
 		public void Dispose()
 		{
-			_onDispose();
+			onDispose();
 		}
 	}
 }
@@ -116,17 +99,8 @@ public class XUnitLogger : ILogger
 /// <summary>
 /// Logger factory for xUnit tests
 /// </summary>
-public class XUnitLoggerFactory : ILoggerFactory
+public class XUnitLoggerFactory(ITestOutputHelper output, LogLevel minLevel = LogLevel.Debug) : ILoggerFactory
 {
-	private readonly ITestOutputHelper _output;
-	private readonly LogLevel _minLevel;
-
-	public XUnitLoggerFactory(ITestOutputHelper output, LogLevel minLevel = LogLevel.Debug)
-	{
-		_output = output;
-		_minLevel = minLevel;
-	}
-
 	public void AddProvider(ILoggerProvider provider)
 	{
 		// Not needed for test logger
@@ -134,7 +108,7 @@ public class XUnitLoggerFactory : ILoggerFactory
 
 	public ILogger CreateLogger(string categoryName)
 	{
-		return new XUnitLogger(_output, categoryName, _minLevel);
+		return new XUnitLogger(output, categoryName, minLevel);
 	}
 
 	public void Dispose()

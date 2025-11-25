@@ -11,7 +11,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 	#region Written Questions Tests
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenQuestionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
@@ -21,7 +21,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByMember_ReturnsQuestions()
 	{
 		// Arrange
@@ -33,13 +33,10 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 			take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.AskingMemberId.Should().Be(memberId);
-		});
+		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByDateRange_ReturnsQuestions()
 	{
 		// Arrange
@@ -60,7 +57,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		});
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByAnswered_ReturnsAnsweredQuestions()
 	{
 		// Act
@@ -76,7 +73,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		});
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenQuestionByIdAsync_WithValidId_ReturnsQuestion()
 	{
 		// Arrange
@@ -91,7 +88,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		_ = result.QuestionText.Should().NotBeNullOrEmpty();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllWrittenQuestionsAsync_StreamsResults()
 	{
 		// Act
@@ -108,7 +105,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 	#region Written Statements Tests
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenStatementsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
@@ -118,7 +115,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenStatementsAsync_FilterByDateRange_ReturnsStatements()
 	{
 		// Arrange
@@ -139,7 +136,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		});
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetWrittenStatementByIdAsync_WithValidId_ReturnsStatement()
 	{
 		// Arrange
@@ -154,7 +151,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		_ = result.StatementText.Should().NotBeNullOrEmpty();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllWrittenStatementsAsync_StreamsResults()
 	{
 		// Act
@@ -171,7 +168,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 	#region Daily Reports Tests
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetDailyReportsAsync_WithDateRange_ReturnsReports()
 	{
 		// Arrange
@@ -189,7 +186,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		_ = result.Items.Should().NotBeNull();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllDailyReportsAsync_StreamsResults()
 	{
 		// Arrange

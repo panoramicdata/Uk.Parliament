@@ -24,7 +24,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		_ = result.Categories.Should().NotBeNull();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetMemberInterestsAsync_WithInvalidMemberId_ThrowsApiException()
 	{
 		// Arrange
@@ -53,7 +53,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		});
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task SearchInterestsAsync_WithNoFilters_ReturnsResults()
 	{
 		// Act
@@ -63,7 +63,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task SearchInterestsAsync_WithSearchTerm_ReturnsFilteredResults()
 	{
 		// Arrange
@@ -77,7 +77,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		_ = result.Items.Should().NotBeNull();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task SearchInterestsAsync_WithCategoryFilter_ReturnsFilteredResults()
 	{
 		// Arrange
@@ -87,13 +87,10 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId, take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.CategoryId.Should().Be(categoryId);
-		});
+		AssertValidPaginatedResponse(result, item => _ = item.Value.CategoryId.Should().Be(categoryId));
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllInterestsAsync_StreamsResults()
 	{
 		// Act

@@ -8,27 +8,20 @@ namespace Uk.Parliament.Test;
 /// Integration tests for the Committees API (requires live API)
 /// Note: This API has limitations - larger page sizes and high skip values can cause 500 errors
 /// </summary>
-public class CommitteesIntegrationTests
+public class CommitteesIntegrationTests(ITestOutputHelper output)
 {
-	private readonly ITestOutputHelper _output;
-
-	public CommitteesIntegrationTests(ITestOutputHelper output)
-	{
-		_output = output;
-	}
-
 	private ParliamentClient CreateClient()
 	{
-		var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
+		var loggerFactory = new XUnitLoggerFactory(output, LogLevel.Debug);
 		var logger = loggerFactory.CreateLogger("ParliamentClient");
-		
+
 		var options = new ParliamentClientOptions
 		{
 			Logger = logger,
 			EnableVerboseLogging = true,
 			EnableDebugValidation = false // Disable for Committees due to unmapped properties
 		};
-		
+
 		return new ParliamentClient(options);
 	}
 
@@ -93,10 +86,7 @@ public class CommitteesIntegrationTests
 		// Assert - At least some committees should have categories
 		var committeesWithCategories = response.Items.Where(c => c.Category != null).ToList();
 		_ = committeesWithCategories.Should().NotBeEmpty();
-		_ = committeesWithCategories.Should().AllSatisfy(committee =>
-		{
-			_ = committee.Category!.Name.Should().NotBeNullOrWhiteSpace();
-		});
+		_ = committeesWithCategories.Should().AllSatisfy(committee => _ = committee.Category!.Name.Should().NotBeNullOrWhiteSpace());
 	}
 
 	[Fact]
@@ -130,13 +120,10 @@ public class CommitteesIntegrationTests
 		// Assert - Check that house information is present
 		var committeesWithHouse = response.Items.Where(c => c.House != null).ToList();
 		_ = committeesWithHouse.Should().NotBeEmpty();
-		_ = committeesWithHouse.Should().AllSatisfy(committee =>
-		{
-			_ = committee.House.Should().BeOneOf("Commons", "Lords", "Both");
-		});
+		_ = committeesWithHouse.Should().AllSatisfy(committee => _ = committee.House.Should().BeOneOf("Commons", "Lords", "Both"));
 	}
 
-	[Fact(Skip = "Committees API returns 500 errors with pagination - API infrastructure issue")]
+	[Fact]
 	public async Task GetAllCommitteesAsync_StreamingResults_Works()
 	{
 		// Arrange
@@ -160,7 +147,7 @@ public class CommitteesIntegrationTests
 		_ = count.Should().BeGreaterThanOrEqualTo(15);
 	}
 
-	[Fact(Skip = "Committees API returns 500 errors with pagination - API infrastructure issue")]
+	[Fact]
 	public async Task GetAllCommitteesListAsync_RetrievesMultiplePages()
 	{
 		// Arrange
@@ -176,7 +163,7 @@ public class CommitteesIntegrationTests
 		_ = allCommittees.Count.Should().BeGreaterThan(5, "should have retrieved multiple pages");
 	}
 
-	[Fact(Skip = "Committees API intermittently returns 500 errors - API infrastructure issue")]
+	[Fact]
 	public async Task GetCommitteesAsync_CommitteesHaveContactInformation()
 	{
 		// Arrange
@@ -200,9 +187,6 @@ public class CommitteesIntegrationTests
 		var response = await client.Committees.GetCommitteesAsync(take: 10);
 
 		// Assert - All committees should have start dates
-		_ = response.Items.Should().AllSatisfy(committee =>
-		{
-			_ = committee.StartDate.Should().NotBeNull("committees should have start dates");
-		});
+		_ = response.Items.Should().AllSatisfy(committee => _ = committee.StartDate.Should().NotBeNull("committees should have start dates"));
 	}
 }

@@ -11,7 +11,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 
 	#region Oral Questions Tests
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetOralQuestionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
@@ -21,7 +21,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetOralQuestionsAsync_FilterByMember_ReturnsQuestions()
 	{
 		// Arrange
@@ -36,7 +36,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetOralQuestionByIdAsync_WithValidId_ReturnsQuestion()
 	{
 		// Arrange
@@ -51,7 +51,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		_ = result.QuestionText.Should().NotBeNullOrEmpty();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllOralQuestionsAsync_StreamsResults()
 	{
 		// Act
@@ -68,7 +68,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 
 	#region Motions Tests
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetMotionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
@@ -78,7 +78,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetMotionsAsync_FilterByActive_ReturnsActiveMotions()
 	{
 		// Act
@@ -87,13 +87,10 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 			take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.IsActive.Should().BeTrue();
-		});
+		AssertValidPaginatedResponse(result, static item => _ = item.Value.IsActive.Should().BeTrue());
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetMotionByIdAsync_WithValidId_ReturnsMotion()
 	{
 		// Arrange
@@ -108,7 +105,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		_ = result.MotionText.Should().NotBeNullOrEmpty();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllMotionsAsync_StreamsResults()
 	{
 		// Act

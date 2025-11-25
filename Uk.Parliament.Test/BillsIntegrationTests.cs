@@ -1,5 +1,4 @@
 using Uk.Parliament.Extensions;
-using Uk.Parliament.Models.Bills;
 
 namespace Uk.Parliament.Test;
 
@@ -59,10 +58,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		// Assert
 		_ = response.Should().NotBeNull();
 		_ = response.Items.Should().NotBeEmpty();
-		_ = response.Items.Should().AllSatisfy(bill =>
-		{
-			_ = bill.CurrentHouse.Should().Be("Commons");
-		});
+		_ = response.Items.Should().AllSatisfy(bill => _ = bill.CurrentHouse.Should().Be("Commons"));
 	}
 
 	[Fact]
@@ -123,10 +119,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = allBills.Should().NotBeNull();
 		_ = allBills.Should().NotBeEmpty();
 		// Should have retrieved all Lords bills with multiple pages
-		_ = allBills.Should().AllSatisfy(b =>
-		{
-			_ = b.CurrentHouse.Should().Be("Lords");
-		});
+		_ = allBills.Should().AllSatisfy(b => _ = b.CurrentHouse.Should().Be("Lords"));
 	}
 
 	[Fact]

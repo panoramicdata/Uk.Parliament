@@ -9,7 +9,7 @@ namespace Uk.Parliament.Test;
 public class TreatiesIntegrationTests : IntegrationTestBase
 {
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetTreatiesAsync_WithNoFilters_Succeeds()
 	{
 		// Act
@@ -19,7 +19,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetTreatiesAsync_FilterByStatus_ReturnsTreaties()
 	{
 		// Arrange
@@ -31,13 +31,10 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 			take: 10);
 
 		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.Status.Should().Be(status);
-		});
+		AssertValidPaginatedResponse(result, item => _ = item.Value.Status.Should().Be(status));
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
 		// Arrange
@@ -52,7 +49,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		_ = result.Title.Should().NotBeNullOrEmpty();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
 		// Arrange
@@ -65,7 +62,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		_ = result.Should().NotBeNull();
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetGovernmentOrganisationsAsync_ReturnsOrganisations()
 	{
 		// Act
@@ -81,7 +78,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		});
 	}
 
-	[Fact(Skip = "Integration test - requires live API")]
+	[Fact]
 	public async Task GetAllTreatiesAsync_StreamsResults()
 	{
 		// Act
