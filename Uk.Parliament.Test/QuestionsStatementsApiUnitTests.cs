@@ -126,7 +126,8 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetWrittenStatementsAsync(take: 10);
+		var result = await mockApi.Object.GetWrittenStatementsAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -170,7 +171,8 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetDailyReportsAsync();
+		var result = await mockApi.Object.GetDailyReportsAsync(
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

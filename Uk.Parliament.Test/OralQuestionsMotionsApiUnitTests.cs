@@ -147,7 +147,8 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetMotionByIdAsync(123);
+		var result = await mockApi.Object.GetMotionByIdAsync(123,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

@@ -68,7 +68,8 @@ public class PetitionsApiMockTests : IntegrationTestBase
 			});
 
 		// Act
-		var result = await mockApi.Object.GetByIdAsync(123);
+		var result = await mockApi.Object.GetByIdAsync(123,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Data.Id.Should().Be(123);
@@ -100,7 +101,8 @@ public class PetitionsApiMockTests : IntegrationTestBase
 			});
 
 		// Act
-		var result = await mockApi.Object.GetArchivedAsync();
+		var result = await mockApi.Object.GetArchivedAsync(
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Data.Should().ContainSingle();
