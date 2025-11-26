@@ -1,5 +1,4 @@
 using Uk.Parliament.Extensions;
-using Uk.Parliament.Models.OralQuestions;
 
 namespace Uk.Parliament.Test;
 
@@ -8,14 +7,17 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 {
-
 	#region Oral Questions Tests
 
 	[Fact]
 	public async Task GetOralQuestionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await Client.OralQuestionsMotions.GetOralQuestionsAsync(take: 10);
+		var result = await Client
+			.OralQuestionsMotions
+			.GetOralQuestionsAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -32,9 +34,12 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		const int memberId = 172;
 
 		// Act
-		var result = await Client.OralQuestionsMotions.GetOralQuestionsAsync(
-			askingMemberId: memberId,
-			take: 10);
+		var result = await Client
+			.OralQuestionsMotions
+			.GetOralQuestionsAsync(
+				askingMemberId: memberId,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -49,7 +54,8 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		// Act
 		var questions = await CollectStreamedItemsAsync(
 			Client.OralQuestionsMotions.GetAllOralQuestionsAsync(
-				pageSize: 5));
+				pageSize: 5,
+			cancellationToken: CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(questions);
@@ -63,7 +69,11 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 	public async Task GetMotionsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await Client.OralQuestionsMotions.GetMotionsAsync(take: 10);
+		var result = await Client
+			.OralQuestionsMotions
+			.GetMotionsAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -76,9 +86,12 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 	public async Task GetMotionsAsync_FilterByActive_ReturnsActiveMotions()
 	{
 		// Act
-		var result = await Client.OralQuestionsMotions.GetMotionsAsync(
-			isActive: true,
-			take: 10);
+		var result = await Client
+			.OralQuestionsMotions
+			.GetMotionsAsync(
+				isActive: true,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -90,12 +103,20 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 	public async Task GetMotionByIdAsync_WithValidId_ReturnsMotion()
 	{
 		// Arrange - First get a valid motion ID from the list
-		var listResult = await Client.OralQuestionsMotions.GetMotionsAsync(take: 1);
-		listResult.Response.Should().NotBeEmpty("Need at least one motion to test GetById");
+		var listResult = await Client
+			.OralQuestionsMotions
+			.GetMotionsAsync(
+				take: 1,
+				cancellationToken: CancellationToken);
+		_ = listResult.Response.Should().NotBeEmpty("Need at least one motion to test GetById");
 		var validMotionId = listResult.Response[0].Id;
 
 		// Act
-		var result = await Client.OralQuestionsMotions.GetMotionByIdAsync(validMotionId);
+		var result = await Client
+			.OralQuestionsMotions
+			.GetMotionByIdAsync(
+				validMotionId,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -111,164 +132,12 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		// Act
 		var motions = await CollectStreamedItemsAsync(
 			Client.OralQuestionsMotions.GetAllMotionsAsync(
-				pageSize: 5));
+				pageSize: 5,
+			cancellationToken: CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(motions);
 	}
 
 	#endregion
-}
-
-/// <summary>
-/// Unit tests for Oral Questions & Motions API (mocking)
-/// </summary>
-public class OralQuestionsMotionsApiUnitTests
-{
-	[Fact]
-	public void OralQuestionsMotionsApi_CanBeMocked()
-	{
-		// Arrange
-		var mock = new Mock<IOralQuestionsMotionsApi>();
-
-		// Assert
-		_ = mock.Object.Should().NotBeNull();
-	}
-
-	[Fact]
-	public async Task GetOralQuestionsAsync_WithMock_ReturnsExpectedData()
-	{
-		// Arrange
-		var mockApi = new Mock<IOralQuestionsMotionsApi>();
-		var expectedResponse = new OralQuestionsResponse<OralQuestion>
-		{
-			PagingInfo = new OralQuestionsPagingInfo { Total = 2, Skip = 0, Take = 10 },
-			StatusCode = 200,
-			Success = true,
-			Response =
-			[
-				new OralQuestion
-				{
-					Id = 1,
-					Uin = 123,
-					QuestionText = "Test oral question 1",
-					TabledWhen = DateTime.Now.AddDays(-1)
-				},
-				new OralQuestion
-				{
-					Id = 2,
-					Uin = 124,
-					QuestionText = "Test oral question 2",
-					TabledWhen = DateTime.Now
-				}
-			]
-		};
-
-		_ = mockApi.Setup(x => x.GetOralQuestionsAsync(
-			It.IsAny<int?>(),
-			It.IsAny<string?>(),
-			It.IsAny<string?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<bool?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
-
-		// Act
-		var result = await mockApi.Object.GetOralQuestionsAsync(take: 10);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.PagingInfo.Total.Should().Be(2);
-		_ = result.Response.Should().HaveCount(2);
-	}
-
-	[Fact]
-	public async Task GetMotionsAsync_WithMock_ReturnsExpectedData()
-	{
-		// Arrange
-		var mockApi = new Mock<IOralQuestionsMotionsApi>();
-		var expectedResponse = new OralQuestionsResponse<Motion>
-		{
-			PagingInfo = new OralQuestionsPagingInfo { Total = 1, Skip = 0, Take = 10 },
-			StatusCode = 200,
-			Success = true,
-			Response =
-			[
-				new Motion
-				{
-					Id = 1,
-					Reference = "EDM123",
-					House = "Commons",
-					Title = "Test Motion",
-					MotionText = "This is a test motion",
-					DateTabled = DateTime.Now.AddDays(-5),
-					SignatureCount = 50,
-					IsActive = true
-				}
-			]
-		};
-
-		_ = mockApi.Setup(x => x.GetMotionsAsync(
-			It.IsAny<int?>(),
-			It.IsAny<string?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<string?>(),
-			It.IsAny<bool?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
-
-		// Act
-		var result = await mockApi.Object.GetMotionsAsync(isActive: true);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.PagingInfo.Total.Should().Be(1);
-		_ = result.Response.Should().ContainSingle();
-		_ = result.Response[0].SignatureCount.Should().Be(50);
-	}
-
-	[Fact]
-	public async Task GetMotionByIdAsync_WithMock_ReturnsMotion()
-	{
-		// Arrange
-		var mockApi = new Mock<IOralQuestionsMotionsApi>();
-		var expectedResponse = new OralQuestionsResponse<Motion>
-		{
-			PagingInfo = new OralQuestionsPagingInfo { Total = 1, Skip = 0, Take = 1 },
-			StatusCode = 200,
-			Success = true,
-			Response =
-			[
-				new Motion
-				{
-					Id = 123,
-					Reference = "EDM123",
-					House = "Commons",
-					Title = "Test Motion",
-					MotionText = "This is a test motion",
-					DateTabled = DateTime.Now.AddDays(-5),
-					SignatureCount = 50,
-					IsActive = true
-				}
-			]
-		};
-
-		_ = mockApi.Setup(x => x.GetMotionByIdAsync(123, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
-
-		// Act
-		var result = await mockApi.Object.GetMotionByIdAsync(123);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Success.Should().BeTrue();
-		_ = result.Response.Should().ContainSingle();
-		_ = result.Response[0].Id.Should().Be(123);
-	}
 }

@@ -5,7 +5,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Unit tests for Erskine May API (mocking)
 /// </summary>
-public class ErskineMayApiUnitTests
+public class ErskineMayApiUnitTests : IntegrationTestBase
 {
 	[Fact]
 	public void ErskineMayApi_CanBeMocked()
@@ -32,7 +32,7 @@ public class ErskineMayApiUnitTests
 			.ReturnsAsync(expectedParts);
 
 		// Act
-		var result = await mockApi.Object.GetPartsAsync();
+		var result = await mockApi.Object.GetPartsAsync(cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -68,7 +68,8 @@ public class ErskineMayApiUnitTests
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.SearchAsync("test");
+		var result = await mockApi.Object.SearchAsync("test",
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

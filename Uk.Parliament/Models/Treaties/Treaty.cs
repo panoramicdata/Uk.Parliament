@@ -1,7 +1,3 @@
-using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Treaties;
 
 /// <summary>
@@ -13,37 +9,42 @@ public class Treaty
 	/// Treaty identifier
 	/// </summary>
 	[JsonPropertyName("id")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string Id { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Treaty name (alternative to title)
 	/// </summary>
 	[JsonPropertyName("name")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Name { get; set; }
 
 	/// <summary>
 	/// Command paper number (e.g., "CP 123" or numeric value)
 	/// </summary>
 	[JsonPropertyName("commandPaperNumber")]
-	[JsonConverter(typeof(StringOrNumberConverter))]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? CommandPaperNumber { get; set; }
 
 	/// <summary>
 	/// Command paper prefix (e.g., "CP", "Cm")
 	/// </summary>
 	[JsonPropertyName("commandPaperPrefix")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? CommandPaperPrefix { get; set; }
 
 	/// <summary>
 	/// Treaty title
 	/// </summary>
 	[JsonPropertyName("title")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Title { get; set; }
 
 	/// <summary>
 	/// Treaty series reference
 	/// </summary>
 	[JsonPropertyName("treatySeries")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? TreatySeries { get; set; }
 
 	/// <summary>
@@ -62,12 +63,14 @@ public class Treaty
 	/// Name of lead government organization
 	/// </summary>
 	[JsonPropertyName("leadGovernmentOrganisation")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? LeadGovernmentOrganisation { get; set; }
 
 	/// <summary>
 	/// Lead department (alternative to leadGovernmentOrganisation)
 	/// </summary>
 	[JsonPropertyName("leadDepartment")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? LeadDepartment { get; set; }
 
 	/// <summary>
@@ -104,18 +107,21 @@ public class Treaty
 	/// House where treaty was laid (Commons/Lords/Both)
 	/// </summary>
 	[JsonPropertyName("house")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? House { get; set; }
 
 	/// <summary>
 	/// Treaty status (e.g., "In Force", "Not Yet In Force")
 	/// </summary>
 	[JsonPropertyName("status")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Status { get; set; }
 
 	/// <summary>
 	/// Web link to treaty document
 	/// </summary>
 	[JsonPropertyName("webLink")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? WebLink { get; set; }
 
 	/// <summary>
@@ -128,45 +134,26 @@ public class Treaty
 	/// Countries/parties involved
 	/// </summary>
 	[JsonPropertyName("countries")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Countries { get; set; }
 
 	/// <summary>
 	/// Subject matter of the treaty
 	/// </summary>
 	[JsonPropertyName("subject")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Subject { get; set; }
 
 	/// <summary>
 	/// URI/identifier for the treaty
 	/// </summary>
 	[JsonPropertyName("uri")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Uri { get; set; }
-}
 
-/// <summary>
-/// JSON converter that handles both string and number values
-/// </summary>
-internal class StringOrNumberConverter : JsonConverter<string?>
-{
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-	{
-		if (reader.TokenType == JsonTokenType.Null)
-			return null;
-
-		if (reader.TokenType == JsonTokenType.String)
-			return reader.GetString();
-
-		if (reader.TokenType == JsonTokenType.Number)
-			return reader.GetInt64().ToString();
-
-		throw new JsonException($"Unexpected token type: {reader.TokenType}");
-	}
-
-	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
-	{
-		if (value == null)
-			writer.WriteNullValue();
-		else
-			writer.WriteStringValue(value);
-	}
+	/// <summary>
+	/// Gets the effective status value from either status or webLink properties
+	/// </summary>
+	[JsonIgnore]
+	public string? EffectiveStatus => Status ?? (IsMultilateral ? null : "Unknown");
 }

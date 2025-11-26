@@ -5,7 +5,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Unit tests for NOW API (mocking)
 /// </summary>
-public class NowApiUnitTests
+public class NowApiUnitTests : IntegrationTestBase
 {
 	[Fact]
 	public void NowApi_CanBeMocked()
@@ -55,7 +55,8 @@ public class NowApiUnitTests
 			.ReturnsAsync(expectedMessage);
 
 		// Act
-		var result = await mockApi.Object.GetCurrentMessageAsync("commons");
+		var result = await mockApi.Object.GetCurrentMessageAsync("commons",
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -83,7 +84,10 @@ public class NowApiUnitTests
 			.ReturnsAsync(expectedMessage);
 
 		// Act
-		var result = await mockApi.Object.GetMessageByDateAsync("lords", "2024-01-01");
+		var result = await mockApi.Object.GetMessageByDateAsync(
+			"lords",
+			"2024-01-01",
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

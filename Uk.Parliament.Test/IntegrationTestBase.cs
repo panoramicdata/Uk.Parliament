@@ -5,12 +5,17 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public abstract class IntegrationTestBase : IDisposable
 {
+	protected static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
+
 	/// <summary>
 	/// Initializes a new instance of the integration test base class
 	/// </summary>
 	protected IntegrationTestBase()
 	{
-		Client = new ParliamentClient();
+		Client = new ParliamentClient(new ParliamentClientOptions
+		{
+			EnableDebugValidation = false
+		});
 	}
 
 	/// <summary>

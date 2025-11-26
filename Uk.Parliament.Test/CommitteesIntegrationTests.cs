@@ -1,14 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Uk.Parliament.Extensions;
 
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
 /// Integration tests for the Committees API (requires live API)
 /// Note: This API has limitations - larger page sizes and high skip values can cause 500 errors
 /// </summary>
-public class CommitteesIntegrationTests(ITestOutputHelper output)
+public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationTestBase
 {
 	private ParliamentClient CreateClient()
 	{
@@ -32,7 +31,11 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client
+			.Committees
+			.GetCommitteesAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -48,8 +51,10 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var page1 = await client.Committees.GetCommitteesAsync(skip: 0, take: 5);
-		var page2 = await client.Committees.GetCommitteesAsync(skip: 5, take: 5);
+		var page1 = await client.Committees.GetCommitteesAsync(skip: 0, take: 5,
+			cancellationToken: CancellationToken);
+		var page2 = await client.Committees.GetCommitteesAsync(skip: 5, take: 5,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = page1.Items.Should().NotBeEmpty();
@@ -64,7 +69,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client.Committees.GetCommitteesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Items.Should().AllSatisfy(committee =>
@@ -81,7 +87,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client.Committees.GetCommitteesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert - At least some committees should have categories
 		var committeesWithCategories = response.Items.Where(c => c.Category != null).ToList();
@@ -96,7 +103,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client.Committees.GetCommitteesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert - At least some committees should have types
 		var committeesWithTypes = response.Items.Where(c => c.CommitteeTypes?.Count > 0).ToList();
@@ -115,7 +123,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client.Committees.GetCommitteesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert - Check that house information is present
 		var committeesWithHouse = response.Items.Where(c => c.House != null).ToList();
@@ -131,7 +140,10 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var count = 0;
 
 		// Act - Keep pageSize small and limit iterations to avoid API 500 errors
-		await foreach (var committee in client.Committees.GetAllCommitteesAsync(pageSize: 5))
+		await foreach (var committee in client
+			.Committees
+			.GetAllCommitteesAsync(pageSize: 5,
+			cancellationToken: CancellationToken))
 		{
 			_ = committee.Should().NotBeNull();
 			_ = committee.Name.Should().NotBeNullOrWhiteSpace();
@@ -154,7 +166,11 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act - Use small page size to avoid API errors
-		var allCommittees = await client.Committees.GetAllCommitteesListAsync(pageSize: 5);
+		var allCommittees = await client
+			.Committees
+			.GetAllCommitteesListAsync(
+				pageSize: 5,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = allCommittees.Should().NotBeNull();
@@ -170,7 +186,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client.Committees.GetCommitteesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert - Some committees should have contact information
 		var committeesWithContact = response.Items.Where(c => c.Contact?.Email != null).ToList();
@@ -184,7 +201,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output)
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10);
+		var response = await client.Committees.GetCommitteesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert - All committees should have start dates
 		_ = response.Items.Should().AllSatisfy(committee => _ = committee.StartDate.Should().NotBeNull("committees should have start dates"));

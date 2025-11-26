@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.ErskineMay;
 
 /// <summary>
@@ -12,7 +9,7 @@ public class ErskineMaySearchResponse
 	/// Search results
 	/// </summary>
 	[JsonPropertyName("searchResults")]
-	public List<ErskineMaySearchResult> SearchResults { get; set; } = new();
+	public List<ErskineMaySearchResult> SearchResults { get; set; } = [];
 
 	/// <summary>
 	/// Search term used

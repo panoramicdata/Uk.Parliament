@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Bills;
 
 /// <summary>
@@ -49,7 +45,7 @@ public class BillStage
 	/// List of sittings for this stage
 	/// </summary>
 	[JsonPropertyName("stageSittings")]
-	public List<StageSitting> StageSittings { get; set; } = new();
+	public List<StageSitting> StageSittings { get; set; } = [];
 
 	/// <summary>
 	/// Sort order for display

@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+using Refit;
 using System.Threading;
 using System.Threading.Tasks;
-using Refit;
 using Uk.Parliament.Models.Interests;
 
 namespace Uk.Parliament.Interfaces;

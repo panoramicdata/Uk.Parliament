@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.OralQuestions;
 
 /// <summary>
@@ -31,13 +28,13 @@ public class OralQuestionsResponse<T>
 	/// List of errors (if any)
 	/// </summary>
 	[JsonPropertyName("Errors")]
-	public List<string> Errors { get; set; } = new();
+	public List<string> Errors { get; set; } = [];
 
 	/// <summary>
 	/// The response data
 	/// </summary>
 	[JsonPropertyName("Response")]
-	public List<T> Response { get; set; } = new();
+	public List<T> Response { get; set; } = [];
 }
 
 /// <summary>
@@ -73,11 +70,11 @@ public class OralQuestionsPagingInfo
 	/// Status counts (if applicable)
 	/// </summary>
 	[JsonPropertyName("StatusCounts")]
-	public List<object> StatusCounts { get; set; } = new();
+	public List<object> StatusCounts { get; set; } = [];
 
 	/// <summary>
 	/// Global status counts (if applicable)
 	/// </summary>
 	[JsonPropertyName("GlobalStatusCounts")]
-	public List<object> GlobalStatusCounts { get; set; } = new();
+	public List<object> GlobalStatusCounts { get; set; } = [];
 }

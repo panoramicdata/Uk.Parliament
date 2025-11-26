@@ -33,19 +33,19 @@ public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel
 
 		var message = formatter(state, exception);
 		var scopeInfo = GetScopeInformation();
-		
+
 		var logBuilder = new StringBuilder();
 		logBuilder.Append($"[{logLevel}] [{categoryName}]");
-		
+
 		if (!string.IsNullOrEmpty(scopeInfo))
 		{
 			logBuilder.Append($" {scopeInfo}");
 		}
-		
+
 		logBuilder.Append($" {message}");
-		
+
 		output.WriteLine(logBuilder.ToString());
-		
+
 		if (exception != null)
 		{
 			output.WriteLine($"Exception: {exception}");
@@ -60,7 +60,7 @@ public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel
 		}
 
 		var scopeBuilder = new StringBuilder();
-		
+
 		foreach (var scope in _scopes)
 		{
 			if (scope is IDictionary<string, object> dict)
@@ -71,6 +71,7 @@ public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel
 					{
 						scopeBuilder.Append(' ');
 					}
+
 					scopeBuilder.Append($"[{kvp.Key}: {kvp.Value}]");
 				}
 			}
@@ -80,19 +81,17 @@ public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel
 				{
 					scopeBuilder.Append(' ');
 				}
+
 				scopeBuilder.Append($"[{scope}]");
 			}
 		}
-		
+
 		return scopeBuilder.ToString();
 	}
 
 	private class ScopeDisposable(Action onDispose) : IDisposable
 	{
-		public void Dispose()
-		{
-			onDispose();
-		}
+		public void Dispose() => onDispose();
 	}
 }
 
@@ -106,10 +105,7 @@ public class XUnitLoggerFactory(ITestOutputHelper output, LogLevel minLevel = Lo
 		// Not needed for test logger
 	}
 
-	public ILogger CreateLogger(string categoryName)
-	{
-		return new XUnitLogger(output, categoryName, minLevel);
-	}
+	public ILogger CreateLogger(string categoryName) => new XUnitLogger(output, categoryName, minLevel);
 
 	public void Dispose()
 	{

@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
+using Refit;
 using System.Threading;
 using System.Threading.Tasks;
-using Refit;
 using Uk.Parliament.Models;
 using Uk.Parliament.Models.Treaties;
 

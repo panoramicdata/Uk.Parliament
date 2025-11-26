@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Treaties;
 
 /// <summary>
@@ -17,12 +15,14 @@ public class GovernmentOrganisation
 	/// Organization name
 	/// </summary>
 	[JsonPropertyName("name")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Name { get; set; }
 
 	/// <summary>
 	/// Organization abbreviation/acronym
 	/// </summary>
 	[JsonPropertyName("abbreviation")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Abbreviation { get; set; }
 
 	/// <summary>

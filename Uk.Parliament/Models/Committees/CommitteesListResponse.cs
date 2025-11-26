@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Committees;
 
 /// <summary>
@@ -13,7 +10,7 @@ public class CommitteesListResponse<T>
 	/// List of items
 	/// </summary>
 	[JsonPropertyName("items")]
-	public List<T> Items { get; set; } = new();
+	public List<T> Items { get; set; } = [];
 
 	/// <summary>
 	/// Total number of results available

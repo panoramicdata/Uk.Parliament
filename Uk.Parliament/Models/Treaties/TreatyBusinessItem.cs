@@ -1,6 +1,3 @@
-using System;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Treaties;
 
 /// <summary>
@@ -18,12 +15,14 @@ public class TreatyBusinessItem
 	/// Treaty identifier this business item relates to
 	/// </summary>
 	[JsonPropertyName("treatyId")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string TreatyId { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Type of business item (e.g., "Debate", "Motion", "Vote")
 	/// </summary>
 	[JsonPropertyName("businessItemType")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? BusinessItemType { get; set; }
 
 	/// <summary>
@@ -36,17 +35,20 @@ public class TreatyBusinessItem
 	/// House where business item occurred
 	/// </summary>
 	[JsonPropertyName("house")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? House { get; set; }
 
 	/// <summary>
 	/// Description/title of the business item
 	/// </summary>
 	[JsonPropertyName("description")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Description { get; set; }
 
 	/// <summary>
 	/// Link to Hansard or other record
 	/// </summary>
 	[JsonPropertyName("link")]
+	[JsonConverter(typeof(AnyValueToStringConverter))]
 	public string? Link { get; set; }
 }

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -11,11 +10,13 @@ namespace Uk.Parliament.Test;
 /// These tests are skipped until Parliament resolves the server-side issues.
 /// See 500_ERROR_ANALYSIS.md for full details and diagnostic logs.
 /// </remarks>
-public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
+public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : IntegrationTestBase
 {
-	private ParliamentClient CreateClient()
+	private readonly ITestOutputHelper _output = output;
+
+	private ParliamentClient CreateClientWithLogging()
 	{
-		var loggerFactory = new XUnitLoggerFactory(output, LogLevel.Debug);
+		var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
 		var logger = loggerFactory.CreateLogger("ParliamentClient");
 
 		return new ParliamentClient(new ParliamentClientOptions
@@ -30,10 +31,13 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
 	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
 	{
 		// Arrange
-		var client = CreateClient();
+		var client = CreateClientWithLogging();
 
 		// Act
-		var divisions = await client.LordsDivisions.GetDivisionsAsync();
+		var divisions = await client
+			.LordsDivisions
+			.GetDivisionsAsync(
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = divisions.Should().NotBeNull();
@@ -45,8 +49,8 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
 	{
 		// Arrange - First get a valid division ID from the list
 		// Note: The API currently returns HTTP 500 errors
-		var client = CreateClient();
-		
+		var client = CreateClientWithLogging();
+
 		// Skip - API returns HTTP 500 errors currently
 		await Task.CompletedTask;
 		return;
@@ -63,8 +67,8 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
 	{
 		// Arrange - First get a valid division ID from the list
 		// Note: The API currently returns HTTP 500 errors
-		var client = CreateClient();
-		
+		var client = CreateClientWithLogging();
+
 		// Skip - API returns HTTP 500 errors currently
 		await Task.CompletedTask;
 		return;
@@ -80,10 +84,14 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
 	{
 		// Arrange
-		var client = CreateClient();
+		var client = CreateClientWithLogging();
 
 		// Act
-		var divisions = await client.LordsDivisions.SearchDivisionsAsync("Amendment");
+		var divisions = await client
+			.LordsDivisions
+			.SearchDivisionsAsync(
+				"Amendment",
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = divisions.Should().NotBeNull();
@@ -94,11 +102,21 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output)
 	public async Task GetDivisionsAsync_WithPagination_Succeeds()
 	{
 		// Arrange
-		var client = CreateClient();
+		var client = CreateClientWithLogging();
 
 		// Act
-		var page1 = await client.LordsDivisions.GetDivisionsAsync(skip: 0, take: 10);
-		var page2 = await client.LordsDivisions.GetDivisionsAsync(skip: 10, take: 10);
+		var page1 = await client
+			.LordsDivisions
+			.GetDivisionsAsync(
+				skip: 0,
+				take: 10,
+				cancellationToken: CancellationToken);
+		var page2 = await client
+			.LordsDivisions
+			.GetDivisionsAsync(
+				skip: 10,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = page1.Should().NotBeNull();

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Now;
 
 /// <summary>
@@ -25,13 +21,13 @@ public class AnnunciatorMessage
 	/// Slides to display
 	/// </summary>
 	[JsonPropertyName("slides")]
-	public List<AnnunciatorSlide> Slides { get; set; } = new();
+	public List<AnnunciatorSlide> Slides { get; set; } = [];
 
 	/// <summary>
 	/// Scrolling messages
 	/// </summary>
 	[JsonPropertyName("scrollingMessages")]
-	public List<string> ScrollingMessages { get; set; } = new();
+	public List<string> ScrollingMessages { get; set; } = [];
 
 	/// <summary>
 	/// Annunciator type (e.g., CommonsMain, LordsMain)
@@ -79,7 +75,7 @@ public class AnnunciatorSlide
 	/// Lines of content to display
 	/// </summary>
 	[JsonPropertyName("lines")]
-	public List<SlideLine> Lines { get; set; } = new();
+	public List<SlideLine> Lines { get; set; } = [];
 
 	/// <summary>
 	/// Type of slide (e.g., Generic, Division)

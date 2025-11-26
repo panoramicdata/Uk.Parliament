@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models;
 
 /// <summary>
@@ -49,7 +46,7 @@ public class PaginatedResponse<T>
 	/// The list of items with their values
 	/// </summary>
 	[JsonPropertyName("items")]
-	public List<ValueWrapper<T>> Items { get; set; } = new();
+	public List<ValueWrapper<T>> Items { get; set; } = [];
 
 	/// <summary>
 	/// The list of results (used by Questions/Statements API - also uses ValueWrapper)

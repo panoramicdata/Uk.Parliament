@@ -5,16 +5,17 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for the Members API
 /// </summary>
-public class Members
+public class Members : IntegrationTestBase
 {
 	[Fact]
 	public async Task SearchAsync_WithNoFilters_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Members.SearchAsync(take: 10);
+		var response = await Client
+			.Members
+			.SearchAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -26,11 +27,13 @@ public class Members
 	[Fact]
 	public async Task SearchAsync_WithNameFilter_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Members.SearchAsync(name: "Johnson", take: 10);
+		var response = await Client
+			.Members
+			.SearchAsync(
+				name: "Johnson",
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -47,11 +50,13 @@ public class Members
 	[Fact]
 	public async Task SearchAsync_ForCurrentMembers_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Members.SearchAsync(isCurrentMember: true, take: 20);
+		var response = await Client
+			.Members
+			.SearchAsync(
+				isCurrentMember: true,
+				take: 20,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -63,11 +68,14 @@ public class Members
 	[Fact]
 	public async Task SearchAsync_ForCommonsMembers_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act - House 1 = Commons
-		var response = await client.Members.SearchAsync(house: 1, isCurrentMember: true, take: 10);
+		var response = await Client
+			.Members
+			.SearchAsync(
+				house: 1,
+				isCurrentMember: true,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -83,11 +91,14 @@ public class Members
 	[Fact]
 	public async Task SearchAsync_ForLordsMembers_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act - House 2 = Lords
-		var response = await client.Members.SearchAsync(house: 2, isCurrentMember: true, take: 10);
+		var response = await Client
+			.Members
+			.SearchAsync(
+				house: 2,
+				isCurrentMember: true,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -104,13 +115,20 @@ public class Members
 	public async Task GetByIdAsync_WithValidId_ReturnsMember()
 	{
 		// Arrange
-		var client = new ParliamentClient();
 		// First, get a valid member ID
-		var searchResponse = await client.Members.SearchAsync(take: 1);
+		var searchResponse = await Client
+			.Members
+			.SearchAsync(
+				take: 1,
+				cancellationToken: CancellationToken);
 		var memberId = searchResponse.Items[0].Value.Id;
 
 		// Act
-		var memberWrapper = await client.Members.GetByIdAsync(memberId);
+		var memberWrapper = await Client
+			.Members
+			.GetByIdAsync(
+				memberId,
+				CancellationToken);
 
 		// Assert
 		_ = memberWrapper.Should().NotBeNull();
@@ -123,14 +141,23 @@ public class Members
 	[Fact]
 	public async Task SearchAsync_WithPagination_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act - Get first page
-		var page1 = await client.Members.SearchAsync(skip: 0, take: 10, isCurrentMember: true);
+		var page1 = await Client
+			.Members
+			.SearchAsync(
+				skip: 0,
+				take: 10,
+				isCurrentMember: true,
+				cancellationToken: CancellationToken);
 
 		// Act - Get second page
-		var page2 = await client.Members.SearchAsync(skip: 10, take: 10, isCurrentMember: true);
+		var page2 = await Client
+			.Members
+			.SearchAsync(
+				skip: 10,
+				take: 10,
+				isCurrentMember: true,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = page1.Items.Should().NotBeEmpty();
@@ -141,11 +168,12 @@ public class Members
 	[Fact]
 	public async Task SearchConstituenciesAsync_WithNoFilters_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Members.SearchConstituenciesAsync(take: 10);
+		var response = await Client
+			.Members
+			.SearchConstituenciesAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -157,11 +185,13 @@ public class Members
 	[Fact]
 	public async Task SearchConstituenciesAsync_WithSearchText_Succeeds()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var response = await client.Members.SearchConstituenciesAsync(searchText: "Westminster", take: 10);
+		var response = await Client
+			.Members
+			.SearchConstituenciesAsync(
+				searchText: "Westminster",
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -179,13 +209,20 @@ public class Members
 	public async Task GetConstituencyByIdAsync_WithValidId_ReturnsConstituency()
 	{
 		// Arrange
-		var client = new ParliamentClient();
 		// First, get a valid constituency ID
-		var searchResponse = await client.Members.SearchConstituenciesAsync(take: 1);
+		var searchResponse = await Client
+			.Members
+			.SearchConstituenciesAsync(
+				take: 1,
+				cancellationToken: CancellationToken);
 		var constituencyId = searchResponse.Items[0].Value.Id;
 
 		// Act
-		var constituencyWrapper = await client.Members.GetConstituencyByIdAsync(constituencyId);
+		var constituencyWrapper = await Client
+			.Members
+			.GetConstituencyByIdAsync(
+				constituencyId,
+				CancellationToken);
 
 		// Assert
 		_ = constituencyWrapper.Should().NotBeNull();
@@ -198,11 +235,10 @@ public class Members
 	public async Task GetAllAsync_StreamingMembers_Works()
 	{
 		// Arrange
-		var client = new ParliamentClient();
 		var count = 0;
 
 		// Act
-		await foreach (var member in client.Members.GetAllAsync(name: "Brown", pageSize: 5))
+		await foreach (var member in Client.Members.GetAllAsync(name: "Brown", pageSize: 5, cancellationToken: CancellationToken))
 		{
 			_ = member.Should().NotBeNull();
 			_ = member.NameDisplayAs.Should().NotBeNullOrWhiteSpace();
@@ -221,14 +257,12 @@ public class Members
 	[Fact]
 	public async Task GetAllListAsync_RetrievesMultiplePages()
 	{
-		// Arrange
-		var client = new ParliamentClient();
-
 		// Act
-		var allMembers = await client.Members.GetAllListAsync(
+		var allMembers = await Client.Members.GetAllListAsync(
 			house: 1, // Commons
 			isCurrentMember: true,
-			pageSize: 20);
+			pageSize: 20,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = allMembers.Should().NotBeNull();

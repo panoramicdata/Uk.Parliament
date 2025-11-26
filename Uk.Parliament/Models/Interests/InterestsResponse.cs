@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Interests;
 
 /// <summary>
@@ -13,7 +10,7 @@ public class InterestsResponse<T>
 	/// Links for pagination
 	/// </summary>
 	[JsonPropertyName("links")]
-	public List<InterestLink> Links { get; set; } = new();
+	public List<InterestLink> Links { get; set; } = [];
 
 	/// <summary>
 	/// Number of items skipped
@@ -37,7 +34,7 @@ public class InterestsResponse<T>
 	/// Items in this page
 	/// </summary>
 	[JsonPropertyName("items")]
-	public List<T> Items { get; set; } = new();
+	public List<T> Items { get; set; } = [];
 }
 
 /// <summary>

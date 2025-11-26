@@ -12,7 +12,9 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	public async Task GetCategoriesAsync_ReturnsCategories()
 	{
 		// Act
-		var result = await Client.Interests.GetCategoriesAsync();
+		var result = await Client
+			.Interests
+			.GetCategoriesAsync(CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -28,7 +30,11 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	public async Task SearchInterestsAsync_WithNoFilters_ReturnsResults()
 	{
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(take: 10);
+		var result = await Client
+			.Interests
+			.SearchInterestsAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -43,7 +49,12 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		const string searchTerm = "employment";
 
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(searchTerm: searchTerm, take: 10);
+		var result = await Client
+			.Interests
+			.SearchInterestsAsync(
+				searchTerm: searchTerm,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -57,7 +68,12 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		const int categoryId = 1;
 
 		// Act
-		var result = await Client.Interests.SearchInterestsAsync(categoryId: categoryId, take: 10);
+		var result = await Client
+			.Interests
+			.SearchInterestsAsync(
+				categoryId: categoryId,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -69,7 +85,8 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var interests = await CollectStreamedItemsAsync(
-			Client.Interests.GetAllInterestsAsync(pageSize: 5));
+			Client.Interests.GetAllInterestsAsync(pageSize: 5,
+			cancellationToken: CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(interests);
@@ -79,7 +96,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 /// <summary>
 /// Unit tests for Interests API (mocking)
 /// </summary>
-public class InterestsApiUnitTests
+public class InterestsApiUnitTests : IntegrationTestBase
 {
 	[Fact]
 	public void InterestsApi_CanBeMocked()
@@ -110,7 +127,8 @@ public class InterestsApiUnitTests
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetCategoriesAsync();
+		var result = await mockApi.Object.GetCategoriesAsync(
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -158,7 +176,8 @@ public class InterestsApiUnitTests
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.SearchInterestsAsync(searchTerm: "test");
+		var result = await mockApi.Object.SearchInterestsAsync(searchTerm: "test",
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

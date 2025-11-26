@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
+using System.Runtime.Serialization;
 using Uk.Parliament.Models;
 
 namespace Uk.Parliament.Interfaces;

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Questions;
 
@@ -80,7 +77,7 @@ public class WrittenStatement
 	/// <summary>
 	/// Department that issued the statement
 	/// </summary>
-	[JsonPropertyName("department")]
+	[JsonPropertyName("answeringBody")]
 	public string? Department { get; set; }
 
 	/// <summary>
@@ -149,25 +146,33 @@ public class WrittenStatement
 /// </summary>
 internal class NumberOrStringConverter : JsonConverter<string?>
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{
-		if (reader.TokenType == JsonTokenType.Null)
-			return null;
-
-		if (reader.TokenType == JsonTokenType.String)
-			return reader.GetString();
-
-		if (reader.TokenType == JsonTokenType.Number)
-			return reader.GetInt64().ToString();
-
-		throw new JsonException($"Unexpected token type: {reader.TokenType}");
-	}
+		JsonTokenType.Null => null,
+		JsonTokenType.String => reader.GetString(),
+		JsonTokenType.Number => reader.GetInt64().ToString(),
+		JsonTokenType.None => throw new NotImplementedException(),
+		JsonTokenType.StartObject => throw new NotImplementedException(),
+		JsonTokenType.EndObject => throw new NotImplementedException(),
+		JsonTokenType.StartArray => throw new NotImplementedException(),
+		JsonTokenType.EndArray => throw new NotImplementedException(),
+		JsonTokenType.PropertyName => throw new NotImplementedException(),
+		JsonTokenType.Comment => throw new NotImplementedException(),
+		JsonTokenType.True => throw new NotImplementedException(),
+		JsonTokenType.False => throw new NotImplementedException(),
+		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
+	};
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
-		if (value == null)
-			writer.WriteNullValue();
-		else
-			writer.WriteStringValue(value);
+		switch (value)
+		{
+			case null:
+				writer.WriteNullValue();
+				break;
+			default:
+				writer.WriteStringValue(value);
+				break;
+		}
 	}
 }

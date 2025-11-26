@@ -1,5 +1,3 @@
-using System;
-
 namespace Uk.Parliament.Models;
 
 /// <summary>

@@ -6,7 +6,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Unit tests for Members API (mocking)
 /// </summary>
-public class MembersApiUnitTests
+public class MembersApiUnitTests : IntegrationTestBase
 {
 	[Fact]
 	public async Task SearchAsync_WithMock_ReturnsExpectedData()
@@ -18,11 +18,11 @@ public class MembersApiUnitTests
 			TotalResults = 2,
 			Skip = 0,
 			Take = 2,
-			Items = new List<ValueWrapper<Member>>
-			{
+			Items =
+			[
 				new() { Value = new Member { Id = 1, NameDisplayAs = "Test Member 1" } },
 				new() { Value = new Member { Id = 2, NameDisplayAs = "Test Member 2" } }
-			}
+			]
 		};
 
 		_ = mockApi.Setup(x => x.SearchAsync(
@@ -35,7 +35,8 @@ public class MembersApiUnitTests
 			.ReturnsAsync(expectedMembers);
 
 		// Act
-		var result = await mockApi.Object.SearchAsync(take: 2);
+		var result = await mockApi.Object.SearchAsync(take: 2,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Items.Should().HaveCount(2);
@@ -61,7 +62,8 @@ public class MembersApiUnitTests
 			.ReturnsAsync(expectedMemberWrapper);
 
 		// Act
-		var result = await mockApi.Object.GetByIdAsync(123);
+		var result = await mockApi.Object.GetByIdAsync(123,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -77,10 +79,10 @@ public class MembersApiUnitTests
 		var expectedConstituencies = new PaginatedResponse<Constituency>
 		{
 			TotalResults = 1,
-			Items = new List<ValueWrapper<Constituency>>
-			{
+			Items =
+			[
 				new() { Value = new Constituency { Id = 1, Name = "Test Constituency" } }
-			}
+			]
 		};
 
 		_ = mockApi.Setup(x => x.SearchConstituenciesAsync(
@@ -91,7 +93,8 @@ public class MembersApiUnitTests
 			.ReturnsAsync(expectedConstituencies);
 
 		// Act
-		var result = await mockApi.Object.SearchConstituenciesAsync(take: 1);
+		var result = await mockApi.Object.SearchConstituenciesAsync(take: 1,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Items.Should().ContainSingle();
@@ -111,11 +114,11 @@ public class MembersApiUnitTests
 				TotalResults = 3,
 				Skip = 0,
 				Take = 2,
-				Items = new List<ValueWrapper<Member>>
-				{
+				Items =
+				[
 					new() { Value = new Member { Id = 1 } },
 					new() { Value = new Member { Id = 2 } }
-				}
+				]
 			});
 
 		// Page 2
@@ -125,16 +128,17 @@ public class MembersApiUnitTests
 				TotalResults = 3,
 				Skip = 2,
 				Take = 2,
-				Items = new List<ValueWrapper<Member>>
-				{
+				Items =
+				[
 					new() { Value = new Member { Id = 3 } }
-				}
+				]
 			});
 
 		var allMembers = new List<Member>();
 
 		// Act
-		await foreach (var member in mockApi.Object.GetAllAsync(pageSize: 2))
+		await foreach (var member in mockApi.Object.GetAllAsync(pageSize: 2,
+			cancellationToken: CancellationToken))
 		{
 			allMembers.Add(member);
 		}

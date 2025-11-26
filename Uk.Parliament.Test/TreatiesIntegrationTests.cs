@@ -8,12 +8,15 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class TreatiesIntegrationTests : IntegrationTestBase
 {
-
 	[Fact]
 	public async Task GetTreatiesAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var result = await Client.Treaties.GetTreatiesAsync(take: 10);
+		var result = await Client
+			.Treaties
+			.GetTreatiesAsync(
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result);
@@ -26,9 +29,12 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		const string status = "In Force";
 
 		// Act
-		var result = await Client.Treaties.GetTreatiesAsync(
-			status: status,
-			take: 10);
+		var result = await Client
+			.Treaties
+			.GetTreatiesAsync(
+				status: status,
+				take: 10,
+				cancellationToken: CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result, item => _ = item.Value.Status.Should().Be(status));
@@ -38,12 +44,20 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
 		// Arrange - First get a valid treaty ID from the list
-		var listResult = await Client.Treaties.GetTreatiesAsync(take: 1);
-		listResult.Items.Should().NotBeEmpty("Need at least one treaty to test GetById");
+		var listResult = await Client
+			.Treaties
+			.GetTreatiesAsync(
+				take: 1,
+				cancellationToken: CancellationToken);
+		_ = listResult.Items.Should().NotBeEmpty("Need at least one treaty to test GetById");
 		var validTreatyId = listResult.Items[0].Value.Id;
 
 		// Act
-		var result = await Client.Treaties.GetTreatyByIdAsync(validTreatyId);
+		var result = await Client
+			.Treaties
+			.GetTreatyByIdAsync(
+				validTreatyId,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -55,12 +69,20 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
 		// Arrange - First get a valid treaty ID from the list
-		var listResult = await Client.Treaties.GetTreatiesAsync(take: 1);
-		listResult.Items.Should().NotBeEmpty("Need at least one treaty to test GetBusinessItems");
+		var listResult = await Client
+			.Treaties
+			.GetTreatiesAsync(
+				take: 1,
+				cancellationToken: CancellationToken);
+		_ = listResult.Items.Should().NotBeEmpty("Need at least one treaty to test GetBusinessItems");
 		var validTreatyId = listResult.Items[0].Value.Id;
 
 		// Act
-		var result = await Client.Treaties.GetTreatyBusinessItemsAsync(validTreatyId);
+		var result = await Client
+			.Treaties
+			.GetTreatyBusinessItemsAsync(
+				validTreatyId,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -70,7 +92,9 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetGovernmentOrganisationsAsync_ReturnsOrganisations()
 	{
 		// Act
-		var result = await Client.Treaties.GetGovernmentOrganisationsAsync();
+		var result = await Client
+			.Treaties
+			.GetGovernmentOrganisationsAsync(CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -87,7 +111,8 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var treaties = await CollectStreamedItemsAsync(
-			Client.Treaties.GetAllTreatiesAsync(pageSize: 5));
+			Client.Treaties.GetAllTreatiesAsync(pageSize: 5,
+			cancellationToken: CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(treaties);
@@ -97,7 +122,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 /// <summary>
 /// Unit tests for Treaties API (mocking)
 /// </summary>
-public class TreatiesApiUnitTests
+public class TreatiesApiUnitTests : IntegrationTestBase
 {
 	[Fact]
 	public void TreatiesApi_CanBeMocked()
@@ -156,7 +181,8 @@ public class TreatiesApiUnitTests
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetTreatiesAsync(take: 10);
+		var result = await mockApi.Object.GetTreatiesAsync(take: 10,
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -189,7 +215,8 @@ public class TreatiesApiUnitTests
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetGovernmentOrganisationsAsync();
+		var result = await mockApi.Object.GetGovernmentOrganisationsAsync(
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -219,7 +246,8 @@ public class TreatiesApiUnitTests
 			.ReturnsAsync(expectedItems);
 
 		// Act
-		var result = await mockApi.Object.GetTreatyBusinessItemsAsync("1");
+		var result = await mockApi.Object.GetTreatyBusinessItemsAsync("1",
+			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

@@ -1,9 +1,7 @@
 using Refit;
-using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Uk.Parliament.Interfaces;
 
 namespace Uk.Parliament;
@@ -109,26 +107,26 @@ public class ParliamentClient : IDisposable
 		Members = CreateApi<IMembersApi>(options.MembersBaseUrl, refitSettings);
 		Bills = CreateApi<IBillsApi>(options.BillsBaseUrl, refitSettings);
 		Committees = CreateApi<ICommitteesApi>(options.CommitteesBaseUrl, refitSettings);
-		
+
 		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
 		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(options.CommonsDivisionsBaseUrl, refitSettings);
 		LordsDivisions = CreateApi<ILordsDivisionsApi>(options.LordsDivisionsBaseUrl, refitSettings);
-		
+
 		// Interests API
 		Interests = CreateApi<IInterestsApi>(options.InterestsBaseUrl, refitSettings);
-		
+
 		// Questions & Statements API
 		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(options.QuestionsStatementsBaseUrl, refitSettings);
-		
+
 		// Oral Questions & Motions API
 		OralQuestionsMotions = CreateApi<IOralQuestionsMotionsApi>(options.OralQuestionsMotionsBaseUrl, refitSettings);
-		
+
 		// Treaties API
 		Treaties = CreateApi<ITreatiesApi>(options.TreatiesBaseUrl, refitSettings);
-		
+
 		// Erskine May API
 		ErskineMay = CreateApi<IErskineMayApi>(options.ErskineMayBaseUrl, refitSettings);
-		
+
 		// NOW (Annunciator) API
 		Now = CreateApi<INowApi>(options.NowBaseUrl, refitSettings);
 	}
@@ -155,11 +153,11 @@ public class ParliamentClient : IDisposable
 		Members = CreateApi<IMembersApi>(httpClient, options.MembersBaseUrl, refitSettings);
 		Bills = CreateApi<IBillsApi>(httpClient, options.BillsBaseUrl, refitSettings);
 		Committees = CreateApi<ICommitteesApi>(httpClient, options.CommitteesBaseUrl, refitSettings);
-		
+
 		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
 		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(httpClient, options.CommonsDivisionsBaseUrl, refitSettings);
 		LordsDivisions = CreateApi<ILordsDivisionsApi>(httpClient, options.LordsDivisionsBaseUrl, refitSettings);
-		
+
 		// Interests API
 		Interests = CreateApi<IInterestsApi>(httpClient, options.InterestsBaseUrl, refitSettings);
 		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(httpClient, options.QuestionsStatementsBaseUrl, refitSettings);

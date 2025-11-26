@@ -3,20 +3,17 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for NOW (Annunciator) API
 /// </summary>
-public class NowIntegrationTests : IDisposable
+public class NowIntegrationTests : IntegrationTestBase
 {
-	private readonly ParliamentClient _client;
-
-	public NowIntegrationTests()
-	{
-		_client = new ParliamentClient();
-	}
-
 	[Fact]
 	public async Task GetCurrentMessageAsync_ForCommons_ReturnsMessage()
 	{
 		// Act
-		var result = await _client.Now.GetCurrentMessageAsync("commons");
+		var result = await Client
+			.Now
+			.GetCurrentMessageAsync(
+				"commons",
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -28,7 +25,11 @@ public class NowIntegrationTests : IDisposable
 	public async Task GetCurrentMessageAsync_ForLords_ReturnsMessage()
 	{
 		// Act
-		var result = await _client.Now.GetCurrentMessageAsync("lords");
+		var result = await Client
+			.Now
+			.GetCurrentMessageAsync(
+				"lords",
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -43,15 +44,14 @@ public class NowIntegrationTests : IDisposable
 		var today = DateTime.Now.ToString("yyyy-MM-dd");
 
 		// Act
-		var result = await _client.Now.GetMessageByDateAsync("commons", today);
+		var result = await Client
+			.Now
+			.GetMessageByDateAsync(
+				"commons",
+				today,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
-	}
-
-	public void Dispose()
-	{
-		_client.Dispose();
-		GC.SuppressFinalize(this);
 	}
 }

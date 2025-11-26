@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Interests;
 
@@ -240,32 +237,27 @@ public class InterestField
 /// </summary>
 internal class AnyValueToStringConverter : JsonConverter<string?>
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-	{
-		if (reader.TokenType == JsonTokenType.Null)
-			return null;
-
-		if (reader.TokenType == JsonTokenType.String)
-			return reader.GetString();
-
-		if (reader.TokenType == JsonTokenType.Number)
-			return reader.GetInt64().ToString();
-
-		if (reader.TokenType == JsonTokenType.True)
-			return "true";
-
-		if (reader.TokenType == JsonTokenType.False)
-			return "false";
-
-		throw new JsonException($"Unexpected token type: {reader.TokenType}");
-	}
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType == JsonTokenType.Null
+		? null
+		: reader.TokenType == JsonTokenType.String
+		? reader.GetString()
+		: reader.TokenType == JsonTokenType.Number
+		? reader.GetInt64().ToString()
+		: reader.TokenType == JsonTokenType.True
+		? "true"
+		: reader.TokenType == JsonTokenType.False ? "false" : throw new JsonException($"Unexpected token type: {reader.TokenType}");
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
-		if (value == null)
-			writer.WriteNullValue();
-		else
-			writer.WriteStringValue(value);
+		switch (value)
+		{
+			case null:
+				writer.WriteNullValue();
+				break;
+			default:
+				writer.WriteStringValue(value);
+				break;
+		}
 	}
 }
 
@@ -274,25 +266,24 @@ internal class AnyValueToStringConverter : JsonConverter<string?>
 /// </summary>
 internal class NumberOrStringConverter : JsonConverter<string?>
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{
-		if (reader.TokenType == JsonTokenType.Null)
-			return null;
-
-		if (reader.TokenType == JsonTokenType.String)
-			return reader.GetString();
-
-		if (reader.TokenType == JsonTokenType.Number)
-			return reader.GetInt64().ToString();
-
-		throw new JsonException($"Unexpected token type: {reader.TokenType}");
-	}
+		JsonTokenType.Null => null,
+		JsonTokenType.String => reader.GetString(),
+		JsonTokenType.Number => reader.GetInt64().ToString(),
+		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
+	};
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
-		if (value == null)
-			writer.WriteNullValue();
-		else
-			writer.WriteStringValue(value);
+		switch (value)
+		{
+			case null:
+				writer.WriteNullValue();
+				break;
+			default:
+				writer.WriteStringValue(value);
+				break;
+		}
 	}
 }

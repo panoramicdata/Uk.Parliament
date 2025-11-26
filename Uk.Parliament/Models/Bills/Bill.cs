@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
 namespace Uk.Parliament.Models.Bills;
 
 /// <summary>
@@ -85,7 +81,7 @@ public class Bill
 	/// List of session IDs the bill has been in
 	/// </summary>
 	[JsonPropertyName("includedSessionIds")]
-	public List<int> IncludedSessionIds { get; set; } = new();
+	public List<int> IncludedSessionIds { get; set; } = [];
 
 	/// <summary>
 	/// Whether the bill has become an Act

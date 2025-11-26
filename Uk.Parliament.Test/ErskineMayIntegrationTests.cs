@@ -6,20 +6,15 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Erskine May API
 /// </summary>
-public class ErskineMayIntegrationTests : IDisposable
+public class ErskineMayIntegrationTests : IntegrationTestBase
 {
-	private readonly ParliamentClient _client;
-
-	public ErskineMayIntegrationTests()
-	{
-		_client = new ParliamentClient();
-	}
-
 	[Fact]
 	public async Task GetPartsAsync_ReturnsAllParts()
 	{
 		// Act
-		var result = await _client.ErskineMay.GetPartsAsync();
+		var result = await Client
+			.ErskineMay
+			.GetPartsAsync(CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -38,7 +33,11 @@ public class ErskineMayIntegrationTests : IDisposable
 		const int partNumber = 1;
 
 		// Act
-		var result = await _client.ErskineMay.GetPartAsync(partNumber);
+		var result = await Client
+			.ErskineMay
+			.GetPartAsync(
+				partNumber,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -53,7 +52,11 @@ public class ErskineMayIntegrationTests : IDisposable
 		const int chapterNumber = 1;
 
 		// Act
-		var result = await _client.ErskineMay.GetChapterAsync(chapterNumber);
+		var result = await Client
+			.ErskineMay
+			.GetChapterAsync(
+				chapterNumber,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -65,8 +68,12 @@ public class ErskineMayIntegrationTests : IDisposable
 	public async Task GetSectionByIdAsync_WithValidId_ReturnsSection()
 	{
 		// Arrange - First get a valid section ID from search results
-		var searchResult = await _client.ErskineMay.SearchAsync("voting");
-		
+		var searchResult = await Client
+			.ErskineMay
+			.SearchAsync(
+				"voting",
+				CancellationToken);
+
 		if (searchResult?.SearchResults == null || searchResult.SearchResults.Count == 0)
 		{
 			// Skip test if no search results available
@@ -76,7 +83,11 @@ public class ErskineMayIntegrationTests : IDisposable
 		var validSectionId = searchResult.SearchResults[0].Id;
 
 		// Act
-		var result = await _client.ErskineMay.GetSectionByIdAsync(validSectionId);
+		var result = await Client
+			.ErskineMay
+			.GetSectionByIdAsync(
+				validSectionId,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -91,7 +102,11 @@ public class ErskineMayIntegrationTests : IDisposable
 		const string searchTerm = "voting";
 
 		// Act
-		var result = await _client.ErskineMay.SearchAsync(searchTerm);
+		var result = await Client
+			.ErskineMay
+			.SearchAsync(
+				searchTerm,
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -106,7 +121,7 @@ public class ErskineMayIntegrationTests : IDisposable
 		var results = new List<ErskineMaySearchResult>();
 
 		// Act
-		await foreach (var result in _client.ErskineMay.SearchAllAsync(searchTerm))
+		await foreach (var result in Client.ErskineMay.SearchAllAsync(searchTerm, cancellationToken: CancellationToken))
 		{
 			results.Add(result);
 			if (results.Count >= 10)
@@ -117,11 +132,5 @@ public class ErskineMayIntegrationTests : IDisposable
 
 		// Assert
 		_ = results.Should().NotBeEmpty();
-	}
-
-	public void Dispose()
-	{
-		_client.Dispose();
-		GC.SuppressFinalize(this);
 	}
 }

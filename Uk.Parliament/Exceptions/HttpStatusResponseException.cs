@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 
 namespace Uk.Parliament.Exceptions;
