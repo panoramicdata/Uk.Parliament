@@ -206,4 +206,10 @@ public class WrittenQuestion
 	/// </summary>
 	[JsonPropertyName("attachments")]
 	public List<object>? Attachments { get; set; }
+
+	/// <summary>
+	/// Links related to this question
+	/// </summary>
+	[JsonPropertyName("links")]
+	public List<object>? Links { get; set; }
 }

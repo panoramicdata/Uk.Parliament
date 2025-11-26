@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Uk.Parliament.Models.Questions;
@@ -24,6 +26,7 @@ public class WrittenStatement
 	/// Notice number for the statement
 	/// </summary>
 	[JsonPropertyName("noticeNumber")]
+	[JsonConverter(typeof(NumberOrStringConverter))]
 	public string? NoticeNumber { get; set; }
 
 	/// <summary>
@@ -121,4 +124,50 @@ public class WrittenStatement
 	/// </summary>
 	[JsonPropertyName("isWithdrawn")]
 	public bool IsWithdrawn { get; set; }
+
+	/// <summary>
+	/// Whether this statement has attachments
+	/// </summary>
+	[JsonPropertyName("hasAttachments")]
+	public bool HasAttachments { get; set; }
+
+	/// <summary>
+	/// Whether this statement has linked statements
+	/// </summary>
+	[JsonPropertyName("hasLinkedStatements")]
+	public bool HasLinkedStatements { get; set; }
+
+	/// <summary>
+	/// Linked statements
+	/// </summary>
+	[JsonPropertyName("linkedStatements")]
+	public List<object>? LinkedStatements { get; set; }
+}
+
+/// <summary>
+/// JSON converter that handles both number and string values
+/// </summary>
+internal class NumberOrStringConverter : JsonConverter<string?>
+{
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		if (reader.TokenType == JsonTokenType.Null)
+			return null;
+
+		if (reader.TokenType == JsonTokenType.String)
+			return reader.GetString();
+
+		if (reader.TokenType == JsonTokenType.Number)
+			return reader.GetInt64().ToString();
+
+		throw new JsonException($"Unexpected token type: {reader.TokenType}");
+	}
+
+	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+	{
+		if (value == null)
+			writer.WriteNullValue();
+		else
+			writer.WriteStringValue(value);
+	}
 }

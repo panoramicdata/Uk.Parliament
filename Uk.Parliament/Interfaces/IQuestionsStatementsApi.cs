@@ -51,7 +51,7 @@ public interface IQuestionsStatementsApi
 	/// </summary>
 	/// <param name="id">Question identifier</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Written question details</returns>
+	/// <returns>Written question details wrapped in ValueWrapper</returns>
 	[Get("/api/writtenquestions/questions/{id}")]
 	Task<ValueWrapper<WrittenQuestion>> GetWrittenQuestionByIdAsync(
 		int id,
@@ -63,7 +63,7 @@ public interface IQuestionsStatementsApi
 	/// <param name="date">Date the question was tabled</param>
 	/// <param name="uin">Unique Identifier Number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Written question details</returns>
+	/// <returns>Written question details wrapped in ValueWrapper</returns>
 	[Get("/api/writtenquestions/questions/{date}/{uin}")]
 	Task<ValueWrapper<WrittenQuestion>> GetWrittenQuestionByDateAndUinAsync(
 		DateTime date,
@@ -98,7 +98,7 @@ public interface IQuestionsStatementsApi
 	/// </summary>
 	/// <param name="id">Statement identifier</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Written statement details</returns>
+	/// <returns>Written statement details wrapped in ValueWrapper</returns>
 	[Get("/api/writtenstatements/statements/{id}")]
 	Task<ValueWrapper<WrittenStatement>> GetWrittenStatementByIdAsync(
 		int id,
@@ -110,7 +110,7 @@ public interface IQuestionsStatementsApi
 	/// <param name="date">Date the statement was made</param>
 	/// <param name="uin">Unique Identifier Number</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Written statement details</returns>
+	/// <returns>Written statement details wrapped in ValueWrapper</returns>
 	[Get("/api/writtenstatements/statements/{date}/{uin}")]
 	Task<ValueWrapper<WrittenStatement>> GetWrittenStatementByDateAndUinAsync(
 		DateTime date,
