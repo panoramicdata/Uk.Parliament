@@ -47,20 +47,8 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 	[Fact]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 	{
-		// Arrange - First get a valid division ID from the list
-		// Note: The GetDivisionsAsync returns 'object', so we need to parse it or use a different approach
-		// For now, skip this test until the API models are properly implemented
-		var client = CreateClientWithLogging();
-
 		// Skip - API returns HTTP 500 errors currently
 		await Task.CompletedTask;
-		return;
-
-		// When API is fixed, use this approach:
-		// var divisions = await client.CommonsDivisions.GetDivisionsAsync();
-		// Extract first division ID from the response
-		// var division = await client.CommonsDivisions.GetDivisionByIdAsync(validId);
-		// _ = division.Should().NotBeNull();
 	}
 
 	[Fact]

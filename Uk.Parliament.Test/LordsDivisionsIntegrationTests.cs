@@ -47,19 +47,8 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 	[Fact]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 	{
-		// Arrange - First get a valid division ID from the list
-		// Note: The API currently returns HTTP 500 errors
-		var client = CreateClientWithLogging();
-
 		// Skip - API returns HTTP 500 errors currently
 		await Task.CompletedTask;
-		return;
-
-		// When API is fixed, use this approach:
-		// var divisions = await client.LordsDivisions.GetDivisionsAsync();
-		// Extract first division ID from the response
-		// var division = await client.LordsDivisions.GetDivisionByIdAsync(validId);
-		// _ = division.Should().NotBeNull();
 	}
 
 	[Fact]

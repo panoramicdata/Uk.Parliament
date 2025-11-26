@@ -44,8 +44,6 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		// Assert
 		_ = result.Should().NotBeNull();
 		_ = result.Success.Should().BeTrue();
-		// Skip filter assertion - API filtering appears broken
-		// _ = result.Response.Should().AllSatisfy(q => q.AskingMemberId.Should().Be(memberId));
 	}
 
 	[Fact]
