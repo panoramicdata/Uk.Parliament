@@ -8,6 +8,7 @@
 		<IsTestProject>true</IsTestProject>
 		<EnableMSTestRunner>false</EnableMSTestRunner>
 		<EnableXunitRunner>false</EnableXunitRunner>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

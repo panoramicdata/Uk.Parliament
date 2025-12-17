@@ -17,7 +17,7 @@ public class WrittenStatement
 	/// Unique Identifier Number (UIN) for the statement
 	/// </summary>
 	[JsonPropertyName("uin")]
-	public required string Uin { get; set; }
+	public string Uin { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Notice number for the statement
@@ -60,7 +60,7 @@ public class WrittenStatement
 	/// House where statement was made (Commons/Lords)
 	/// </summary>
 	[JsonPropertyName("house")]
-	public required string House { get; set; }
+	public string House { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Answering body ID
@@ -90,13 +90,13 @@ public class WrittenStatement
 	/// Statement title/heading
 	/// </summary>
 	[JsonPropertyName("title")]
-	public required string Title { get; set; }
+	public string Title { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Statement text/content
 	/// </summary>
 	[JsonPropertyName("statementText")]
-	public required string StatementText { get; set; }
+	public string StatementText { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Text (alternative to statementText)
@@ -150,29 +150,19 @@ internal class NumberOrStringConverter : JsonConverter<string?>
 	{
 		JsonTokenType.Null => null,
 		JsonTokenType.String => reader.GetString(),
-		JsonTokenType.Number => reader.GetInt64().ToString(),
-		JsonTokenType.None => throw new NotImplementedException(),
-		JsonTokenType.StartObject => throw new NotImplementedException(),
-		JsonTokenType.EndObject => throw new NotImplementedException(),
-		JsonTokenType.StartArray => throw new NotImplementedException(),
-		JsonTokenType.EndArray => throw new NotImplementedException(),
-		JsonTokenType.PropertyName => throw new NotImplementedException(),
-		JsonTokenType.Comment => throw new NotImplementedException(),
-		JsonTokenType.True => throw new NotImplementedException(),
-		JsonTokenType.False => throw new NotImplementedException(),
-		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
+		JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString() : reader.GetDouble().ToString(),
+		_ => null
 	};
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
-		switch (value)
+		if (value == null)
 		{
-			case null:
-				writer.WriteNullValue();
-				break;
-			default:
-				writer.WriteStringValue(value);
-				break;
+			writer.WriteNullValue();
+		}
+		else
+		{
+			writer.WriteStringValue(value);
 		}
 	}
 }

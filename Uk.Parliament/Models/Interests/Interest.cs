@@ -219,10 +219,10 @@ public class InterestField
 	public object? TypeInfo { get; set; }
 
 	/// <summary>
-	/// Field values (for multi-value fields)
+	/// Field values (for multi-value fields - can be mixed types)
 	/// </summary>
 	[JsonPropertyName("values")]
-	public List<string>? Values { get; set; }
+	public List<object>? Values { get; set; }
 
 	/// <summary>
 	/// Field value (can be string, number, or boolean)

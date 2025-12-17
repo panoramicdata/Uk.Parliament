@@ -35,6 +35,9 @@
 
 		<!-- Documentation -->
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+		<!-- Code Quality -->
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

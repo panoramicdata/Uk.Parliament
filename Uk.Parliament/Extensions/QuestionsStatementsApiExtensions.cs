@@ -53,18 +53,20 @@ public static class QuestionsStatementsApiExtensions
 				pageSize,
 				cancellationToken);
 
-			if (response?.Items is null || response.Items.Count == 0)
+			// Check both Items and Results (API uses both)
+			var items = response?.Items ?? response?.Results;
+			if (items is null || items.Count == 0)
 			{
 				yield break;
 			}
 
-			foreach (var item in response.Items)
+			foreach (var item in items)
 			{
 				yield return item.Value;
 			}
 
 			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
+			if (items.Count < pageSize || skip + pageSize >= response!.TotalResults)
 			{
 				yield break;
 			}
@@ -151,18 +153,20 @@ public static class QuestionsStatementsApiExtensions
 				pageSize,
 				cancellationToken);
 
-			if (response?.Items is null || response.Items.Count == 0)
+			// Check both Items and Results (API uses both)
+			var items = response?.Items ?? response?.Results;
+			if (items is null || items.Count == 0)
 			{
 				yield break;
 			}
 
-			foreach (var item in response.Items)
+			foreach (var item in items)
 			{
 				yield return item.Value;
 			}
 
 			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
+			if (items.Count < pageSize || skip + pageSize >= response!.TotalResults)
 			{
 				yield break;
 			}
@@ -240,18 +244,20 @@ public static class QuestionsStatementsApiExtensions
 				pageSize,
 				cancellationToken);
 
-			if (response?.Items is null || response.Items.Count == 0)
+			// Check both Items and Results (API uses both)
+			var items = response?.Items ?? response?.Results;
+			if (items is null || items.Count == 0)
 			{
 				yield break;
 			}
 
-			foreach (var item in response.Items)
+			foreach (var item in items)
 			{
 				yield return item.Value;
 			}
 
 			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
+			if (items.Count < pageSize || skip + pageSize >= response!.TotalResults)
 			{
 				yield break;
 			}

@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,10 +88,7 @@ internal class LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogge
 			.AppendLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}")
 			.AppendLine("Headers:");
 
-		foreach (var header in response.Headers)
-		{
-			_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
-		}
+		AppendHeaders(sb, response.Headers);
 
 		// Always log response body for errors (4xx, 5xx), even if verbose logging is off
 		var isError = !response.IsSuccessStatusCode;
@@ -97,29 +96,46 @@ internal class LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogge
 
 		if (response.Content != null && shouldLogBody)
 		{
-			_ = sb.AppendLine("Content Headers:");
-			foreach (var header in response.Content.Headers)
-			{
-				_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
-			}
-
-			var content = await response.Content.ReadAsStringAsync();
-			if (!string.IsNullOrEmpty(content))
-			{
-				_ = sb.AppendLine($"Body ({content.Length} chars):");
-				// For errors, always show full content (up to 10000 chars)
-				// For success, truncate at 5000 chars if verbose logging
-				var maxLength = isError ? 10000 : 5000;
-				var displayContent = content.Length > maxLength ? content[..maxLength] + "... (truncated)" : content;
-				_ = sb.AppendLine(displayContent);
-			}
+			await AppendContentAsync(sb, response.Content, isError);
 		}
 
-		// Use Error level for 5xx, Warning for 4xx, Debug for 2xx/3xx
-		var logLevel = (int)response.StatusCode >= 500 ? LogLevel.Error :
-					   (int)response.StatusCode >= 400 ? LogLevel.Warning :
-					   LogLevel.Debug;
-
+		var logLevel = GetLogLevel(response.StatusCode);
 		logger?.Log(logLevel, "{ResponseLog}", sb.ToString());
+	}
+
+	private static void AppendHeaders(StringBuilder sb, HttpHeaders headers)
+	{
+		foreach (var header in headers)
+		{
+			_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
+		}
+	}
+
+	private static async Task AppendContentAsync(StringBuilder sb, HttpContent content, bool isError)
+	{
+		_ = sb.AppendLine("Content Headers:");
+		foreach (var header in content.Headers)
+		{
+			_ = sb.AppendLine($"  {header.Key}: {string.Join(", ", header.Value)}");
+		}
+
+		var contentString = await content.ReadAsStringAsync();
+		if (!string.IsNullOrEmpty(contentString))
+		{
+			_ = sb.AppendLine($"Body ({contentString.Length} chars):");
+			// For errors, always show full content (up to 10000 chars)
+			// For success, truncate at 5000 chars if verbose logging
+			var maxLength = isError ? 10000 : 5000;
+			var displayContent = contentString.Length > maxLength ? contentString[..maxLength] + "... (truncated)" : contentString;
+			_ = sb.AppendLine(displayContent);
+		}
+	}
+
+	private static LogLevel GetLogLevel(HttpStatusCode statusCode)
+	{
+		// Use Error level for 5xx, Warning for 4xx, Debug for 2xx/3xx
+		return (int)statusCode >= 500 ? LogLevel.Error :
+			   (int)statusCode >= 400 ? LogLevel.Warning :
+			   LogLevel.Debug;
 	}
 }

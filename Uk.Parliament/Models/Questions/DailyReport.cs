@@ -21,13 +21,13 @@ public class DailyReport
 	/// House (Commons/Lords)
 	/// </summary>
 	[JsonPropertyName("house")]
-	public required string House { get; set; }
+	public string House { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Report title
 	/// </summary>
 	[JsonPropertyName("title")]
-	public required string Title { get; set; }
+	public string? Title { get; set; }
 
 	/// <summary>
 	/// Number of questions in the report
