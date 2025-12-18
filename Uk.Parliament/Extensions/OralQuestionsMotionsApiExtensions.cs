@@ -12,6 +12,27 @@ namespace Uk.Parliament.Extensions;
 public static class OralQuestionsMotionsApiExtensions
 {
 	/// <summary>
+	/// Get all oral questions by automatically paginating through all results using options
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="options">Query options</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all oral questions</returns>
+	public static IAsyncEnumerable<OralQuestion> GetAllOralQuestionsAsync(
+		this IOralQuestionsMotionsApi api,
+		OralQuestionsQueryOptions options,
+		CancellationToken cancellationToken = default)
+		=> api.GetAllOralQuestionsAsync(
+			options.AskingMemberId,
+			options.AnsweringDepartment,
+			options.House,
+			options.DateFrom,
+			options.DateTo,
+			options.IsAnswered,
+			options.PageSize,
+			cancellationToken);
+
+	/// <summary>
 	/// Get all oral questions by automatically paginating through all results
 	/// </summary>
 	/// <param name="api">The oral questions/motions API</param>
@@ -37,7 +58,7 @@ public static class OralQuestionsMotionsApiExtensions
 	{
 		var skip = 0;
 
-		while (true)
+		while (!cancellationToken.IsCancellationRequested)
 		{
 			var response = await api.GetOralQuestionsAsync(
 				askingMemberId,
@@ -60,8 +81,7 @@ public static class OralQuestionsMotionsApiExtensions
 				yield return item;
 			}
 
-			// Stop if this was the last page
-			if (response.Response.Count < pageSize || skip + pageSize >= response.PagingInfo.Total)
+			if (IsLastPage(response.Response.Count, skip, pageSize, response.PagingInfo.Total))
 			{
 				yield break;
 			}
@@ -69,6 +89,27 @@ public static class OralQuestionsMotionsApiExtensions
 			skip += pageSize;
 		}
 	}
+
+	/// <summary>
+	/// Get all oral questions as a materialized list using options
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="options">Query options</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all oral questions</returns>
+	public static Task<List<OralQuestion>> GetAllOralQuestionsListAsync(
+		this IOralQuestionsMotionsApi api,
+		OralQuestionsQueryOptions options,
+		CancellationToken cancellationToken = default)
+		=> api.GetAllOralQuestionsListAsync(
+			options.AskingMemberId,
+			options.AnsweringDepartment,
+			options.House,
+			options.DateFrom,
+			options.DateTo,
+			options.IsAnswered,
+			options.PageSize,
+			cancellationToken);
 
 	/// <summary>
 	/// Get all oral questions as a materialized list
@@ -113,6 +154,27 @@ public static class OralQuestionsMotionsApiExtensions
 	}
 
 	/// <summary>
+	/// Get all motions by automatically paginating through all results using options
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="options">Query options</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all motions</returns>
+	public static IAsyncEnumerable<Motion> GetAllMotionsAsync(
+		this IOralQuestionsMotionsApi api,
+		MotionsQueryOptions options,
+		CancellationToken cancellationToken = default)
+		=> api.GetAllMotionsAsync(
+			options.ProposingMemberId,
+			options.House,
+			options.DateFrom,
+			options.DateTo,
+			options.MotionType,
+			options.IsActive,
+			options.PageSize,
+			cancellationToken);
+
+	/// <summary>
 	/// Get all motions by automatically paginating through all results
 	/// </summary>
 	/// <param name="api">The oral questions/motions API</param>
@@ -138,7 +200,7 @@ public static class OralQuestionsMotionsApiExtensions
 	{
 		var skip = 0;
 
-		while (true)
+		while (!cancellationToken.IsCancellationRequested)
 		{
 			var response = await api.GetMotionsAsync(
 				proposingMemberId,
@@ -161,8 +223,7 @@ public static class OralQuestionsMotionsApiExtensions
 				yield return item;
 			}
 
-			// Stop if this was the last page
-			if (response.Response.Count < pageSize || skip + pageSize >= response.PagingInfo.Total)
+			if (IsLastPage(response.Response.Count, skip, pageSize, response.PagingInfo.Total))
 			{
 				yield break;
 			}
@@ -170,6 +231,27 @@ public static class OralQuestionsMotionsApiExtensions
 			skip += pageSize;
 		}
 	}
+
+	/// <summary>
+	/// Get all motions as a materialized list using options
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="options">Query options</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all motions</returns>
+	public static Task<List<Motion>> GetAllMotionsListAsync(
+		this IOralQuestionsMotionsApi api,
+		MotionsQueryOptions options,
+		CancellationToken cancellationToken = default)
+		=> api.GetAllMotionsListAsync(
+			options.ProposingMemberId,
+			options.House,
+			options.DateFrom,
+			options.DateTo,
+			options.MotionType,
+			options.IsActive,
+			options.PageSize,
+			cancellationToken);
 
 	/// <summary>
 	/// Get all motions as a materialized list
@@ -212,4 +294,10 @@ public static class OralQuestionsMotionsApiExtensions
 
 		return allMotions;
 	}
+
+	/// <summary>
+	/// Determines if this is the last page of results
+	/// </summary>
+	private static bool IsLastPage(int itemCount, int skip, int pageSize, int totalResults)
+		=> itemCount < pageSize || skip + pageSize >= totalResults;
 }

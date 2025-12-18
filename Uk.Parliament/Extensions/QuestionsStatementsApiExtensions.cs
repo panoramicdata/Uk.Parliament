@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
+using Uk.Parliament.Models;
 using Uk.Parliament.Models.Questions;
 
 namespace Uk.Parliament.Extensions;
@@ -11,6 +12,27 @@ namespace Uk.Parliament.Extensions;
 /// </summary>
 public static class QuestionsStatementsApiExtensions
 {
+	/// <summary>
+	/// Get all written questions by automatically paginating through all results using options
+	/// </summary>
+	/// <param name="api">The questions/statements API</param>
+	/// <param name="options">Query options</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all written questions</returns>
+	public static IAsyncEnumerable<WrittenQuestion> GetAllWrittenQuestionsAsync(
+		this IQuestionsStatementsApi api,
+		WrittenQuestionsQueryOptions options,
+		CancellationToken cancellationToken = default)
+		=> api.GetAllWrittenQuestionsAsync(
+			options.AskingMemberId,
+			options.AnsweringMemberId,
+			options.House,
+			options.TabledWhenFrom,
+			options.TabledWhenTo,
+			options.IsAnswered,
+			options.PageSize,
+			cancellationToken);
+
 	/// <summary>
 	/// Get all written questions by automatically paginating through all results
 	/// </summary>
@@ -35,11 +57,9 @@ public static class QuestionsStatementsApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.GetWrittenQuestionsAsync(
+		await foreach (var question in PaginateAsync(
+			pageSize,
+			async skip => await api.GetWrittenQuestionsAsync(
 				askingMemberId,
 				answeringMemberId,
 				null,
@@ -51,29 +71,33 @@ public static class QuestionsStatementsApiExtensions
 				isAnswered,
 				skip,
 				pageSize,
-				cancellationToken);
-
-			// Check both Items and Results (API uses both)
-			var items = response?.Items ?? response?.Results;
-			if (items is null || items.Count == 0)
-			{
-				yield break;
-			}
-
-			foreach (var item in items)
-			{
-				yield return item.Value;
-			}
-
-			// Stop if this was the last page
-			if (items.Count < pageSize || skip + pageSize >= response!.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
+				cancellationToken),
+			cancellationToken))
+		{
+			yield return question;
 		}
 	}
+
+	/// <summary>
+	/// Get all written questions as a materialized list using options
+	/// </summary>
+	/// <param name="api">The questions/statements API</param>
+	/// <param name="options">Query options</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all written questions</returns>
+	public static Task<List<WrittenQuestion>> GetAllWrittenQuestionsListAsync(
+		this IQuestionsStatementsApi api,
+		WrittenQuestionsQueryOptions options,
+		CancellationToken cancellationToken = default)
+		=> api.GetAllWrittenQuestionsListAsync(
+			options.AskingMemberId,
+			options.AnsweringMemberId,
+			options.House,
+			options.TabledWhenFrom,
+			options.TabledWhenTo,
+			options.IsAnswered,
+			options.PageSize,
+			cancellationToken);
 
 	/// <summary>
 	/// Get all written questions as a materialized list
@@ -139,11 +163,9 @@ public static class QuestionsStatementsApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.GetWrittenStatementsAsync(
+		await foreach (var statement in PaginateAsync(
+			pageSize,
+			async skip => await api.GetWrittenStatementsAsync(
 				makingMemberId,
 				department,
 				house,
@@ -151,27 +173,10 @@ public static class QuestionsStatementsApiExtensions
 				madeWhenTo,
 				skip,
 				pageSize,
-				cancellationToken);
-
-			// Check both Items and Results (API uses both)
-			var items = response?.Items ?? response?.Results;
-			if (items is null || items.Count == 0)
-			{
-				yield break;
-			}
-
-			foreach (var item in items)
-			{
-				yield return item.Value;
-			}
-
-			// Stop if this was the last page
-			if (items.Count < pageSize || skip + pageSize >= response!.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
+				cancellationToken),
+			cancellationToken))
+		{
+			yield return statement;
 		}
 	}
 
@@ -232,20 +237,36 @@ public static class QuestionsStatementsApiExtensions
 		int pageSize = 20,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.GetDailyReportsAsync(
+		await foreach (var report in PaginateAsync(
+			pageSize,
+			async skip => await api.GetDailyReportsAsync(
 				dateFrom,
 				dateTo,
 				house,
 				skip,
 				pageSize,
-				cancellationToken);
+				cancellationToken),
+			cancellationToken))
+		{
+			yield return report;
+		}
+	}
 
-			// Check both Items and Results (API uses both)
-			var items = response?.Items ?? response?.Results;
+	/// <summary>
+	/// Generic pagination helper that iterates through all pages of a paginated response
+	/// </summary>
+	private static async IAsyncEnumerable<T> PaginateAsync<T>(
+		int pageSize,
+		Func<int, Task<PaginatedResponse<T>?>> fetchPage,
+		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
+		var skip = 0;
+
+		while (!cancellationToken.IsCancellationRequested)
+		{
+			var response = await fetchPage(skip);
+			var items = GetItemsFromResponse(response);
+
 			if (items is null || items.Count == 0)
 			{
 				yield break;
@@ -256,8 +277,7 @@ public static class QuestionsStatementsApiExtensions
 				yield return item.Value;
 			}
 
-			// Stop if this was the last page
-			if (items.Count < pageSize || skip + pageSize >= response!.TotalResults)
+			if (IsLastPage(items.Count, skip, pageSize, response!.TotalResults))
 			{
 				yield break;
 			}
@@ -265,4 +285,16 @@ public static class QuestionsStatementsApiExtensions
 			skip += pageSize;
 		}
 	}
+
+	/// <summary>
+	/// Gets items from the response, checking both Items and Results properties (API uses both)
+	/// </summary>
+	private static List<ValueWrapper<T>>? GetItemsFromResponse<T>(PaginatedResponse<T>? response)
+		=> response?.Items ?? response?.Results;
+
+	/// <summary>
+	/// Determines if this is the last page of results
+	/// </summary>
+	private static bool IsLastPage(int itemCount, int skip, int pageSize, int totalResults)
+		=> itemCount < pageSize || skip + pageSize >= totalResults;
 }

@@ -27,7 +27,7 @@ public class AnnunciatorMessage
 	/// Scrolling messages
 	/// </summary>
 	[JsonPropertyName("scrollingMessages")]
-	public List<string> ScrollingMessages { get; set; } = [];
+	public List<ScrollingMessage> ScrollingMessages { get; set; } = [];
 
 	/// <summary>
 	/// Annunciator type (e.g., CommonsMain, LordsMain)
