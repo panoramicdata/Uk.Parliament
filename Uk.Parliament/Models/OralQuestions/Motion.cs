@@ -103,7 +103,7 @@ public class Motion
 /// <summary>
 /// JSON converter that handles any value type and converts to string
 /// </summary>
-internal class AnyToStringConverter : JsonConverter<string?>
+internal sealed class AnyToStringConverter : JsonConverter<string?>
 {
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{

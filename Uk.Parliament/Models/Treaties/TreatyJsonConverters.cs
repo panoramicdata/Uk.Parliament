@@ -62,7 +62,7 @@ internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 /// <summary>
 /// JSON converter that handles both string and number values
 /// </summary>
-internal class StringOrNumberConverter : JsonConverter<string?>
+internal sealed class StringOrNumberConverter : JsonConverter<string?>
 {
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{

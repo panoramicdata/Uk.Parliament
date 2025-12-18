@@ -235,7 +235,7 @@ public class InterestField
 /// <summary>
 /// JSON converter that handles string, number, and boolean values
 /// </summary>
-internal class AnyValueToStringConverter : JsonConverter<string?>
+internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 {
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType == JsonTokenType.Null
 		? null
@@ -264,7 +264,7 @@ internal class AnyValueToStringConverter : JsonConverter<string?>
 /// <summary>
 /// JSON converter that handles both number and string values
 /// </summary>
-internal class NumberOrStringConverter : JsonConverter<string?>
+internal sealed class NumberOrStringConverter : JsonConverter<string?>
 {
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{

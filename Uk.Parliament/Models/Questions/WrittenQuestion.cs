@@ -218,7 +218,7 @@ public class WrittenQuestion
 /// JSON converter that handles lists containing any type of value (strings, numbers, dates, objects, etc.)
 /// and converts them all to strings
 /// </summary>
-internal class FlexibleStringListConverter : JsonConverter<List<string>?>
+internal sealed class FlexibleStringListConverter : JsonConverter<List<string>?>
 {
 	public override List<string>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
