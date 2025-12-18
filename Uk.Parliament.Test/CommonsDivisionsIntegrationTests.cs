@@ -52,17 +52,11 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 
 	[Fact]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
-	{
-		// Skip - API may return HTTP errors currently and return type is untyped (object)
-		await Task.CompletedTask;
-	}
+		=> throw new NotImplementedException();
 
 	[Fact]
 	public async Task GetDivisionGroupedByPartyAsync_WithValidId_ReturnsGroupedVotes()
-	{
-		// Skip - API may return HTTP errors currently and return type is untyped (object)
-		await Task.CompletedTask;
-	}
+		=> throw new NotImplementedException();
 
 	[Fact]
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()

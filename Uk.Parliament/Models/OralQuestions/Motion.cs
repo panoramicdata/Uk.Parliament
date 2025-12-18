@@ -105,20 +105,17 @@ public class Motion
 /// </summary>
 internal class AnyToStringConverter : JsonConverter<string?>
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{
-		return reader.TokenType switch
-		{
-			JsonTokenType.Null => null,
-			JsonTokenType.String => reader.GetString(),
-			JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString() : reader.GetDouble().ToString(),
-			JsonTokenType.True => "true",
-			JsonTokenType.False => "false",
-			JsonTokenType.StartObject => SkipAndReturnNull(ref reader),
-			JsonTokenType.StartArray => SkipAndReturnNull(ref reader),
-			_ => null
-		};
-	}
+		JsonTokenType.Null => null,
+		JsonTokenType.String => reader.GetString(),
+		JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString() : reader.GetDouble().ToString(),
+		JsonTokenType.True => "true",
+		JsonTokenType.False => "false",
+		JsonTokenType.StartObject => SkipAndReturnNull(ref reader),
+		JsonTokenType.StartArray => SkipAndReturnNull(ref reader),
+		_ => null
+	};
 
 	private static string? SkipAndReturnNull(ref Utf8JsonReader reader)
 	{

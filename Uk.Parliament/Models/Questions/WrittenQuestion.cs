@@ -262,7 +262,7 @@ internal class FlexibleStringListConverter : JsonConverter<List<string>?>
 		var depth = 1;
 		while (depth > 0 && reader.Read())
 		{
-			if (reader.TokenType == JsonTokenType.StartObject || reader.TokenType == JsonTokenType.StartArray)
+			if (reader.TokenType is JsonTokenType.StartObject or JsonTokenType.StartArray)
 			{
 				depth++;
 			}
