@@ -5,7 +5,7 @@ namespace Uk.Parliament.Models.Treaties;
 /// <summary>
 /// JSON converter that handles string, number, and boolean values
 /// </summary>
-internal class AnyValueToStringConverter : JsonConverter<string?>
+internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 {
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{

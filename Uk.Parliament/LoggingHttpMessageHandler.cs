@@ -11,7 +11,7 @@ namespace Uk.Parliament;
 /// <summary>
 /// HTTP message handler that logs requests and responses for diagnostics
 /// </summary>
-internal class LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogger? logger, bool verboseLogging) : DelegatingHandler(innerHandler)
+internal sealed class LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogger? logger, bool verboseLogging) : DelegatingHandler(innerHandler)
 {
 	protected override async Task<HttpResponseMessage> SendAsync(
 		HttpRequestMessage request,
@@ -131,11 +131,9 @@ internal class LoggingHttpMessageHandler(HttpMessageHandler innerHandler, ILogge
 		}
 	}
 
-	private static LogLevel GetLogLevel(HttpStatusCode statusCode)
-	{
+	private static LogLevel GetLogLevel(HttpStatusCode statusCode) =>
 		// Use Error level for 5xx, Warning for 4xx, Debug for 2xx/3xx
-		return (int)statusCode >= 500 ? LogLevel.Error :
+		(int)statusCode >= 500 ? LogLevel.Error :
 			   (int)statusCode >= 400 ? LogLevel.Warning :
 			   LogLevel.Debug;
-	}
 }
