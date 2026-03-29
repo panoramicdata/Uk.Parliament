@@ -1,8 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
 using Uk.Parliament.Models.Treaties;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Extensions;
 
@@ -11,6 +11,32 @@ namespace Uk.Parliament.Extensions;
 /// </summary>
 public static class TreatiesApiExtensions
 {
+	/// <summary>
+	/// Get all treaties by automatically paginating through all results.
+	/// </summary>
+	/// <param name="api">The treaties API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all treaties</returns>
+	public static IAsyncEnumerable<Treaty> GetAllTreatiesAsync(
+		this ITreatiesApi api,
+		GetTreatiesRequest? request = null,
+		CancellationToken cancellationToken = default)
+	{
+		request ??= new GetTreatiesRequest();
+		var pageSize = request.Take ?? 20;
+
+		return PaginationHelper.GetAllOffsetAsync(
+			request,
+			pageSize,
+			static (current, skip, take) => current with { Skip = skip, Take = take },
+			(pageRequest, token) => api.GetTreatiesAsync(pageRequest, token),
+			static response => response.Items?.ConvertAll(static item => item.Value)
+				?? response.Results?.ConvertAll(static item => item.Value),
+			static response => response.TotalResults,
+			cancellationToken);
+	}
+
 	/// <summary>
 	/// Get all treaties by automatically paginating through all results
 	/// </summary>
@@ -23,7 +49,7 @@ public static class TreatiesApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all treaties</returns>
-	public static async IAsyncEnumerable<Treaty> GetAllTreatiesAsync(
+   public static IAsyncEnumerable<Treaty> GetAllTreatiesAsync(
 		this ITreatiesApi api,
 		int? governmentOrganisationId = null,
 		string? house = null,
@@ -31,41 +57,31 @@ public static class TreatiesApiExtensions
 		DateTime? dateLaidFrom = null,
 		DateTime? dateLaidTo = null,
 		int pageSize = 20,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.GetTreatiesAsync(
-				governmentOrganisationId,
-				house,
-				status,
-				dateLaidFrom,
-				dateLaidTo,
-				skip,
-				pageSize,
-				cancellationToken);
-
-			if (response?.Items is null || response.Items.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllTreatiesAsync(
+			new GetTreatiesRequest
 			{
-				yield break;
-			}
+				GovernmentOrganisationId = governmentOrganisationId,
+				House = house,
+				Status = status,
+				DateLaidFrom = dateLaidFrom,
+				DateLaidTo = dateLaidTo,
+				Take = pageSize
+			},
+			cancellationToken);
 
-			foreach (var item in response.Items)
-			{
-				yield return item.Value;
-			}
-
-			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
-		}
-	}
+	/// <summary>
+	/// Get all treaties as a materialized list.
+	/// </summary>
+	/// <param name="api">The treaties API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all treaties</returns>
+	public static Task<List<Treaty>> GetAllTreatiesListAsync(
+		this ITreatiesApi api,
+		GetTreatiesRequest? request = null,
+		CancellationToken cancellationToken = default)
+		=> PaginationHelper.ToListAsync(api.GetAllTreatiesAsync(request, cancellationToken), cancellationToken);
 
 	/// <summary>
 	/// Get all treaties as a materialized list
@@ -79,7 +95,7 @@ public static class TreatiesApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all treaties</returns>
-	public static async Task<List<Treaty>> GetAllTreatiesListAsync(
+ public static Task<List<Treaty>> GetAllTreatiesListAsync(
 		this ITreatiesApi api,
 		int? governmentOrganisationId = null,
 		string? house = null,
@@ -88,21 +104,14 @@ public static class TreatiesApiExtensions
 		DateTime? dateLaidTo = null,
 		int pageSize = 20,
 		CancellationToken cancellationToken = default)
-	{
-		var allTreaties = new List<Treaty>();
-
-		await foreach (var treaty in api.GetAllTreatiesAsync(
-			governmentOrganisationId,
-			house,
-			status,
-			dateLaidFrom,
-			dateLaidTo,
-			pageSize,
-			cancellationToken))
-		{
-			allTreaties.Add(treaty);
-		}
-
-		return allTreaties;
-	}
+	   => PaginationHelper.ToListAsync(
+			api.GetAllTreatiesAsync(
+				governmentOrganisationId,
+				house,
+				status,
+				dateLaidFrom,
+				dateLaidTo,
+				pageSize,
+				cancellationToken),
+			cancellationToken);
 }

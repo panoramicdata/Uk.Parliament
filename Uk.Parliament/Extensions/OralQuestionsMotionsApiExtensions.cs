@@ -1,8 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
 using Uk.Parliament.Models.OralQuestions;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Extensions;
 
@@ -11,6 +11,31 @@ namespace Uk.Parliament.Extensions;
 /// </summary>
 public static class OralQuestionsMotionsApiExtensions
 {
+	/// <summary>
+	/// Get all oral questions by automatically paginating through all results using a request model.
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all oral questions</returns>
+	public static IAsyncEnumerable<OralQuestion> GetAllOralQuestionsAsync(
+		this IOralQuestionsMotionsApi api,
+		GetOralQuestionsRequest? request = null,
+		CancellationToken cancellationToken = default)
+	{
+		request ??= new GetOralQuestionsRequest();
+		var pageSize = request.Take ?? 20;
+
+		return PaginationHelper.GetAllOffsetAsync(
+			request,
+			pageSize,
+			static (current, skip, take) => current with { Skip = skip, Take = take },
+			(pageRequest, token) => api.GetOralQuestionsAsync(pageRequest, token),
+			static response => response.Response,
+			static response => response.PagingInfo.Total,
+			cancellationToken);
+	}
+
 	/// <summary>
 	/// Get all oral questions by automatically paginating through all results using options
 	/// </summary>
@@ -23,13 +48,16 @@ public static class OralQuestionsMotionsApiExtensions
 		OralQuestionsQueryOptions options,
 		CancellationToken cancellationToken = default)
 		=> api.GetAllOralQuestionsAsync(
-			options.AskingMemberId,
-			options.AnsweringDepartment,
-			options.House,
-			options.DateFrom,
-			options.DateTo,
-			options.IsAnswered,
-			options.PageSize,
+		 new GetOralQuestionsRequest
+		 {
+			 AskingMemberId = options.AskingMemberId,
+			 AnsweringDepartment = options.AnsweringDepartment,
+			 House = options.House,
+			 DateFrom = options.DateFrom,
+			 DateTo = options.DateTo,
+			 IsAnswered = options.IsAnswered,
+			 Take = options.PageSize
+		 },
 			cancellationToken);
 
 	/// <summary>
@@ -45,7 +73,7 @@ public static class OralQuestionsMotionsApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all oral questions</returns>
-	public static async IAsyncEnumerable<OralQuestion> GetAllOralQuestionsAsync(
+    public static IAsyncEnumerable<OralQuestion> GetAllOralQuestionsAsync(
 		this IOralQuestionsMotionsApi api,
 		int? askingMemberId = null,
 		string? answeringDepartment = null,
@@ -54,41 +82,32 @@ public static class OralQuestionsMotionsApiExtensions
 		DateTime? dateTo = null,
 		bool? isAnswered = null,
 		int pageSize = 20,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var skip = 0;
-
-		while (!cancellationToken.IsCancellationRequested)
-		{
-			var response = await api.GetOralQuestionsAsync(
-				askingMemberId,
-				answeringDepartment,
-				house,
-				dateFrom,
-				dateTo,
-				isAnswered,
-				skip,
-				pageSize,
-				cancellationToken);
-
-			if (response?.Response is null || response.Response.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllOralQuestionsAsync(
+			new GetOralQuestionsRequest
 			{
-				yield break;
-			}
+				AskingMemberId = askingMemberId,
+				AnsweringDepartment = answeringDepartment,
+				House = house,
+				DateFrom = dateFrom,
+				DateTo = dateTo,
+				IsAnswered = isAnswered,
+				Take = pageSize
+			},
+			cancellationToken);
 
-			foreach (var item in response.Response)
-			{
-				yield return item;
-			}
-
-			if (IsLastPage(response.Response.Count, skip, pageSize, response.PagingInfo.Total))
-			{
-				yield break;
-			}
-
-			skip += pageSize;
-		}
-	}
+	/// <summary>
+	/// Get all oral questions as a materialized list using a request model.
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all oral questions</returns>
+	public static Task<List<OralQuestion>> GetAllOralQuestionsListAsync(
+		this IOralQuestionsMotionsApi api,
+		GetOralQuestionsRequest? request = null,
+		CancellationToken cancellationToken = default)
+		=> PaginationHelper.ToListAsync(api.GetAllOralQuestionsAsync(request, cancellationToken), cancellationToken);
 
 	/// <summary>
 	/// Get all oral questions as a materialized list using options
@@ -102,13 +121,16 @@ public static class OralQuestionsMotionsApiExtensions
 		OralQuestionsQueryOptions options,
 		CancellationToken cancellationToken = default)
 		=> api.GetAllOralQuestionsListAsync(
-			options.AskingMemberId,
-			options.AnsweringDepartment,
-			options.House,
-			options.DateFrom,
-			options.DateTo,
-			options.IsAnswered,
-			options.PageSize,
+		 new GetOralQuestionsRequest
+		 {
+			 AskingMemberId = options.AskingMemberId,
+			 AnsweringDepartment = options.AnsweringDepartment,
+			 House = options.House,
+			 DateFrom = options.DateFrom,
+			 DateTo = options.DateTo,
+			 IsAnswered = options.IsAnswered,
+			 Take = options.PageSize
+		 },
 			cancellationToken);
 
 	/// <summary>
@@ -124,7 +146,7 @@ public static class OralQuestionsMotionsApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all oral questions</returns>
-	public static async Task<List<OralQuestion>> GetAllOralQuestionsListAsync(
+  public static Task<List<OralQuestion>> GetAllOralQuestionsListAsync(
 		this IOralQuestionsMotionsApi api,
 		int? askingMemberId = null,
 		string? answeringDepartment = null,
@@ -134,23 +156,41 @@ public static class OralQuestionsMotionsApiExtensions
 		bool? isAnswered = null,
 		int pageSize = 20,
 		CancellationToken cancellationToken = default)
+	   => PaginationHelper.ToListAsync(
+			api.GetAllOralQuestionsAsync(
+				askingMemberId,
+				answeringDepartment,
+				house,
+				dateFrom,
+				dateTo,
+				isAnswered,
+				pageSize,
+				cancellationToken),
+			cancellationToken);
+
+	/// <summary>
+	/// Get all motions by automatically paginating through all results using a request model.
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all motions</returns>
+	public static IAsyncEnumerable<Motion> GetAllMotionsAsync(
+		this IOralQuestionsMotionsApi api,
+		GetMotionsRequest? request = null,
+		CancellationToken cancellationToken = default)
 	{
-		var allQuestions = new List<OralQuestion>();
+		request ??= new GetMotionsRequest();
+		var pageSize = request.Take ?? 20;
 
-		await foreach (var question in api.GetAllOralQuestionsAsync(
-			askingMemberId,
-			answeringDepartment,
-			house,
-			dateFrom,
-			dateTo,
-			isAnswered,
+		return PaginationHelper.GetAllOffsetAsync(
+			request,
 			pageSize,
-			cancellationToken))
-		{
-			allQuestions.Add(question);
-		}
-
-		return allQuestions;
+			static (current, skip, take) => current with { Skip = skip, Take = take },
+			(pageRequest, token) => api.GetMotionsAsync(pageRequest, token),
+			static response => response.Response,
+			static response => response.PagingInfo.Total,
+			cancellationToken);
 	}
 
 	/// <summary>
@@ -165,13 +205,16 @@ public static class OralQuestionsMotionsApiExtensions
 		MotionsQueryOptions options,
 		CancellationToken cancellationToken = default)
 		=> api.GetAllMotionsAsync(
-			options.ProposingMemberId,
-			options.House,
-			options.DateFrom,
-			options.DateTo,
-			options.MotionType,
-			options.IsActive,
-			options.PageSize,
+		  new GetMotionsRequest
+		  {
+			  ProposingMemberId = options.ProposingMemberId,
+			  House = options.House,
+			  DateFrom = options.DateFrom,
+			  DateTo = options.DateTo,
+			  MotionType = options.MotionType,
+			  IsActive = options.IsActive,
+			  Take = options.PageSize
+		  },
 			cancellationToken);
 
 	/// <summary>
@@ -187,7 +230,7 @@ public static class OralQuestionsMotionsApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all motions</returns>
-	public static async IAsyncEnumerable<Motion> GetAllMotionsAsync(
+    public static IAsyncEnumerable<Motion> GetAllMotionsAsync(
 		this IOralQuestionsMotionsApi api,
 		int? proposingMemberId = null,
 		string? house = null,
@@ -196,41 +239,32 @@ public static class OralQuestionsMotionsApiExtensions
 		string? motionType = null,
 		bool? isActive = null,
 		int pageSize = 20,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var skip = 0;
-
-		while (!cancellationToken.IsCancellationRequested)
-		{
-			var response = await api.GetMotionsAsync(
-				proposingMemberId,
-				house,
-				dateFrom,
-				dateTo,
-				motionType,
-				isActive,
-				skip,
-				pageSize,
-				cancellationToken);
-
-			if (response?.Response is null || response.Response.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllMotionsAsync(
+			new GetMotionsRequest
 			{
-				yield break;
-			}
+				ProposingMemberId = proposingMemberId,
+				House = house,
+				DateFrom = dateFrom,
+				DateTo = dateTo,
+				MotionType = motionType,
+				IsActive = isActive,
+				Take = pageSize
+			},
+			cancellationToken);
 
-			foreach (var item in response.Response)
-			{
-				yield return item;
-			}
-
-			if (IsLastPage(response.Response.Count, skip, pageSize, response.PagingInfo.Total))
-			{
-				yield break;
-			}
-
-			skip += pageSize;
-		}
-	}
+	/// <summary>
+	/// Get all motions as a materialized list using a request model.
+	/// </summary>
+	/// <param name="api">The oral questions/motions API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all motions</returns>
+	public static Task<List<Motion>> GetAllMotionsListAsync(
+		this IOralQuestionsMotionsApi api,
+		GetMotionsRequest? request = null,
+		CancellationToken cancellationToken = default)
+		=> PaginationHelper.ToListAsync(api.GetAllMotionsAsync(request, cancellationToken), cancellationToken);
 
 	/// <summary>
 	/// Get all motions as a materialized list using options
@@ -244,13 +278,16 @@ public static class OralQuestionsMotionsApiExtensions
 		MotionsQueryOptions options,
 		CancellationToken cancellationToken = default)
 		=> api.GetAllMotionsListAsync(
-			options.ProposingMemberId,
-			options.House,
-			options.DateFrom,
-			options.DateTo,
-			options.MotionType,
-			options.IsActive,
-			options.PageSize,
+		  new GetMotionsRequest
+		  {
+			  ProposingMemberId = options.ProposingMemberId,
+			  House = options.House,
+			  DateFrom = options.DateFrom,
+			  DateTo = options.DateTo,
+			  MotionType = options.MotionType,
+			  IsActive = options.IsActive,
+			  Take = options.PageSize
+		  },
 			cancellationToken);
 
 	/// <summary>
@@ -266,7 +303,7 @@ public static class OralQuestionsMotionsApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all motions</returns>
-	public static async Task<List<Motion>> GetAllMotionsListAsync(
+  public static Task<List<Motion>> GetAllMotionsListAsync(
 		this IOralQuestionsMotionsApi api,
 		int? proposingMemberId = null,
 		string? house = null,
@@ -276,28 +313,15 @@ public static class OralQuestionsMotionsApiExtensions
 		bool? isActive = null,
 		int pageSize = 20,
 		CancellationToken cancellationToken = default)
-	{
-		var allMotions = new List<Motion>();
-
-		await foreach (var motion in api.GetAllMotionsAsync(
-			proposingMemberId,
-			house,
-			dateFrom,
-			dateTo,
-			motionType,
-			isActive,
-			pageSize,
-			cancellationToken))
-		{
-			allMotions.Add(motion);
-		}
-
-		return allMotions;
-	}
-
-	/// <summary>
-	/// Determines if this is the last page of results
-	/// </summary>
-	private static bool IsLastPage(int itemCount, int skip, int pageSize, int totalResults)
-		=> itemCount < pageSize || skip + pageSize >= totalResults;
+	   => PaginationHelper.ToListAsync(
+			api.GetAllMotionsAsync(
+				proposingMemberId,
+				house,
+				dateFrom,
+				dateTo,
+				motionType,
+				isActive,
+				pageSize,
+				cancellationToken),
+			cancellationToken);
 }

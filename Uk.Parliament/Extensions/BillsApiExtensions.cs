@@ -1,8 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
 using Uk.Parliament.Models.Bills;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Extensions;
 
@@ -11,6 +11,31 @@ namespace Uk.Parliament.Extensions;
 /// </summary>
 public static class BillsApiExtensions
 {
+	/// <summary>
+	/// Get all bills by automatically paginating through all results.
+	/// </summary>
+	/// <param name="api">The bills API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all bills</returns>
+	public static IAsyncEnumerable<Bill> GetAllBillsAsync(
+		this IBillsApi api,
+		GetBillsRequest? request = null,
+		CancellationToken cancellationToken = default)
+	{
+		request ??= new GetBillsRequest();
+		var pageSize = request.Take ?? 20;
+
+		return PaginationHelper.GetAllOffsetAsync(
+			request,
+			pageSize,
+			static (current, skip, take) => current with { Skip = skip, Take = take },
+			(pageRequest, token) => api.GetBillsAsync(pageRequest, token),
+			static response => response.Items,
+			static response => response.TotalResults,
+			cancellationToken);
+	}
+
 	/// <summary>
 	/// Get all bills by automatically paginating through all results
 	/// </summary>
@@ -21,39 +46,35 @@ public static class BillsApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all bills</returns>
-	public static async IAsyncEnumerable<Bill> GetAllBillsAsync(
+    public static IAsyncEnumerable<Bill> GetAllBillsAsync(
 		this IBillsApi api,
 		string? searchTerm = null,
 		int? session = null,
 		string? currentHouse = null,
 		int pageSize = 20,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.GetBillsAsync(searchTerm, session, currentHouse, skip, pageSize, cancellationToken);
-
-			if (response?.Items is null || response.Items.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllBillsAsync(
+			new GetBillsRequest
 			{
-				yield break;
-			}
+				SearchTerm = searchTerm,
+				Session = session,
+				CurrentHouse = currentHouse,
+				Take = pageSize
+			},
+			cancellationToken);
 
-			foreach (var bill in response.Items)
-			{
-				yield return bill;
-			}
-
-			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
-		}
-	}
+	/// <summary>
+	/// Get all bills as a materialized list.
+	/// </summary>
+	/// <param name="api">The bills API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all bills</returns>
+	public static Task<List<Bill>> GetAllBillsListAsync(
+		this IBillsApi api,
+		GetBillsRequest? request = null,
+		CancellationToken cancellationToken = default)
+		=> PaginationHelper.ToListAsync(api.GetAllBillsAsync(request, cancellationToken), cancellationToken);
 
 	/// <summary>
 	/// Get all bills as a materialized list
@@ -65,21 +86,14 @@ public static class BillsApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all bills</returns>
-	public static async Task<List<Bill>> GetAllBillsListAsync(
+  public static Task<List<Bill>> GetAllBillsListAsync(
 		this IBillsApi api,
 		string? searchTerm = null,
 		int? session = null,
 		string? currentHouse = null,
 		int pageSize = 20,
 		CancellationToken cancellationToken = default)
-	{
-		var allBills = new List<Bill>();
-
-		await foreach (var bill in api.GetAllBillsAsync(searchTerm, session, currentHouse, pageSize, cancellationToken))
-		{
-			allBills.Add(bill);
-		}
-
-		return allBills;
-	}
+	   => PaginationHelper.ToListAsync(
+			api.GetAllBillsAsync(searchTerm, session, currentHouse, pageSize, cancellationToken),
+			cancellationToken);
 }

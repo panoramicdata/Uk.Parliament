@@ -26,8 +26,9 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 		SetupWrittenQuestionsAsyncMock(mockApi, expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetWrittenQuestionsAsync(take: 10,
-			cancellationToken: CancellationToken);
+        var result = await mockApi.Object.GetWrittenQuestionsAsync(
+			new GetWrittenQuestionsRequest { Take = 10 },
+			CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -72,9 +73,8 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 		PaginatedResponse<WrittenQuestion> response)
 		=> mockApi
 			.Setup(x => x.GetWrittenQuestionsAsync(
-				It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(),
-				It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(),
-				It.IsAny<bool?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
+               It.IsAny<GetWrittenQuestionsRequest>(),
+				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(response);
 
 	[Fact]
@@ -114,20 +114,15 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 			]
 		};
 
-		_ = mockApi.Setup(x => x.GetWrittenStatementsAsync(
-			It.IsAny<int?>(),
-			It.IsAny<string?>(),
-			It.IsAny<string?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+     _ = mockApi.Setup(x => x.GetWrittenStatementsAsync(
+			It.IsAny<GetWrittenStatementsRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetWrittenStatementsAsync(take: 10,
-			cancellationToken: CancellationToken);
+       var result = await mockApi.Object.GetWrittenStatementsAsync(
+			new GetWrittenStatementsRequest { Take = 10 },
+			CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -161,18 +156,15 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 			]
 		};
 
-		_ = mockApi.Setup(x => x.GetDailyReportsAsync(
-			It.IsAny<DateTime?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<string?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+      _ = mockApi.Setup(x => x.GetDailyReportsAsync(
+			It.IsAny<GetDailyReportsRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedResponse);
 
 		// Act
 		var result = await mockApi.Object.GetDailyReportsAsync(
-			cancellationToken: CancellationToken);
+          new GetDailyReportsRequest(),
+			CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

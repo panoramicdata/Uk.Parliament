@@ -1,8 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
 using Uk.Parliament.Models;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Extensions;
 
@@ -12,6 +12,30 @@ namespace Uk.Parliament.Extensions;
 public static class PetitionsApiExtensions
 {
 	/// <summary>
+	/// Get all petitions by automatically paginating through all results.
+	/// </summary>
+	/// <param name="api">The petitions API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all petitions</returns>
+	public static IAsyncEnumerable<Petition> GetAllAsync(
+		this IPetitionsApi api,
+		GetPetitionsRequest? request = null,
+		CancellationToken cancellationToken = default)
+	{
+		request ??= new GetPetitionsRequest();
+		var pageSize = request.PageSize ?? 50;
+
+		return PaginationHelper.GetAllPageAsync(
+			request,
+			pageSize,
+			static (current, page, size) => current with { Page = page, PageSize = size },
+			(pageRequest, token) => api.GetAsync(pageRequest, token),
+			static response => response.Data,
+			cancellationToken);
+	}
+
+	/// <summary>
 	/// Get all petitions by automatically paginating through all results
 	/// </summary>
 	/// <param name="api">The petitions API</param>
@@ -20,38 +44,33 @@ public static class PetitionsApiExtensions
 	/// <param name="pageSize">Items per page (default: 50)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all petitions</returns>
-	public static async IAsyncEnumerable<Petition> GetAllAsync(
+ public static IAsyncEnumerable<Petition> GetAllAsync(
 		this IPetitionsApi api,
 		string? search = null,
 		string? state = null,
 		int pageSize = 50,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var page = 1;
-
-		while (true)
-		{
-			var response = await api.GetAsync(search, state, page, pageSize, cancellationToken);
-
-			if (response?.Data is null || response.Data.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllAsync(
+			new GetPetitionsRequest
 			{
-				yield break;
-			}
+				Search = search,
+				State = state,
+				PageSize = pageSize
+			},
+			cancellationToken);
 
-			foreach (var petition in response.Data)
-			{
-				yield return petition;
-			}
-
-			// Stop if this was the last page
-			if (response.Data.Count < pageSize)
-			{
-				yield break;
-			}
-
-			page++;
-		}
-	}
+	/// <summary>
+	/// Get all petitions as a materialized list.
+	/// </summary>
+	/// <param name="api">The petitions API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all petitions</returns>
+	public static Task<List<Petition>> GetAllListAsync(
+		this IPetitionsApi api,
+		GetPetitionsRequest? request = null,
+		CancellationToken cancellationToken = default)
+		=> PaginationHelper.ToListAsync(api.GetAllAsync(request, cancellationToken), cancellationToken);
 
 	/// <summary>
 	/// Get all petitions as a materialized list
@@ -62,20 +81,11 @@ public static class PetitionsApiExtensions
 	/// <param name="pageSize">Items per page (default: 50)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all petitions</returns>
-	public static async Task<List<Petition>> GetAllListAsync(
+   public static Task<List<Petition>> GetAllListAsync(
 		this IPetitionsApi api,
 		string? search = null,
 		string? state = null,
 		int pageSize = 50,
 		CancellationToken cancellationToken = default)
-	{
-		var allPetitions = new List<Petition>();
-
-		await foreach (var petition in api.GetAllAsync(search, state, pageSize, cancellationToken))
-		{
-			allPetitions.Add(petition);
-		}
-
-		return allPetitions;
-	}
+	   => PaginationHelper.ToListAsync(api.GetAllAsync(search, state, pageSize, cancellationToken), cancellationToken);
 }

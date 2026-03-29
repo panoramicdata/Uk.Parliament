@@ -18,11 +18,8 @@ public class PetitionsApiMockTests : IntegrationTestBase
 			Links = new Links() }
 		};
 
-		_ = mockApi.Setup(x => x.GetAsync(
-			It.IsAny<string>(),
-			It.IsAny<string>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+      _ = mockApi.Setup(x => x.GetAsync(
+			It.IsAny<GetPetitionsRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new ParliamentApiResponse<List<Petition>>
 			{
@@ -31,8 +28,9 @@ public class PetitionsApiMockTests : IntegrationTestBase
 			});
 
 		// Act
-		var result = await mockApi.Object.GetAsync(state: "open",
-			cancellationToken: CancellationToken);
+       var result = await mockApi.Object.GetAsync(
+			new GetPetitionsRequest { State = "open" },
+			CancellationToken);
 
 		// Assert
 		_ = result.Data.Should().HaveCount(2);
@@ -88,11 +86,8 @@ public class PetitionsApiMockTests : IntegrationTestBase
 			Links = new Links() }
 		};
 
-		_ = mockApi.Setup(x => x.GetArchivedAsync(
-			It.IsAny<string>(),
-			It.IsAny<string>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+      _ = mockApi.Setup(x => x.GetArchivedAsync(
+			It.IsAny<GetPetitionsRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new ParliamentApiResponse<List<Petition>>
 			{
@@ -102,7 +97,8 @@ public class PetitionsApiMockTests : IntegrationTestBase
 
 		// Act
 		var result = await mockApi.Object.GetArchivedAsync(
-			cancellationToken: CancellationToken);
+          new GetPetitionsRequest(),
+			CancellationToken);
 
 		// Assert
 		_ = result.Data.Should().ContainSingle();

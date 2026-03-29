@@ -14,7 +14,13 @@ public class PetitionsApiExtensionsTests : IntegrationTestBase
 		var mockApi = new Mock<IPetitionsApi>();
 
 		// Setup page 1
-		_ = mockApi.Setup(x => x.GetAsync(null, null, 1, 2, It.IsAny<CancellationToken>()))
+     _ = mockApi.Setup(x => x.GetAsync(
+			It.Is<GetPetitionsRequest>(request =>
+				request.Search == null &&
+				request.State == null &&
+				request.Page == 1 &&
+				request.PageSize == 2),
+			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new ParliamentApiResponse<List<Petition>>
 			{
 				Data =
@@ -28,7 +34,13 @@ public class PetitionsApiExtensionsTests : IntegrationTestBase
 			});
 
 		// Setup page 2
-		_ = mockApi.Setup(x => x.GetAsync(null, null, 2, 2, It.IsAny<CancellationToken>()))
+     _ = mockApi.Setup(x => x.GetAsync(
+			It.Is<GetPetitionsRequest>(request =>
+				request.Search == null &&
+				request.State == null &&
+				request.Page == 2 &&
+				request.PageSize == 2),
+			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new ParliamentApiResponse<List<Petition>>
 			{
 				Data =
@@ -61,7 +73,12 @@ public class PetitionsApiExtensionsTests : IntegrationTestBase
 		// Arrange
 		var mockApi = new Mock<IPetitionsApi>();
 
-		_ = mockApi.Setup(x => x.GetAsync(null, null, It.IsAny<int?>(), 10, It.IsAny<CancellationToken>()))
+     _ = mockApi.Setup(x => x.GetAsync(
+			It.Is<GetPetitionsRequest>(request =>
+				request.Search == null &&
+				request.State == null &&
+				request.PageSize == 10),
+			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new ParliamentApiResponse<List<Petition>>
 			{
 				Data =

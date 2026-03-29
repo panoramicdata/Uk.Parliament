@@ -1,8 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Interfaces;
 using Uk.Parliament.Models.Members;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Extensions;
 
@@ -11,6 +11,32 @@ namespace Uk.Parliament.Extensions;
 /// </summary>
 public static class MembersApiExtensions
 {
+	/// <summary>
+	/// Get all members by automatically paginating through all results.
+	/// </summary>
+	/// <param name="api">The members API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all members</returns>
+	public static IAsyncEnumerable<Member> GetAllAsync(
+		this IMembersApi api,
+		SearchMembersRequest? request = null,
+		CancellationToken cancellationToken = default)
+	{
+		request ??= new SearchMembersRequest();
+		var pageSize = request.Take ?? 20;
+
+		return PaginationHelper.GetAllOffsetAsync(
+			request,
+			pageSize,
+			static (current, skip, take) => current with { Skip = skip, Take = take },
+			(pageRequest, token) => api.SearchAsync(pageRequest, token),
+			static response => response.Items?.ConvertAll(static item => item.Value)
+				?? response.Results?.ConvertAll(static item => item.Value),
+			static response => response.TotalResults,
+			cancellationToken);
+	}
+
 	/// <summary>
 	/// Get all members by automatically paginating through all results
 	/// </summary>
@@ -21,39 +47,35 @@ public static class MembersApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all members</returns>
-	public static async IAsyncEnumerable<Member> GetAllAsync(
+   public static IAsyncEnumerable<Member> GetAllAsync(
 		this IMembersApi api,
 		string? name = null,
 		int? house = null,
 		bool? isCurrentMember = null,
 		int pageSize = 20,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.SearchAsync(name, skip, pageSize, house, isCurrentMember, cancellationToken);
-
-			if (response?.Items is null || response.Items.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllAsync(
+			new SearchMembersRequest
 			{
-				yield break;
-			}
+				Name = name,
+				House = house,
+				IsCurrentMember = isCurrentMember,
+				Take = pageSize
+			},
+			cancellationToken);
 
-			foreach (var item in response.Items)
-			{
-				yield return item.Value;
-			}
-
-			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
-		}
-	}
+	/// <summary>
+	/// Get all members as a materialized list.
+	/// </summary>
+	/// <param name="api">The members API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of all members</returns>
+	public static Task<List<Member>> GetAllListAsync(
+		this IMembersApi api,
+		SearchMembersRequest? request = null,
+		CancellationToken cancellationToken = default)
+		=> PaginationHelper.ToListAsync(api.GetAllAsync(request, cancellationToken), cancellationToken);
 
 	/// <summary>
 	/// Get all members as a materialized list
@@ -65,22 +87,39 @@ public static class MembersApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of all members</returns>
-	public static async Task<List<Member>> GetAllListAsync(
+ public static Task<List<Member>> GetAllListAsync(
 		this IMembersApi api,
 		string? name = null,
 		int? house = null,
 		bool? isCurrentMember = null,
 		int pageSize = 20,
 		CancellationToken cancellationToken = default)
+	   => PaginationHelper.ToListAsync(api.GetAllAsync(name, house, isCurrentMember, pageSize, cancellationToken), cancellationToken);
+
+	/// <summary>
+	/// Get all constituencies by automatically paginating through all results.
+	/// </summary>
+	/// <param name="api">The members API</param>
+	/// <param name="request">Request parameters</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Async enumerable of all constituencies</returns>
+	public static IAsyncEnumerable<Constituency> GetAllConstituenciesAsync(
+		this IMembersApi api,
+		SearchConstituenciesRequest? request = null,
+		CancellationToken cancellationToken = default)
 	{
-		var allMembers = new List<Member>();
+		request ??= new SearchConstituenciesRequest();
+		var pageSize = request.Take ?? 20;
 
-		await foreach (var member in api.GetAllAsync(name, house, isCurrentMember, pageSize, cancellationToken))
-		{
-			allMembers.Add(member);
-		}
-
-		return allMembers;
+		return PaginationHelper.GetAllOffsetAsync(
+			request,
+			pageSize,
+			static (current, skip, take) => current with { Skip = skip, Take = take },
+			(pageRequest, token) => api.SearchConstituenciesAsync(pageRequest, token),
+			static response => response.Items?.ConvertAll(static item => item.Value)
+				?? response.Results?.ConvertAll(static item => item.Value),
+			static response => response.TotalResults,
+			cancellationToken);
 	}
 
 	/// <summary>
@@ -91,35 +130,16 @@ public static class MembersApiExtensions
 	/// <param name="pageSize">Items per page (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Async enumerable of all constituencies</returns>
-	public static async IAsyncEnumerable<Constituency> GetAllConstituenciesAsync(
+   public static IAsyncEnumerable<Constituency> GetAllConstituenciesAsync(
 		this IMembersApi api,
 		string? searchText = null,
 		int pageSize = 20,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var skip = 0;
-
-		while (true)
-		{
-			var response = await api.SearchConstituenciesAsync(searchText, skip, pageSize, cancellationToken);
-
-			if (response?.Items is null || response.Items.Count == 0)
+     CancellationToken cancellationToken = default)
+	   => api.GetAllConstituenciesAsync(
+			new SearchConstituenciesRequest
 			{
-				yield break;
-			}
-
-			foreach (var item in response.Items)
-			{
-				yield return item.Value;
-			}
-
-			// Stop if this was the last page
-			if (response.Items.Count < pageSize || skip + pageSize >= response.TotalResults)
-			{
-				yield break;
-			}
-
-			skip += pageSize;
-		}
-	}
+				SearchText = searchText,
+				Take = pageSize
+			},
+			cancellationToken);
 }

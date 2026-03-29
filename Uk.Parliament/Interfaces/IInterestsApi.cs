@@ -1,7 +1,9 @@
+#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Models.Interests;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -45,6 +47,20 @@ public interface IInterestsApi
 	/// <returns>Paginated list of interests</returns>
 	[Get("/api/v1/Interests")]
 	Task<InterestsResponse<Interest>> SearchInterestsAsync(
+		[Query] SearchInterestsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Search interests across all members.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="SearchInterestsAsync(SearchInterestsRequest, CancellationToken)"/> instead.
+	/// Example: <c>SearchInterestsAsync(new SearchInterestsRequest { MemberId = memberId, CategoryId = categoryId, SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// This overload remains temporarily as a warning-only migration path.
+	/// </remarks>
+	[Obsolete("Use SearchInterestsAsync(SearchInterestsRequest request, CancellationToken cancellationToken) instead. Example: SearchInterestsAsync(new SearchInterestsRequest { MemberId = memberId, CategoryId = categoryId, SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Get("/api/v1/Interests")]
+	Task<InterestsResponse<Interest>> SearchInterestsAsync(
 		[Query] int? memberId = null,
 		[Query] int? categoryId = null,
 		[Query] string? searchTerm = null,
@@ -83,3 +99,4 @@ public interface IInterestsApi
 		int id,
 		CancellationToken cancellationToken = default);
 }
+#pragma warning restore CS1572, CS1573

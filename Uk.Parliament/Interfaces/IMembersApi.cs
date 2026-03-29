@@ -1,8 +1,10 @@
+#pragma warning disable CS1572, CS1573
 using System.Threading;
 using System.Threading.Tasks;
 using Refit;
 using Uk.Parliament.Models;
 using Uk.Parliament.Models.Members;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -21,6 +23,20 @@ public interface IMembersApi
 	/// <param name="isCurrentMember">Filter for current members only</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of members</returns>
+	[Get("/api/Members/Search")]
+	Task<PaginatedResponse<Member>> SearchAsync(
+		[Query] SearchMembersRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Search for members of parliament.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="SearchAsync(SearchMembersRequest, CancellationToken)"/> instead.
+	/// Example: <c>SearchAsync(new SearchMembersRequest { Name = name, Skip = skip, Take = take, House = house, IsCurrentMember = isCurrentMember }, cancellationToken)</c>.
+	/// This overload remains temporarily as a warning-only migration path.
+	/// </remarks>
+	[Obsolete("Use SearchAsync(SearchMembersRequest request, CancellationToken cancellationToken) instead. Example: SearchAsync(new SearchMembersRequest { Name = name, Skip = skip, Take = take, House = house, IsCurrentMember = isCurrentMember }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
 	[Get("/api/Members/Search")]
 	Task<PaginatedResponse<Member>> SearchAsync(
 		[Query] string? name = null,
@@ -51,6 +67,20 @@ public interface IMembersApi
 	/// <returns>Paginated list of constituencies</returns>
 	[Get("/api/Location/Constituency/Search")]
 	Task<PaginatedResponse<Constituency>> SearchConstituenciesAsync(
+		[Query] SearchConstituenciesRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Search for constituencies.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="SearchConstituenciesAsync(SearchConstituenciesRequest, CancellationToken)"/> instead.
+	/// Example: <c>SearchConstituenciesAsync(new SearchConstituenciesRequest { SearchText = searchText, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// This overload remains temporarily as a warning-only migration path.
+	/// </remarks>
+	[Obsolete("Use SearchConstituenciesAsync(SearchConstituenciesRequest request, CancellationToken cancellationToken) instead. Example: SearchConstituenciesAsync(new SearchConstituenciesRequest { SearchText = searchText, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Get("/api/Location/Constituency/Search")]
+	Task<PaginatedResponse<Constituency>> SearchConstituenciesAsync(
 		[Query] string? searchText = null,
 		[Query] int? skip = null,
 		[Query] int? take = null,
@@ -67,3 +97,4 @@ public interface IMembersApi
 		int id,
 		CancellationToken cancellationToken = default);
 }
+#pragma warning restore CS1572, CS1573
