@@ -84,7 +84,7 @@ public class Members : IntegrationTestBase
 		_ = response.Items.Should().AllSatisfy(item =>
 		{
 			_ = item.Value.LatestHouseMembership.Should().NotBeNull();
-			_ = item.Value.LatestHouseMembership!.House.Should().Be(1, "should only return Commons members");
+			_ = item.Value.LatestHouseMembership.House.Should().Be(1, "should only return Commons members");
 		});
 	}
 
@@ -107,7 +107,7 @@ public class Members : IntegrationTestBase
 		_ = response.Items.Should().AllSatisfy(item =>
 		{
 			_ = item.Value.LatestHouseMembership.Should().NotBeNull();
-			_ = item.Value.LatestHouseMembership!.House.Should().Be(2, "should only return Lords members");
+			_ = item.Value.LatestHouseMembership.House.Should().Be(2, "should only return Lords members");
 		});
 	}
 
@@ -270,7 +270,7 @@ public class Members : IntegrationTestBase
 		_ = allMembers.Should().AllSatisfy(m =>
 		{
 			_ = m.LatestHouseMembership.Should().NotBeNull();
-			_ = m.LatestHouseMembership!.House.Should().Be(1);
+			_ = m.LatestHouseMembership.House.Should().Be(1);
 		});
 	}
 }

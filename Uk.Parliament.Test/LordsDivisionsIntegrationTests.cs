@@ -51,11 +51,11 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 	}
 
 	[Fact]
-	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
+	public Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 		=> throw new NotImplementedException();
 
 	[Fact]
-	public async Task GetDivisionGroupedByPartyAsync_WithValidId_ReturnsGroupedVotes()
+	public Task GetDivisionGroupedByPartyAsync_WithValidId_ReturnsGroupedVotes()
 		=> throw new NotImplementedException();
 
 	[Fact]

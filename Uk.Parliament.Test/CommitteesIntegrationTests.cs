@@ -111,8 +111,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = committeesWithTypes.Should().NotBeEmpty();
 		_ = committeesWithTypes.Should().AllSatisfy(committee =>
 		{
-			_ = committee.CommitteeTypes!.Should().NotBeEmpty();
-			_ = committee.CommitteeTypes![0].Name.Should().NotBeNullOrWhiteSpace();
+			_ = committee.CommitteeTypes.Should().NotBeEmpty();
+			_ = committee.CommitteeTypes[0].Name.Should().NotBeNullOrWhiteSpace();
 		});
 	}
 

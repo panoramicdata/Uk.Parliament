@@ -177,7 +177,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 
 		// Assert
 		_ = bill.CurrentStage.Should().NotBeNull();
-		_ = bill.CurrentStage!.Description.Should().NotBeNullOrWhiteSpace();
+		_ = bill.CurrentStage.Description.Should().NotBeNullOrWhiteSpace();
 	}
 
 	[Fact]
