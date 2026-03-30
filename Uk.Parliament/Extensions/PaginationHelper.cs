@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,14 +6,14 @@ namespace Uk.Parliament.Extensions;
 
 internal static class PaginationHelper
 {
-  public static async IAsyncEnumerable<TItem> GetAllOffsetAsync<TRequest, TResponse, TItem>(
-		TRequest request,
-		int pageSize,
-		Func<TRequest, int, int, TRequest> withPagination,
-      Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
-		Func<TResponse, IReadOnlyList<TItem>?> getItems,
-		Func<TResponse, int> getTotalResults,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	public static async IAsyncEnumerable<TItem> GetAllOffsetAsync<TRequest, TResponse, TItem>(
+		  TRequest request,
+		  int pageSize,
+		  Func<TRequest, int, int, TRequest> withPagination,
+		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
+		  Func<TResponse, IReadOnlyList<TItem>?> getItems,
+		  Func<TResponse, int> getTotalResults,
+		  [EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{
 		var skip = 0;
 
@@ -34,7 +33,7 @@ internal static class PaginationHelper
 				yield return item;
 			}
 
-         if (items.Count < pageSize || skip + pageSize >= getTotalResults(response!))
+			if (items.Count < pageSize || skip + pageSize >= getTotalResults(response!))
 			{
 				yield break;
 			}
@@ -43,11 +42,11 @@ internal static class PaginationHelper
 		}
 	}
 
-    public static async IAsyncEnumerable<TItem> GetAllPageAsync<TRequest, TResponse, TItem>(
+	public static async IAsyncEnumerable<TItem> GetAllPageAsync<TRequest, TResponse, TItem>(
 		TRequest request,
 		int pageSize,
 		Func<TRequest, int, int, TRequest> withPagination,
-      Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
+	  Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
 		Func<TResponse, IReadOnlyList<TItem>?> getItems,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default)
 	{

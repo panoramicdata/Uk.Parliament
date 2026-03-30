@@ -10,7 +10,7 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-                new GetPetitionsRequest { Search = "Electric Vehicles", Page = 1, PageSize = 10 },
+				new GetPetitionsRequest { Search = "Electric Vehicles", Page = 1, PageSize = 10 },
 				CancellationToken);
 
 		_ = response.Should().NotBeNull();
@@ -24,7 +24,7 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-              new GetPetitionsRequest { State = "open", Page = 1, PageSize = 5 },
+			  new GetPetitionsRequest { State = "open", Page = 1, PageSize = 5 },
 				CancellationToken);
 
 		_ = response.Should().NotBeNull();
@@ -38,7 +38,7 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-                new GetPetitionsRequest { State = "closed", Page = 1, PageSize = 5 },
+				new GetPetitionsRequest { State = "closed", Page = 1, PageSize = 5 },
 				CancellationToken);
 
 		_ = response.Should().NotBeNull();
@@ -52,7 +52,7 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-              new GetPetitionsRequest { State = "rejected", Page = 1, PageSize = 5 },
+			  new GetPetitionsRequest { State = "rejected", Page = 1, PageSize = 5 },
 				CancellationToken);
 
 		_ = response.Should().NotBeNull();
@@ -121,7 +121,7 @@ public class Petitions : IntegrationTestBase
 		var page1 = await Client
 			.Petitions
 			.GetAsync(
-              new GetPetitionsRequest { State = "open", Page = 1, PageSize = 10 },
+			  new GetPetitionsRequest { State = "open", Page = 1, PageSize = 10 },
 				CancellationToken);
 
 		_ = page1.Data.Should().NotBeNull();
@@ -130,7 +130,7 @@ public class Petitions : IntegrationTestBase
 		var page2 = await Client
 			.Petitions
 			.GetAsync(
-              new GetPetitionsRequest { State = "open", Page = 2, PageSize = 10 },
+			  new GetPetitionsRequest { State = "open", Page = 2, PageSize = 10 },
 				CancellationToken);
 
 		_ = page2.Data.Should().NotBeNull();
@@ -144,7 +144,7 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-                new GetPetitionsRequest { PageSize = 5 },
+				new GetPetitionsRequest { PageSize = 5 },
 				CancellationToken);
 
 		_ = response.Should().NotBeNull();

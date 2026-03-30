@@ -307,28 +307,37 @@ var committee = await client.Committees.GetCommitteeByIdAsync(1, cancellationTok
 
 Voting records for Commons and Lords.
 
-> **Note:** The Divisions APIs currently return untyped (`object`) responses.
-> `GetAllAsync` is not yet available for these endpoints — use the raw interface methods directly.
-> Strongly-typed models and `GetAllAsync` support will be added in a future release.
-
 ```csharp
-// Commons divisions (raw interface — manual paging)
+// Commons divisions — search and get by ID
 var commonsDivisions = await client.CommonsDivisions.SearchDivisionsAsync(
     new SearchCommonsDivisionsRequest { SearchTerm = "Budget" }, cancellationToken);
+foreach (var div in commonsDivisions)
+{
+    Console.WriteLine($"{div.Title}: Ayes {div.AyeCount}, Noes {div.NoCount}");
+}
 
 var division = await client.CommonsDivisions.GetDivisionByIdAsync(12345, cancellationToken);
-var groupedByParty = await client.CommonsDivisions.GetDivisionGroupedByPartyAsync(12345, cancellationToken);
-var memberVoting = await client.CommonsDivisions.GetMemberVotingAsync(
-    new GetCommonsMemberVotingRequest { MemberId = 172 }, cancellationToken);
 
-// Lords divisions (raw interface — manual paging)
+// Member voting history
+var votingHistory = await client.CommonsDivisions.GetMemberVotingAsync(
+    new GetCommonsMemberVotingRequest { MemberId = 172 }, cancellationToken);
+foreach (var record in votingHistory)
+{
+    Console.WriteLine($"{record.PublishedDivision?.Title}: Aye={record.MemberVotedAye}");
+}
+
+// Lords divisions
 var lordsDivisions = await client.LordsDivisions.SearchDivisionsAsync(
     new SearchLordsDivisionsRequest { SearchTerm = "Education" }, cancellationToken);
+foreach (var div in lordsDivisions)
+{
+    Console.WriteLine($"{div.Title}: Content {div.AuthoritativeContentCount}, Not-Content {div.AuthoritativeNotContentCount}");
+}
 
 var lordsDivision = await client.LordsDivisions.GetDivisionByIdAsync(6789, cancellationToken);
 ```
 
-**Status:** ✅ Functional
+**Status:** ✅ Fully typed
 
 ### ✅ Member Interests API
 
@@ -572,7 +581,6 @@ The library covers all core/primary endpoints for each API. Some APIs have addit
 
 ## Known Issues
 
-- **Divisions APIs**: Responses are currently untyped (`object`); `GetAllAsync` is not available — use the raw interface methods with manual paging
 - **Committees API**: Occasional intermittent 500 errors from Parliament servers
 - **Members API**: Many sub-endpoints (biography, voting history, portraits) not yet implemented
 - **Bills API**: Stage/amendment/publication sub-endpoints not yet implemented
@@ -618,12 +626,11 @@ See [Breaking Change in v10.1](#️-breaking-change-in-v101--request-model-migra
 ## Contributing
 
 Contributions welcome! Priority areas:
-1. Add strongly-typed models to Divisions APIs (Commons & Lords) to enable `GetAllAsync`
-2. Expand Members API (biography, voting history, portraits, etc.)
-3. Expand Bills API (stages, amendments, publications)
-4. Add more integration tests
-5. Improve documentation
-6. Report issues
+1. Expand Members API (biography, voting history, portraits, etc.)
+2. Expand Bills API (stages, amendments, publications)
+3. Add more integration tests
+4. Improve documentation
+5. Report issues
 
 ---
 

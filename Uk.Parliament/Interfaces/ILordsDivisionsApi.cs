@@ -1,10 +1,11 @@
-#pragma warning disable CS1572, CS1573
-namespace Uk.Parliament.Interfaces;
-
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
+using Uk.Parliament.Models.Divisions;
 using Uk.Parliament.Requests;
+
+#pragma warning disable CS1572, CS1573
+namespace Uk.Parliament.Interfaces;
 
 /// <summary>
 /// UK Parliament Lords Divisions (Voting) API client
@@ -12,14 +13,13 @@ using Uk.Parliament.Requests;
 public interface ILordsDivisionsApi
 {
 	/// <summary>
-	/// List all Lords divisions (placeholder - API structure TBD)
+	/// List all Lords divisions
 	/// </summary>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of divisions</returns>
 	[Get("/data/Divisions")]
-	Task<object> GetDivisionsAsync(
+	Task<List<LordsDivision>> GetDivisionsAsync(
 		[Query] GetLordsDivisionsRequest request,
 		CancellationToken cancellationToken = default);
 
@@ -32,43 +32,41 @@ public interface ILordsDivisionsApi
 	/// </remarks>
 	[Obsolete("Use GetDivisionsAsync(GetLordsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: GetDivisionsAsync(new GetLordsDivisionsRequest { Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/data/Divisions")]
-	Task<object> GetDivisionsAsync(
+	Task<List<LordsDivision>> GetDivisionsAsync(
 		[Query] int? skip = null,
 		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get a specific Lords division by ID (placeholder - API structure TBD)
+	/// Get a specific Lords division by ID
 	/// </summary>
 	/// <param name="divisionId">Division ID</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Division details</returns>
 	[Get("/data/Divisions/{divisionId}")]
-	Task<object> GetDivisionByIdAsync(
+	Task<LordsDivision> GetDivisionByIdAsync(
 		int divisionId,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get division results grouped by party (placeholder - API structure TBD)
+	/// Get division results grouped by party
 	/// </summary>
 	/// <param name="divisionId">Division ID</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Grouped votes by party</returns>
+	/// <returns>Division details with votes grouped by party</returns>
 	[Get("/data/Divisions/groupedbyparty/{divisionId}")]
-	Task<object> GetDivisionGroupedByPartyAsync(
+	Task<LordsDivision> GetDivisionGroupedByPartyAsync(
 		int divisionId,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Search divisions (placeholder - API structure TBD)
+	/// Search divisions
 	/// </summary>
-	/// <param name="searchTerm">Search term</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Search request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of divisions matching search criteria</returns>
 	[Get("/data/Divisions/search")]
-	Task<object> SearchDivisionsAsync(
+	Task<List<LordsDivision>> SearchDivisionsAsync(
 		[Query] SearchLordsDivisionsRequest request,
 		CancellationToken cancellationToken = default);
 
@@ -81,7 +79,7 @@ public interface ILordsDivisionsApi
 	/// </remarks>
 	[Obsolete("Use SearchDivisionsAsync(SearchLordsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: SearchDivisionsAsync(new SearchLordsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/data/Divisions/search")]
-	Task<object> SearchDivisionsAsync(
+	Task<List<LordsDivision>> SearchDivisionsAsync(
 		[Query] string searchTerm,
 		[Query] int? skip = null,
 		[Query] int? take = null,

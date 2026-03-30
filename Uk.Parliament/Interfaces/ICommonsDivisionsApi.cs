@@ -2,6 +2,7 @@
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
+using Uk.Parliament.Models.Divisions;
 using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
@@ -12,13 +13,13 @@ namespace Uk.Parliament.Interfaces;
 public interface ICommonsDivisionsApi
 {
 	/// <summary>
-	/// List all Commons divisions (placeholder - API structure TBD)
+	/// List all Commons divisions
 	/// </summary>
-	/// <param name="queryParameters">Optional query parameters</param>
+	/// <param name="request">Request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of divisions</returns>
 	[Get("/data/divisions.json")]
-	Task<object> GetDivisionsAsync(
+	Task<List<CommonsDivision>> GetDivisionsAsync(
 		[Query] GetCommonsDivisionsRequest request,
 		CancellationToken cancellationToken = default);
 
@@ -31,42 +32,40 @@ public interface ICommonsDivisionsApi
 	/// </remarks>
 	[Obsolete("Use GetDivisionsAsync(GetCommonsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: GetDivisionsAsync(new GetCommonsDivisionsRequest { Skip = 0, Take = 20 }, cancellationToken).", true)]
 	[Get("/data/divisions.json")]
-	Task<object> GetDivisionsAsync(
+	Task<List<CommonsDivision>> GetDivisionsAsync(
 		[Query] string? queryParameters = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get a specific Commons division by ID (placeholder - API structure TBD)
+	/// Get a specific Commons division by ID
 	/// </summary>
 	/// <param name="divisionId">Division ID</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Division details</returns>
 	[Get("/data/division/{divisionId}.json")]
-	Task<object> GetDivisionByIdAsync(
+	Task<CommonsDivision> GetDivisionByIdAsync(
 		int divisionId,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get division results grouped by party (placeholder - API structure TBD)
+	/// Get division results grouped by party
 	/// </summary>
 	/// <param name="divisionId">Division ID</param>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>Grouped votes by party</returns>
+	/// <returns>Division details with votes grouped by party</returns>
 	[Get("/data/divisions.json/groupedbyparty/{divisionId}")]
-	Task<object> GetDivisionGroupedByPartyAsync(
+	Task<CommonsDivision> GetDivisionGroupedByPartyAsync(
 		int divisionId,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Search divisions (placeholder - API structure TBD)
+	/// Search divisions
 	/// </summary>
-	/// <param name="searchTerm">Search term</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Search request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of divisions matching search criteria</returns>
 	[Get("/data/divisions.json/search")]
-	Task<object> SearchDivisionsAsync(
+	Task<List<CommonsDivision>> SearchDivisionsAsync(
 		[Query] SearchCommonsDivisionsRequest request,
 		CancellationToken cancellationToken = default);
 
@@ -79,22 +78,20 @@ public interface ICommonsDivisionsApi
 	/// </remarks>
 	[Obsolete("Use SearchDivisionsAsync(SearchCommonsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: SearchDivisionsAsync(new SearchCommonsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/data/divisions.json/search")]
-	Task<object> SearchDivisionsAsync(
+	Task<List<CommonsDivision>> SearchDivisionsAsync(
 		[Query] string searchTerm,
 		[Query] int? skip = null,
 		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get member voting records (placeholder - API structure TBD)
+	/// Get member voting records
 	/// </summary>
-	/// <param name="memberId">Member ID</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Request parameters including member ID</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Member voting history</returns>
 	[Get("/data/divisions.json/membervoting")]
-	Task<object> GetMemberVotingAsync(
+	Task<List<MemberVotingRecord>> GetMemberVotingAsync(
 		[Query] GetCommonsMemberVotingRequest request,
 		CancellationToken cancellationToken = default);
 
@@ -107,7 +104,7 @@ public interface ICommonsDivisionsApi
 	/// </remarks>
 	[Obsolete("Use GetMemberVotingAsync(GetCommonsMemberVotingRequest request, CancellationToken cancellationToken) instead. Example: GetMemberVotingAsync(new GetCommonsMemberVotingRequest { MemberId = memberId, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/data/divisions.json/membervoting")]
-	Task<object> GetMemberVotingAsync(
+	Task<List<MemberVotingRecord>> GetMemberVotingAsync(
 		[Query] int memberId,
 		[Query] int? skip = null,
 		[Query] int? take = null,

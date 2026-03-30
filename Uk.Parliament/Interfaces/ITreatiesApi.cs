@@ -89,9 +89,9 @@ public interface ITreatiesApi
 	/// Get series memberships
 	/// </summary>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of series memberships</returns>
+	/// <returns>Paginated list of series memberships</returns>
 	[Get("/api/SeriesMembership")]
-	Task<object> GetSeriesMembershipsAsync(
+	Task<PaginatedResponse<SeriesMembership>> GetSeriesMembershipsAsync(
 		CancellationToken cancellationToken = default);
 
 	/// <summary>

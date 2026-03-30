@@ -14,7 +14,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-               new GetWrittenQuestionsRequest { Take = 10 },
+			   new GetWrittenQuestionsRequest { Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -31,7 +31,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-               new GetWrittenQuestionsRequest { AskingMemberId = memberId, Take = 10 },
+			   new GetWrittenQuestionsRequest { AskingMemberId = memberId, Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -49,7 +49,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-               new GetWrittenQuestionsRequest { TabledWhenFrom = fromDate, TabledWhenTo = toDate, Take = 10 },
+			   new GetWrittenQuestionsRequest { TabledWhenFrom = fromDate, TabledWhenTo = toDate, Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -67,7 +67,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-               new GetWrittenQuestionsRequest { IsAnswered = true, Take = 10 },
+			   new GetWrittenQuestionsRequest { IsAnswered = true, Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -85,7 +85,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-                new GetWrittenQuestionsRequest { Take = 1 },
+				new GetWrittenQuestionsRequest { Take = 1 },
 				CancellationToken);
 
 		// Check if using Results or Items property
@@ -140,7 +140,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenStatementsAsync(
-               new GetWrittenStatementsRequest { Take = 10 },
+			   new GetWrittenStatementsRequest { Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -158,7 +158,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenStatementsAsync(
-             new GetWrittenStatementsRequest { MadeWhenFrom = fromDate, MadeWhenTo = toDate, Take = 10 },
+			 new GetWrittenStatementsRequest { MadeWhenFrom = fromDate, MadeWhenTo = toDate, Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -176,7 +176,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.QuestionsStatements
 			.GetWrittenStatementsAsync(
-                new GetWrittenStatementsRequest { Take = 1 },
+				new GetWrittenStatementsRequest { Take = 1 },
 				CancellationToken);
 
 		// Check if using Results or Items property
@@ -234,7 +234,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetDailyReportsAsync(
-             new GetDailyReportsRequest { DateFrom = fromDate, DateTo = toDate, Take = 10 },
+			 new GetDailyReportsRequest { DateFrom = fromDate, DateTo = toDate, Take = 10 },
 				CancellationToken);
 
 		// Assert

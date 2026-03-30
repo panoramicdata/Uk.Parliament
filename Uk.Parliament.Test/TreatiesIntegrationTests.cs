@@ -14,7 +14,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Treaties
 			.GetTreatiesAsync(
-               new GetTreatiesRequest { Take = 10 },
+			   new GetTreatiesRequest { Take = 10 },
 				CancellationToken);
 
 		// Assert
@@ -31,7 +31,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Treaties
 			.GetTreatiesAsync(
-             new GetTreatiesRequest { Status = status, Take = 10 },
+			 new GetTreatiesRequest { Status = status, Take = 10 },
 				CancellationToken);
 
 		// Assert - API returns results but Status field may not be populated
@@ -46,7 +46,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.Treaties
 			.GetTreatiesAsync(
-                new GetTreatiesRequest { Take = 1 },
+				new GetTreatiesRequest { Take = 1 },
 				CancellationToken);
 
 		if (listResult.Items == null || listResult.Items.Count == 0)
@@ -75,7 +75,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.Treaties
 			.GetTreatiesAsync(
-                new GetTreatiesRequest { Take = 1 },
+				new GetTreatiesRequest { Take = 1 },
 				CancellationToken);
 
 		if (listResult.Items == null || listResult.Items.Count == 0)
@@ -186,13 +186,13 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 			]
 		};
 
-      _ = mockApi.Setup(x => x.GetTreatiesAsync(
-			It.IsAny<GetTreatiesRequest>(),
-			It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
+		_ = mockApi.Setup(x => x.GetTreatiesAsync(
+			  It.IsAny<GetTreatiesRequest>(),
+			  It.IsAny<CancellationToken>()))
+			  .ReturnsAsync(expectedResponse);
 
 		// Act
-        var result = await mockApi.Object.GetTreatiesAsync(
+		var result = await mockApi.Object.GetTreatiesAsync(
 			new GetTreatiesRequest { Take = 10 },
 			CancellationToken);
 

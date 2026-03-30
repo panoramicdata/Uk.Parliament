@@ -38,26 +38,62 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			var divisions = await client
 				.CommonsDivisions
 				.GetDivisionsAsync(
-					new GetCommonsDivisionsRequest(),
+					new GetCommonsDivisionsRequest { Take = 5 },
 					cancellationToken: CancellationToken);
 
 			// Assert
 			_ = divisions.Should().NotBeNull();
+			_ = divisions.Should().NotBeEmpty();
+			_ = divisions.Should().AllSatisfy(d =>
+			{
+				_ = d.DivisionId.Should().BePositive();
+				_ = d.Title.Should().NotBeNullOrEmpty();
+			});
 		}
 		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
 		{
-			// API endpoint may return 404 - this is expected
 			_output.WriteLine("Commons Divisions API returned 404 - endpoint may not be available");
 		}
 	}
 
 	[Fact]
-	public Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
-		=> throw new NotImplementedException();
+	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
+	{
+		// Arrange
+		var client = CreateClientWithLogging();
 
-	[Fact]
-	public Task GetDivisionGroupedByPartyAsync_WithValidId_ReturnsGroupedVotes()
-		=> throw new NotImplementedException();
+		try
+		{
+			// First get a valid division ID
+			var divisions = await client
+				.CommonsDivisions
+				.SearchDivisionsAsync(
+					new SearchCommonsDivisionsRequest { SearchTerm = "Budget", Take = 1 },
+					cancellationToken: CancellationToken);
+
+			if (divisions.Count == 0)
+			{
+				_output.WriteLine("No divisions found to test GetDivisionByIdAsync");
+				return;
+			}
+
+			var divisionId = divisions[0].DivisionId;
+
+			// Act
+			var result = await client
+				.CommonsDivisions
+				.GetDivisionByIdAsync(divisionId, CancellationToken);
+
+			// Assert
+			_ = result.Should().NotBeNull();
+			_ = result.DivisionId.Should().Be(divisionId);
+			_ = result.Title.Should().NotBeNullOrEmpty();
+		}
+		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+		{
+			_output.WriteLine("Commons Divisions API returned 404 - endpoint may not be available");
+		}
+	}
 
 	[Fact]
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
@@ -76,10 +112,11 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 
 			// Assert
 			_ = divisions.Should().NotBeNull();
+			_ = divisions.Should().NotBeEmpty();
+			_ = divisions[0].DivisionId.Should().BePositive();
 		}
 		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
 		{
-			// API endpoint may return 404 - this is expected
 			_output.WriteLine("Commons Divisions Search API returned 404 - endpoint may not be available");
 		}
 	}
@@ -96,15 +133,20 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			var votingHistory = await client
 				.CommonsDivisions
 				.GetMemberVotingAsync(
-					new GetCommonsMemberVotingRequest { MemberId = 172 },
+					new GetCommonsMemberVotingRequest { MemberId = 172, Take = 5 },
 					cancellationToken: CancellationToken);
 
 			// Assert
 			_ = votingHistory.Should().NotBeNull();
+			_ = votingHistory.Should().NotBeEmpty();
+			_ = votingHistory.Should().AllSatisfy(r =>
+			{
+				_ = r.MemberId.Should().Be(172);
+				_ = r.PublishedDivision.Should().NotBeNull();
+			});
 		}
 		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
 		{
-			// API endpoint may return 404 - this is expected
 			_output.WriteLine("Commons Divisions Member Voting API returned 404 - endpoint may not be available");
 		}
 	}
@@ -126,10 +168,10 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 
 			// Assert
 			_ = page1.Should().NotBeNull();
+			_ = page1.Count.Should().BeLessThanOrEqualTo(10);
 		}
 		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
 		{
-			// API endpoint may return 404 - this is expected
 			_output.WriteLine("Commons Divisions API returned 404 - endpoint may not be available");
 		}
 	}

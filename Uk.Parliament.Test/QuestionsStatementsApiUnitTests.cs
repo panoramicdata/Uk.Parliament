@@ -26,7 +26,7 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 		SetupWrittenQuestionsAsyncMock(mockApi, expectedResponse);
 
 		// Act
-        var result = await mockApi.Object.GetWrittenQuestionsAsync(
+		var result = await mockApi.Object.GetWrittenQuestionsAsync(
 			new GetWrittenQuestionsRequest { Take = 10 },
 			CancellationToken);
 
@@ -73,7 +73,7 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 		PaginatedResponse<WrittenQuestion> response)
 		=> mockApi
 			.Setup(x => x.GetWrittenQuestionsAsync(
-               It.IsAny<GetWrittenQuestionsRequest>(),
+			   It.IsAny<GetWrittenQuestionsRequest>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(response);
 
@@ -114,15 +114,15 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 			]
 		};
 
-     _ = mockApi.Setup(x => x.GetWrittenStatementsAsync(
-			It.IsAny<GetWrittenStatementsRequest>(),
-			It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
+		_ = mockApi.Setup(x => x.GetWrittenStatementsAsync(
+			   It.IsAny<GetWrittenStatementsRequest>(),
+			   It.IsAny<CancellationToken>()))
+			   .ReturnsAsync(expectedResponse);
 
 		// Act
-       var result = await mockApi.Object.GetWrittenStatementsAsync(
-			new GetWrittenStatementsRequest { Take = 10 },
-			CancellationToken);
+		var result = await mockApi.Object.GetWrittenStatementsAsync(
+			 new GetWrittenStatementsRequest { Take = 10 },
+			 CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -156,14 +156,14 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 			]
 		};
 
-      _ = mockApi.Setup(x => x.GetDailyReportsAsync(
-			It.IsAny<GetDailyReportsRequest>(),
-			It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
+		_ = mockApi.Setup(x => x.GetDailyReportsAsync(
+			  It.IsAny<GetDailyReportsRequest>(),
+			  It.IsAny<CancellationToken>()))
+			  .ReturnsAsync(expectedResponse);
 
 		// Act
 		var result = await mockApi.Object.GetDailyReportsAsync(
-          new GetDailyReportsRequest(),
+		  new GetDailyReportsRequest(),
 			CancellationToken);
 
 		// Assert

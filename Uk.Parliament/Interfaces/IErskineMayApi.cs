@@ -106,7 +106,7 @@ public interface IErskineMayApi
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Index term details</returns>
 	[Get("/api/IndexTerm/{indexTermId}")]
-	Task<object> GetIndexTermByIdAsync(
+	Task<ErskineMayIndexTerm> GetIndexTermByIdAsync(
 		int indexTermId,
 		CancellationToken cancellationToken = default);
 
@@ -114,9 +114,9 @@ public interface IErskineMayApi
 	/// Browse index terms
 	/// </summary>
 	/// <param name="cancellationToken">Cancellation token</param>
-	/// <returns>List of index terms</returns>
+	/// <returns>Paginated list of index terms</returns>
 	[Get("/api/IndexTerm/browse")]
-	Task<object> BrowseIndexTermsAsync(
+	Task<ErskineMaySearchResponse> BrowseIndexTermsAsync(
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
