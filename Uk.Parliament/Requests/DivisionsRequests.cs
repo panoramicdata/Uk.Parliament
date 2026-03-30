@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Refit;
 
 namespace Uk.Parliament.Requests;
@@ -19,7 +18,6 @@ public sealed record class SearchCommonsDivisionsRequest : SkipTakeRequest
 	[AliasAs("searchTerm")]
 	public required string SearchTerm { get; init; }
 }
-#pragma warning restore CS1591
 
 /// <summary>
 /// Request for retrieving Commons member voting.

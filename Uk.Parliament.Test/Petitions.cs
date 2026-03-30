@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 public class Petitions : IntegrationTestBase
@@ -157,10 +155,9 @@ public class Petitions : IntegrationTestBase
 	[Fact]
 	public async Task GetAllListAsync_WithStateFilter_RetrievesMultiplePages()
 	{
-		var allPetitions = await Client.Petitions.GetAllListAsync(
-			state: "rejected",
-			pageSize: 10,
-			cancellationToken: CancellationToken); // Small page size to ensure we get multiple pages
+		var allPetitions = await Client.GetAllListAsync(
+			new GetPetitionsRequest { State = "rejected", PageSize = 10 },
+			CancellationToken);
 
 		_ = allPetitions.Should().NotBeNull();
 		_ = allPetitions.Should().NotBeEmpty();
@@ -173,7 +170,7 @@ public class Petitions : IntegrationTestBase
 	{
 		var count = 0;
 
-		await foreach (var petition in Client.Petitions.GetAllAsync(state: "open", pageSize: 5, cancellationToken: CancellationToken))
+		await foreach (var petition in Client.GetAllAsync(new GetPetitionsRequest { State = "open", PageSize = 5 }, CancellationToken))
 		{
 			_ = petition.Should().NotBeNull();
 			_ = petition.Attributes.Should().NotBeNull();

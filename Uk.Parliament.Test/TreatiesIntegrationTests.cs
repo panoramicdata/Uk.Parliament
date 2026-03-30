@@ -1,4 +1,3 @@
-using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Treaties;
 
 namespace Uk.Parliament.Test;
@@ -128,9 +127,9 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var treaties = await CollectStreamedItemsAsync(
-			Client.Treaties.GetAllTreatiesAsync(
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetTreatiesRequest { Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify streaming works
 		_ = treaties.Should().NotBeNull();

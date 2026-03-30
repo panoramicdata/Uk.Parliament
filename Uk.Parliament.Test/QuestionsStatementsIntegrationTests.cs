@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -123,10 +121,9 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var questions = await CollectStreamedItemsAsync(
-			Client.QuestionsStatements.GetAllWrittenQuestionsAsync(
-				house: "Commons",
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetWrittenQuestionsRequest { House = "Commons", Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify we can stream without error
 		_ = questions.Should().NotBeNull();
@@ -214,9 +211,9 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var statements = await CollectStreamedItemsAsync(
-			Client.QuestionsStatements.GetAllWrittenStatementsAsync(
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetWrittenStatementsRequest { Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify we can stream without error
 		_ = statements.Should().NotBeNull();
@@ -253,10 +250,9 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 		// Act
 		var reports = await CollectStreamedItemsAsync(
-			Client.QuestionsStatements.GetAllDailyReportsAsync(
-				dateFrom: fromDate,
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetDailyReportsRequest { DateFrom = fromDate, Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify we can stream without error
 		_ = reports.Should().NotBeNull();

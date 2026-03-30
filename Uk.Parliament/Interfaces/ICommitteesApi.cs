@@ -30,13 +30,23 @@ public interface ICommitteesApi
 	/// <remarks>
 	/// Use <see cref="GetCommitteesAsync(GetCommitteesRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetCommitteesAsync(new GetCommitteesRequest { Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetCommitteesAsync(GetCommitteesRequest request, CancellationToken cancellationToken) instead. Example: GetCommitteesAsync(new GetCommitteesRequest { Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetCommitteesAsync(GetCommitteesRequest request, CancellationToken cancellationToken) instead. Example: GetCommitteesAsync(new GetCommitteesRequest { Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/Committees")]
 	Task<CommitteesListResponse<Committee>> GetCommitteesAsync(
 		[Query] int? skip = null,
 		[Query] int? take = null,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get a specific committee by ID
+	/// </summary>
+	/// <param name="id">Committee identifier</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Committee details</returns>
+	[Get("/api/Committees/{id}")]
+	Task<Committee> GetCommitteeByIdAsync(
+		int id,
 		CancellationToken cancellationToken = default);
 }
 #pragma warning restore CS1572, CS1573

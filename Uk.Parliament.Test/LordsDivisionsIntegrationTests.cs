@@ -38,6 +38,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 			var divisions = await client
 				.LordsDivisions
 				.GetDivisionsAsync(
+					new GetLordsDivisionsRequest(),
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -70,7 +71,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 			var divisions = await client
 				.LordsDivisions
 				.SearchDivisionsAsync(
-					"Amendment",
+					new SearchLordsDivisionsRequest { SearchTerm = "Amendment" },
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -95,8 +96,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 			var page1 = await client
 				.LordsDivisions
 				.GetDivisionsAsync(
-					skip: 0,
-					take: 10,
+					new GetLordsDivisionsRequest { Skip = 0, Take = 10 },
 					cancellationToken: CancellationToken);
 
 			// Assert

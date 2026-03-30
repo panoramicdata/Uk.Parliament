@@ -43,9 +43,8 @@ public interface IQuestionsStatementsApi
 	/// <remarks>
 	/// Use <see cref="GetWrittenQuestionsAsync(GetWrittenQuestionsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetWrittenQuestionsAsync(new GetWrittenQuestionsRequest { AskingMemberId = askingMemberId, AnsweringMemberId = answeringMemberId, AnsweringDepartment = answeringDepartment, House = house, TabledWhenFrom = tabledWhenFrom, TabledWhenTo = tabledWhenTo, AnsweredWhenFrom = answeredWhenFrom, AnsweredWhenTo = answeredWhenTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetWrittenQuestionsAsync(GetWrittenQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetWrittenQuestionsAsync(new GetWrittenQuestionsRequest { AskingMemberId = askingMemberId, AnsweringMemberId = answeringMemberId, AnsweringDepartment = answeringDepartment, House = house, TabledWhenFrom = tabledWhenFrom, TabledWhenTo = tabledWhenTo, AnsweredWhenFrom = answeredWhenFrom, AnsweredWhenTo = answeredWhenTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetWrittenQuestionsAsync(GetWrittenQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetWrittenQuestionsAsync(new GetWrittenQuestionsRequest { AskingMemberId = askingMemberId, AnsweringMemberId = answeringMemberId, AnsweringDepartment = answeringDepartment, House = house, TabledWhenFrom = tabledWhenFrom, TabledWhenTo = tabledWhenTo, AnsweredWhenFrom = answeredWhenFrom, AnsweredWhenTo = answeredWhenTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/writtenquestions/questions")]
 	Task<PaginatedResponse<WrittenQuestion>> GetWrittenQuestionsAsync(
 		[Query] int? askingMemberId = null,
@@ -108,9 +107,8 @@ public interface IQuestionsStatementsApi
 	/// <remarks>
 	/// Use <see cref="GetWrittenStatementsAsync(GetWrittenStatementsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetWrittenStatementsAsync(new GetWrittenStatementsRequest { MakingMemberId = makingMemberId, Department = department, House = house, MadeWhenFrom = madeWhenFrom, MadeWhenTo = madeWhenTo, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetWrittenStatementsAsync(GetWrittenStatementsRequest request, CancellationToken cancellationToken) instead. Example: GetWrittenStatementsAsync(new GetWrittenStatementsRequest { MakingMemberId = makingMemberId, Department = department, House = house, MadeWhenFrom = madeWhenFrom, MadeWhenTo = madeWhenTo, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetWrittenStatementsAsync(GetWrittenStatementsRequest request, CancellationToken cancellationToken) instead. Example: GetWrittenStatementsAsync(new GetWrittenStatementsRequest { MakingMemberId = makingMemberId, Department = department, House = house, MadeWhenFrom = madeWhenFrom, MadeWhenTo = madeWhenTo, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/writtenstatements/statements")]
 	Task<PaginatedResponse<WrittenStatement>> GetWrittenStatementsAsync(
 		[Query] int? makingMemberId = null,
@@ -167,9 +165,8 @@ public interface IQuestionsStatementsApi
 	/// <remarks>
 	/// Use <see cref="GetDailyReportsAsync(GetDailyReportsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetDailyReportsAsync(new GetDailyReportsRequest { DateFrom = dateFrom, DateTo = dateTo, House = house, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetDailyReportsAsync(GetDailyReportsRequest request, CancellationToken cancellationToken) instead. Example: GetDailyReportsAsync(new GetDailyReportsRequest { DateFrom = dateFrom, DateTo = dateTo, House = house, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetDailyReportsAsync(GetDailyReportsRequest request, CancellationToken cancellationToken) instead. Example: GetDailyReportsAsync(new GetDailyReportsRequest { DateFrom = dateFrom, DateTo = dateTo, House = house, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/dailyreports/dailyreports")]
 	Task<PaginatedResponse<DailyReport>> GetDailyReportsAsync(
 		[Query] DateTime? dateFrom = null,

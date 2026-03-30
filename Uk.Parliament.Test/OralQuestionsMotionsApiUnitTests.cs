@@ -26,7 +26,7 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 		SetupGetOralQuestionsAsyncMock(mockApi, expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetOralQuestionsAsync(take: 10,
+		var result = await mockApi.Object.GetOralQuestionsAsync(new GetOralQuestionsRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert
@@ -44,7 +44,7 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 		SetupGetMotionsAsyncMock(mockApi, expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetMotionsAsync(isActive: true,
+		var result = await mockApi.Object.GetMotionsAsync(new GetMotionsRequest { IsActive = true },
 			cancellationToken: CancellationToken);
 
 		// Assert
@@ -105,9 +105,8 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 		OralQuestionsResponse<OralQuestion> response)
 		=> mockApi
 			.Setup(x => x.GetOralQuestionsAsync(
-				It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<string?>(),
-				It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<bool?>(),
-				It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
+				It.IsAny<GetOralQuestionsRequest>(),
+				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(response);
 
 	// Note: This mock setup has apparent complexity due to the API's parameter count.
@@ -116,8 +115,7 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 		OralQuestionsResponse<Motion> response)
 		=> mockApi
 			.Setup(x => x.GetMotionsAsync(
-				It.IsAny<int?>(), It.IsAny<string?>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(),
-				It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<int?>(), It.IsAny<int?>(),
+				It.IsAny<GetMotionsRequest>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(response);
 

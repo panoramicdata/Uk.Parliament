@@ -28,9 +28,8 @@ public interface ICommonsDivisionsApi
 	/// <remarks>
 	/// Use <see cref="GetDivisionsAsync(GetCommonsDivisionsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetDivisionsAsync(new GetCommonsDivisionsRequest { Skip = 0, Take = 20 }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetDivisionsAsync(GetCommonsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: GetDivisionsAsync(new GetCommonsDivisionsRequest { Skip = 0, Take = 20 }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetDivisionsAsync(GetCommonsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: GetDivisionsAsync(new GetCommonsDivisionsRequest { Skip = 0, Take = 20 }, cancellationToken).", true)]
 	[Get("/data/divisions.json")]
 	Task<object> GetDivisionsAsync(
 		[Query] string? queryParameters = null,
@@ -77,9 +76,8 @@ public interface ICommonsDivisionsApi
 	/// <remarks>
 	/// Use <see cref="SearchDivisionsAsync(SearchCommonsDivisionsRequest, CancellationToken)"/> instead.
 	/// Example: <c>SearchDivisionsAsync(new SearchCommonsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use SearchDivisionsAsync(SearchCommonsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: SearchDivisionsAsync(new SearchCommonsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use SearchDivisionsAsync(SearchCommonsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: SearchDivisionsAsync(new SearchCommonsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/data/divisions.json/search")]
 	Task<object> SearchDivisionsAsync(
 		[Query] string searchTerm,
@@ -106,9 +104,8 @@ public interface ICommonsDivisionsApi
 	/// <remarks>
 	/// Use <see cref="GetMemberVotingAsync(GetCommonsMemberVotingRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetMemberVotingAsync(new GetCommonsMemberVotingRequest { MemberId = memberId, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetMemberVotingAsync(GetCommonsMemberVotingRequest request, CancellationToken cancellationToken) instead. Example: GetMemberVotingAsync(new GetCommonsMemberVotingRequest { MemberId = memberId, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetMemberVotingAsync(GetCommonsMemberVotingRequest request, CancellationToken cancellationToken) instead. Example: GetMemberVotingAsync(new GetCommonsMemberVotingRequest { MemberId = memberId, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/data/divisions.json/membervoting")]
 	Task<object> GetMemberVotingAsync(
 		[Query] int memberId,

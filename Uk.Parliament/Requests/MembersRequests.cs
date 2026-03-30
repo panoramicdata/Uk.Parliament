@@ -1,12 +1,13 @@
 #pragma warning disable CS1591
 using Refit;
+using Uk.Parliament.Models.Members;
 
 namespace Uk.Parliament.Requests;
 
 /// <summary>
 /// Request for searching members.
 /// </summary>
-public sealed record class SearchMembersRequest : SkipTakeRequest
+public sealed record class SearchMembersRequest : SkipTakeRequest, IPaginatedRequest<Member>
 {
 	/// <summary>
 	/// Optional member name.
@@ -30,7 +31,7 @@ public sealed record class SearchMembersRequest : SkipTakeRequest
 /// <summary>
 /// Request for searching constituencies.
 /// </summary>
-public sealed record class SearchConstituenciesRequest : SkipTakeRequest
+public sealed record class SearchConstituenciesRequest : SkipTakeRequest, IPaginatedRequest<Constituency>
 {
 	/// <summary>
 	/// Optional search text.

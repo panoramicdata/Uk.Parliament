@@ -33,9 +33,8 @@ public interface IBillsApi
 	/// <remarks>
 	/// Use <see cref="GetBillsAsync(GetBillsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetBillsAsync(new GetBillsRequest { SearchTerm = searchTerm, Session = session, CurrentHouse = currentHouse, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetBillsAsync(GetBillsRequest request, CancellationToken cancellationToken) instead. Example: GetBillsAsync(new GetBillsRequest { SearchTerm = searchTerm, Session = session, CurrentHouse = currentHouse, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetBillsAsync(GetBillsRequest request, CancellationToken cancellationToken) instead. Example: GetBillsAsync(new GetBillsRequest { SearchTerm = searchTerm, Session = session, CurrentHouse = currentHouse, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/v1/Bills")]
 	Task<BillsListResponse<Bill>> GetBillsAsync(
 		[Query] string? searchTerm = null,

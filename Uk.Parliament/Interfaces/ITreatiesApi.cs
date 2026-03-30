@@ -39,9 +39,8 @@ public interface ITreatiesApi
 	/// <remarks>
 	/// Use <see cref="GetTreatiesAsync(GetTreatiesRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetTreatiesAsync(GetTreatiesRequest request, CancellationToken cancellationToken) instead. Example: GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetTreatiesAsync(GetTreatiesRequest request, CancellationToken cancellationToken) instead. Example: GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/Treaty")]
 	Task<PaginatedResponse<Treaty>> GetTreatiesAsync(
 		[Query] int? governmentOrganisationId = null,
@@ -73,6 +72,26 @@ public interface ITreatiesApi
 	[Get("/api/Treaty/{treatyId}/BusinessItem")]
 	Task<List<TreatyBusinessItem>> GetTreatyBusinessItemsAsync(
 		string treatyId,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get a specific business item by ID
+	/// </summary>
+	/// <param name="id">Business item identifier</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Business item details</returns>
+	[Get("/api/BusinessItem/{id}")]
+	Task<TreatyBusinessItem> GetBusinessItemByIdAsync(
+		string id,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get series memberships
+	/// </summary>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of series memberships</returns>
+	[Get("/api/SeriesMembership")]
+	Task<object> GetSeriesMembershipsAsync(
 		CancellationToken cancellationToken = default);
 
 	/// <summary>

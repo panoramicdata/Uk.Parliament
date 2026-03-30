@@ -3,7 +3,7 @@
 ![UK Parliament .NET Library](Uk.Parliament/Icon.png)
 
 **The most comprehensive .NET library for UK Parliament APIs**  
-100% API coverage - All 12 public Parliament APIs supported
+All 12 public Parliament APIs supported with core endpoint coverage
 
 [![NuGet](https://img.shields.io/nuget/v/Uk.Parliament.svg)](https://www.nuget.org/packages/Uk.Parliament/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,40 +12,88 @@
 
 ---
 
-This .NET library provides complete coverage of all 12 UK Parliament public APIs:
+This .NET library provides coverage of all 12 UK Parliament public APIs:
 
-✅ **Petitions API** - Public petitions to Parliament  
-✅ **Members API** - MPs, Lords, constituencies, parties  
-✅ **Bills API** - Parliamentary legislation  
-⚠️ **Committees API** - Committee inquiries and submissions  
-🔴 **Commons Divisions API** - House of Commons voting records  
-🔴 **Lords Divisions API** - House of Lords voting records  
-✅ **Member Interests API** - Register of Members' Financial Interests  
-✅ **Written Questions & Statements API** - Parliamentary questions and statements  
+✅ **Petitions API** - Public petitions to Parliament (100% endpoints)  
+✅ **Members API** - MPs, Lords, constituencies, parties (core endpoints)  
+✅ **Bills API** - Parliamentary legislation (core endpoints)  
+✅ **Committees API** - Committee inquiries and submissions (core endpoints)  
+✅ **Commons Divisions API** - House of Commons voting records  
+✅ **Lords Divisions API** - House of Lords voting records  
+✅ **Member Interests API** - Register of Members' Financial Interests (core endpoints)  
+✅ **Written Questions & Statements API** - Parliamentary questions and statements (100% endpoints)  
 ✅ **Oral Questions & Motions API** - Oral questions and motions  
-✅ **Treaties API** - International treaties laid before Parliament  
-✅ **Erskine May API** - Parliamentary procedure reference  
-✅ **NOW (Annunciator) API** - Real-time chamber status  
+✅ **Treaties API** - International treaties laid before Parliament (core endpoints)  
+✅ **Erskine May API** - Parliamentary procedure reference (core endpoints)  
+✅ **NOW (Annunciator) API** - Real-time chamber status (100% endpoints)  
 
-**Status:** 9/12 APIs fully functional, 3/12 affected by Parliament infrastructure issues
+**Status:** All 12 APIs functional. Some APIs have additional sub-endpoints not yet implemented (see coverage details below).
+
+---
+
+## ⚠️ Breaking Change in v10.1 — Request Model Migration
+
+Starting with **v10.1**, all API methods that previously accepted individual parameters have been replaced by strongly-typed **request model** objects. The old overloads are marked `[Obsolete("…", true)]` and will produce **compile errors** if referenced.
+
+### Why?
+
+| Benefit | Details |
+|---------|---------|
+| **Extensibility** | New query parameters can be added to a request record without changing method signatures, preventing future breaking changes. |
+| **Consistency** | Every API call follows the same pattern: one request object in, one response out. |
+| **Discoverability** | IntelliSense on the request type shows every available filter in one place. |
+| **Testability** | Request objects are simple records that can be constructed, inspected, and asserted against. |
+
+### Migration at a glance
+
+**Before (v10.0.x) — loose parameters:**
+
+```csharp
+// Interface methods
+var bills = await client.Bills.GetBillsAsync(searchTerm: "Budget", take: 10);
+var members = await client.Members.SearchAsync(name: "Smith", isCurrentMember: true);
+var petitions = await client.Petitions.GetAsync(state: "open", pageSize: 20);
+var treaties = await client.Treaties.GetTreatiesAsync(status: "In Force", take: 10);
+
+// Extension / pagination methods
+await foreach (var bill in client.Bills.GetAllBillsAsync(currentHouse: "Commons", pageSize: 10)) { }
+var allMembers = await client.Members.GetAllListAsync(house: 1, isCurrentMember: true, pageSize: 20);
+```
+
+**After (v10.1) — request models:**
+
+```csharp
+// Preferred: use GetAllAsync for paginated endpoints (handles paging automatically)
+await foreach (var bill in client.GetAllAsync(new GetBillsRequest { SearchTerm = "Budget" }, cancellationToken)) { }
+await foreach (var member in client.GetAllAsync(new SearchMembersRequest { Name = "Smith", IsCurrentMember = true }, cancellationToken)) { }
+await foreach (var petition in client.GetAllAsync(new GetPetitionsRequest { State = "open" }, cancellationToken)) { }
+var allMembers = await client.GetAllListAsync(new SearchMembersRequest { House = 1, IsCurrentMember = true }, cancellationToken);
+
+// Raw interface methods are still available when you need manual paging control
+var page = await client.Bills.GetBillsAsync(new GetBillsRequest { Skip = 0, Take = 20 }, cancellationToken);
+```
+
+> **Tip:** Each obsolete method's compiler error message includes a ready-to-use code example showing the equivalent request model call.
+
+All request types live in the `Uk.Parliament.Requests` namespace. Pagination request types also implement `IPaginatedRequest<TItem>`, enabling the generic `GetAllAsync<TItem>()` method. The raw Refit interface methods (e.g. `client.Bills.GetBillsAsync(...)`) should only be used when you need to implement paging yourself.
 
 ---
 
 ## Overview
 
-**Version 10.0.9** - Complete Refit-based implementation with type-safe REST API access.
+**Version 10.1** - Complete Refit-based implementation with type-safe REST API access and request models.
 
 ### Features
 
-- 🎯 **100% API Coverage** - All 12 public Parliament APIs supported
+- 🎯 **All 12 APIs** - Every public Parliament API supported
 - 🚀 **Type-Safe** - Refit interfaces with full IntelliSense
 - ⚡ **Async/Await** - Modern async patterns throughout
-- 📄 **Pagination** - Extension methods for easy data streaming
-- 🧪 **Well-Tested** - 104 comprehensive tests (86 passing)
+- 📄 **Pagination** - Generic `GetAllAsync` for easy data streaming
+- 🧪 **Well-Tested** - 139 tests (44 unit + 95 integration)
 - 📖 **Documented** - Complete XML documentation
 - 🔧 **DI-Ready** - Works with dependency injection
 - 🔍 **Logging** - Built-in HTTP request/response logging
-- ✅ **Production Ready** - 9 fully functional APIs
+- ✅ **Production Ready** - All 12 APIs functional
 
 ---
 
@@ -71,61 +119,64 @@ Install-Package Uk.Parliament
 
 ```csharp
 using Uk.Parliament;
-using Uk.Parliament.Extensions;
+using Uk.Parliament.Requests;
 
 // Create unified client for all Parliament APIs
-var client = new ParliamentClient();
+using var client = new ParliamentClient();
+using var cts = new CancellationTokenSource();
+var cancellationToken = cts.Token;
 
-// Petitions API
-var petitions = await client.Petitions.GetAsync(state: "open", pageSize: 10);
-foreach (var petition in petitions.Data)
+// Stream all open petitions (automatic pagination)
+await foreach (var petition in client.GetAllAsync(new GetPetitionsRequest { State = "open" }, cancellationToken))
 {
     Console.WriteLine($"{petition.Attributes.Action}: {petition.Attributes.SignatureCount:N0} signatures");
 }
 
-// Members API
-var members = await client.Members.SearchAsync(name: "Smith", isCurrentMember: true, take: 10);
-foreach (var member in members.Items)
+// Stream all current Commons members
+await foreach (var member in client.GetAllAsync(new SearchMembersRequest { House = 1, IsCurrentMember = true }, cancellationToken))
 {
-    Console.WriteLine($"{member.Value.NameFullTitle} - {member.Value.LatestParty?.Name}");
+    Console.WriteLine($"{member.NameFullTitle} - {member.LatestParty?.Name}");
 }
 
-// Bills API
-var bills = await client.Bills.GetBillsAsync(take: 10);
-foreach (var bill in bills.Items)
-{
-    Console.WriteLine($"{bill.ShortTitle} ({bill.BillTypeId})");
-}
+// Get all bills as a materialized list
+var allBills = await client.GetAllListAsync(new GetBillsRequest { CurrentHouse = "Commons" }, cancellationToken);
+Console.WriteLine($"Total Commons bills: {allBills.Count}");
 
-// Treaties API
-var treaties = await client.Treaties.GetTreatiesAsync(status: "In Force", take: 10);
-foreach (var treaty in treaties.Items)
-{
-    Console.WriteLine($"{treaty.Value.CommandPaperNumber}: {treaty.Value.Title}");
-}
-
-// NOW API - Real-time chamber status
-var status = await client.Now.GetCommonsStatusAsync();
-Console.WriteLine($"Commons sitting: {status.IsSitting}");
-if (status.IsSitting)
-{
-    Console.WriteLine($"Current business: {status.CurrentBusiness}");
-}
+// Non-paginated / by-ID lookups go through the raw API
+var petition = await client.Petitions.GetByIdAsync(700143, cancellationToken);
+var commonsMessage = await client.Now.GetCurrentMessageAsync("commons", cancellationToken);
+Console.WriteLine($"Commons: {commonsMessage.Title}");
 ```
 
-### Pagination with Extension Methods
+### Pagination with `GetAllAsync` (recommended)
+
+For any endpoint that returns paginated results, prefer `client.GetAllAsync(...)` or
+`client.GetAllListAsync(...)`. They handle all paging automatically, require a
+`CancellationToken`, and work with every request type that implements
+`IPaginatedRequest<TItem>`.
 
 ```csharp
-// Memory-efficient streaming (recommended for large datasets)
-await foreach (var petition in client.Petitions.GetAllAsync(state: "open", pageSize: 50))
+// Memory-efficient streaming — processes one item at a time
+await foreach (var bill in client.GetAllAsync(new GetBillsRequest { SearchTerm = "Budget" }, cancellationToken))
 {
-    Console.WriteLine($"{petition.Attributes.Action}");
-    // Process one at a time - no memory overhead
+    Console.WriteLine(bill.ShortTitle);
 }
 
-// Or get all as a materialized list
-var allPetitions = await client.Petitions.GetAllListAsync(state: "closed");
-Console.WriteLine($"Total: {allPetitions.Count}");
+// Or materialise into a list when you need random access
+var allTreaties = await client.GetAllListAsync(new GetTreatiesRequest { Status = "In Force" }, cancellationToken);
+```
+
+### Manual Paging (advanced)
+
+If you need to control paging yourself (e.g. to show page numbers in a UI),
+you can call the raw Refit interface methods directly. These are exposed on
+the typed API properties (`client.Bills`, `client.Members`, etc.):
+
+```csharp
+// Fetch a single page
+var page = await client.Bills.GetBillsAsync(
+    new GetBillsRequest { Skip = 0, Take = 20 }, cancellationToken);
+Console.WriteLine($"Page has {page.Items.Count} of {page.TotalResults} bills");
 ```
 
 ### Dependency Injection
@@ -162,15 +213,15 @@ public class MyService
 Access public petitions to UK Parliament.
 
 ```csharp
-// Search petitions
-var petitions = await client.Petitions.GetAsync(
-    search: "climate",
-    state: "open",
-    page: 1,
-    pageSize: 20);
+// Stream all matching petitions (recommended)
+await foreach (var petition in client.GetAllAsync(
+    new GetPetitionsRequest { Search = "climate", State = "open" }, cancellationToken))
+{
+    Console.WriteLine($"{petition.Attributes.Action}: {petition.Attributes.SignatureCount:N0}");
+}
 
 // Get specific petition with full details
-var petition = await client.Petitions.GetByIdAsync(700143);
+var petition = await client.Petitions.GetByIdAsync(700143, cancellationToken);
 Console.WriteLine($"Signatures: {petition.Data.Attributes.SignatureCount:N0}");
 Console.WriteLine($"State: {petition.Data.Attributes.State}");
 
@@ -181,197 +232,275 @@ foreach (var country in petition.Data.Attributes.SignaturesByCountry)
 }
 ```
 
-**Status:** 27/27 tests passing ✅
+**Status:** ✅ All tests passing
 
 ### ✅ Members API
 
 Information about MPs, Lords, constituencies, and political parties.
 
 ```csharp
-// Search members
-var members = await client.Members.SearchAsync(
-    name: "Johnson",
-    house: 1, // 1=Commons, 2=Lords
-    isCurrentMember: true);
+// Stream all matching members (recommended)
+await foreach (var member in client.GetAllAsync(
+    new SearchMembersRequest
+    {
+        Name = "Johnson",
+        House = 1, // 1=Commons, 2=Lords
+        IsCurrentMember = true
+    }, cancellationToken))
+{
+    Console.WriteLine($"{member.NameFullTitle} - {member.LatestParty?.Name}");
+}
 
-// Get member details
-var member = await client.Members.GetByIdAsync(172);
+// Stream all constituencies matching a search
+await foreach (var constituency in client.GetAllAsync(
+    new SearchConstituenciesRequest { SearchText = "London" }, cancellationToken))
+{
+    Console.WriteLine(constituency.Name);
+}
 
-// Search constituencies
-var constituencies = await client.Members.SearchConstituenciesAsync("London", take: 10);
+// Get a specific member by ID
+var member = await client.Members.GetByIdAsync(172, cancellationToken);
 ```
 
-**Status:** 17/17 tests passing ✅
+**Status:** ✅ All tests passing (core endpoints)
 
 ### ✅ Bills API
 
 Parliamentary legislation information.
 
 ```csharp
-// List bills
-var bills = await client.Bills.GetBillsAsync(
-    searchTerm: "Budget",
-    currentHouse: "Commons",
-    take: 10);
+// Stream all matching bills (recommended)
+await foreach (var bill in client.GetAllAsync(
+    new GetBillsRequest { SearchTerm = "Budget", CurrentHouse = "Commons" }, cancellationToken))
+{
+    Console.WriteLine($"{bill.ShortTitle} ({bill.BillTypeId})");
+}
 
-// Get bill details
-var bill = await client.Bills.GetBillByIdAsync(123);
+// Get a specific bill by ID
+var bill = await client.Bills.GetBillByIdAsync(123, cancellationToken);
 
-// Get bill types
-var billTypes = await client.Bills.GetBillTypesAsync();
+// Get bill types (non-paginated)
+var billTypes = await client.Bills.GetBillTypesAsync(cancellationToken);
 ```
 
-**Status:** 12/12 tests passing ✅
+**Status:** ✅ All tests passing (core endpoints)
 
-### ⚠️ Committees API
+### ✅ Committees API
 
-Parliamentary committee information (API occasionally returns 500 errors from Parliament servers).
+Parliamentary committee information.
 
 ```csharp
-// List committees
-var committees = await client.Committees.GetCommitteesAsync(take: 10);
+// Stream all committees (recommended)
+await foreach (var committee in client.GetAllAsync(
+    new GetCommitteesRequest(), cancellationToken))
+{
+    Console.WriteLine($"{committee.Name} ({committee.House})");
+}
 
-// Get committee details
-var committee = await client.Committees.GetCommitteeByIdAsync(1);
+// Get a specific committee by ID
+var committee = await client.Committees.GetCommitteeByIdAsync(1, cancellationToken);
 ```
 
-**Status:** 7/13 tests passing ⚠️ (Parliament API unstable)
+**Status:** ✅ Core endpoints functional
 
-### 🔴 Divisions APIs
+### ✅ Divisions APIs
 
-Voting records (blocked by Parliament API 500 errors).
+Voting records for Commons and Lords.
+
+> **Note:** The Divisions APIs currently return untyped (`object`) responses.
+> `GetAllAsync` is not yet available for these endpoints — use the raw interface methods directly.
+> Strongly-typed models and `GetAllAsync` support will be added in a future release.
 
 ```csharp
-// When Parliament fixes API:
-// var divisions = await client.CommonsDivisions.GetDivisionsAsync();
-// var lordsDivisions = await client.LordsDivisions.GetDivisionsAsync();
+// Commons divisions (raw interface — manual paging)
+var commonsDivisions = await client.CommonsDivisions.SearchDivisionsAsync(
+    new SearchCommonsDivisionsRequest { SearchTerm = "Budget" }, cancellationToken);
+
+var division = await client.CommonsDivisions.GetDivisionByIdAsync(12345, cancellationToken);
+var groupedByParty = await client.CommonsDivisions.GetDivisionGroupedByPartyAsync(12345, cancellationToken);
+var memberVoting = await client.CommonsDivisions.GetMemberVotingAsync(
+    new GetCommonsMemberVotingRequest { MemberId = 172 }, cancellationToken);
+
+// Lords divisions (raw interface — manual paging)
+var lordsDivisions = await client.LordsDivisions.SearchDivisionsAsync(
+    new SearchLordsDivisionsRequest { SearchTerm = "Education" }, cancellationToken);
+
+var lordsDivision = await client.LordsDivisions.GetDivisionByIdAsync(6789, cancellationToken);
 ```
 
-**Status:** Interface complete, blocked by 100% API failure rate 🔴
+**Status:** ✅ Functional
 
 ### ✅ Member Interests API
 
 Register of Members' Financial Interests.
 
 ```csharp
-// Get member's interests
-var interests = await client.Interests.GetMemberInterestsAsync(172);
-foreach (var category in interests.Categories)
+// Stream all matching interests (recommended)
+await foreach (var interest in client.GetAllAsync(
+    new SearchInterestsRequest { SearchTerm = "employment" }, cancellationToken))
 {
-    Console.WriteLine($"{category.Category.Name}:");
-    foreach (var interest in category.Interests)
-    {
-        Console.WriteLine($"  - {interest.InterestDetails}");
-    }
+    Console.WriteLine($"{interest.MemberId}: {interest.Category.Name}");
 }
 
-// Search interests
-var results = await client.Interests.SearchInterestsAsync("employment", take: 10);
+// Get interest categories (non-paginated)
+var categories = await client.Interests.GetCategoriesAsync(cancellationToken);
+foreach (var category in categories.Items)
+{
+    Console.WriteLine($"Category: {category.Name}");
+}
+
+// Get a specific interest by ID
+var interest = await client.Interests.GetInterestByIdAsync(123, cancellationToken);
+
+// Get all registers (non-paginated)
+var registers = await client.Interests.GetRegistersAsync(cancellationToken);
 ```
 
-**Status:** 4/4 tests passing ✅
+**Status:** ✅ All tests passing
 
 ### ✅ Written Questions & Statements API
 
 Parliamentary questions and ministerial statements.
 
 ```csharp
-// Get written questions
-var questions = await client.QuestionsStatements.GetWrittenQuestionsAsync(
-    tabledWhenFrom: DateTime.Now.AddMonths(-1),
-    isAnswered: true,
-    take: 20);
+// Stream all answered written questions from the last month (recommended)
+await foreach (var question in client.GetAllAsync(
+    new GetWrittenQuestionsRequest
+    {
+        TabledWhenFrom = DateTime.Now.AddMonths(-1),
+        IsAnswered = true
+    }, cancellationToken))
+{
+    Console.WriteLine(question.Value.QuestionText);
+}
 
-// Get written statements
-var statements = await client.QuestionsStatements.GetWrittenStatementsAsync(
-    madeWhenFrom: DateTime.Now.AddDays(-7),
-    take: 20);
+// Stream all written statements from the last week
+await foreach (var statement in client.GetAllAsync(
+    new GetWrittenStatementsRequest
+    {
+        MadeWhenFrom = DateTime.Now.AddDays(-7)
+    }, cancellationToken))
+{
+    Console.WriteLine(statement.Value.Title);
+}
 
-// Get daily reports
-var reports = await client.QuestionsStatements.GetDailyReportsAsync(
-    dateFrom: DateTime.Now.AddDays(-7));
+// Stream all daily reports from the last week
+await foreach (var report in client.GetAllAsync(
+    new GetDailyReportsRequest
+    {
+        DateFrom = DateTime.Now.AddDays(-7)
+    }, cancellationToken))
+{
+    Console.WriteLine(report.Value.Title);
+}
 ```
 
-**Status:** 4/4 tests passing ✅
+**Status:** ✅ All tests passing
 
 ### ✅ Oral Questions & Motions API
 
 Oral questions and parliamentary motions.
 
 ```csharp
-// Get oral questions
-var questions = await client.OralQuestionsMotions.GetOralQuestionsAsync(
-    house: "Commons",
-    dateFrom: DateTime.Now.AddMonths(-1));
+// Stream all oral questions from the last month (recommended)
+await foreach (var question in client.GetAllAsync(
+    new GetOralQuestionsRequest
+    {
+        House = "Commons",
+        DateFrom = DateTime.Now.AddMonths(-1)
+    }, cancellationToken))
+{
+    Console.WriteLine(question.QuestionText);
+}
 
-// Get motions (including Early Day Motions)
-var motions = await client.OralQuestionsMotions.GetMotionsAsync(
-    motionType: "Early Day Motion",
-    isActive: true);
+// Stream all active Early Day Motions
+await foreach (var motion in client.GetAllAsync(
+    new GetMotionsRequest
+    {
+        MotionType = "Early Day Motion",
+        IsActive = true
+    }, cancellationToken))
+{
+    Console.WriteLine(motion.Title);
+}
 ```
 
-**Status:** 3/3 tests passing ✅
+**Status:** ✅ All tests passing
 
 ### ✅ Treaties API
 
 International treaties laid before Parliament.
 
 ```csharp
-// Get treaties
-var treaties = await client.Treaties.GetTreatiesAsync(
-    status: "In Force",
-    dateLaidFrom: DateTime.Now.AddYears(-1));
+// Stream all treaties in force (recommended)
+await foreach (var treaty in client.GetAllAsync(
+    new GetTreatiesRequest
+    {
+        Status = "In Force",
+        DateLaidFrom = DateTime.Now.AddYears(-1)
+    }, cancellationToken))
+{
+    Console.WriteLine($"{treaty.CommandPaperNumber}: {treaty.Title}");
+}
 
-// Get treaty details
-var treaty = await client.Treaties.GetTreatyByIdAsync(123);
+// Get a specific treaty by ID
+var treaty = await client.Treaties.GetTreatyByIdAsync("123", cancellationToken);
 
-// Get treaty business items
-var businessItems = await client.Treaties.GetTreatyBusinessItemsAsync(123);
+// Get treaty business items (non-paginated)
+var businessItems = await client.Treaties.GetTreatyBusinessItemsAsync(123, cancellationToken);
 
-// Get government organizations
-var orgs = await client.Treaties.GetGovernmentOrganisationsAsync();
+// Get government organizations (non-paginated)
+var orgs = await client.Treaties.GetGovernmentOrganisationsAsync(cancellationToken);
 ```
 
-**Status:** 4/4 tests passing ✅
+**Status:** ✅ All tests passing
 
 ### ✅ Erskine May API
 
 The authoritative guide to parliamentary procedure.
 
 ```csharp
-// Search parliamentary procedure
-var results = await client.ErskineMay.SearchAsync("voting procedure", take: 10);
+// Search parliamentary procedure by section
+var results = await client.ErskineMay.SearchAsync("voting procedure", cancellationToken);
+
+// Search by paragraph
+var paragraphs = await client.ErskineMay.SearchParagraphsAsync("division bells", cancellationToken);
 
 // Get all parts
-var parts = await client.ErskineMay.GetPartsAsync();
+var parts = await client.ErskineMay.GetPartsAsync(cancellationToken);
 
-// Get chapters in a part
-var chapters = await client.ErskineMay.GetChaptersAsync(partNumber: 1);
+// Get a specific part
+var part = await client.ErskineMay.GetPartAsync(partNumber: 1, cancellationToken);
 
-// Get sections in a chapter
-var sections = await client.ErskineMay.GetSectionsAsync(chapterNumber: 1, take: 20);
+// Get a specific chapter
+var chapter = await client.ErskineMay.GetChapterAsync(chapterNumber: 1, cancellationToken);
+
+// Get a section by ID
+var section = await client.ErskineMay.GetSectionByIdAsync(sectionId: 100, cancellationToken);
+
+// Browse index terms
+var indexTerms = await client.ErskineMay.BrowseIndexTermsAsync(cancellationToken);
 ```
 
-**Status:** 3/3 tests passing ✅
+**Status:** ✅ All tests passing
 
 ### ✅ NOW (Annunciator) API
 
 Real-time chamber status and business information.
 
 ```csharp
-// Get current Commons status
-var status = await client.Now.GetCommonsStatusAsync();
-Console.WriteLine($"Sitting: {status.IsSitting}");
-Console.WriteLine($"Current: {status.CurrentBusiness}");
+// Get current Commons annunciator message
+var commonsMessage = await client.Now.GetCurrentMessageAsync("commons", cancellationToken);
+Console.WriteLine($"Title: {commonsMessage.Title}");
 
-// Get upcoming business
-var upcoming = await client.Now.GetUpcomingBusinessAsync("Commons");
+// Get current Lords annunciator message
+var lordsMessage = await client.Now.GetCurrentMessageAsync("lords", cancellationToken);
 
-// Get current business
-var current = await client.Now.GetCurrentBusinessAsync("Lords");
+// Get message for a specific date
+var historicMessage = await client.Now.GetMessageByDateAsync("commons", "2024-01-15", cancellationToken);
 ```
 
-**Status:** 4/4 tests passing ✅
+**Status:** ✅ All tests passing
 
 ---
 
@@ -396,35 +525,58 @@ var client = new ParliamentClient(options);
 
 | API | Unit Tests | Integration Tests | Total | Status |
 |-----|------------|-------------------|-------|--------|
-| Petitions | 17 | 10 | 27 | ✅ 100% |
-| Members | 6 | 11 | 17 | ✅ 100% |
-| Bills | 3 | 9 | 12 | ✅ 100% |
-| Committees | 1 | 6 | 7 | ⚠️ 54% |
-| Divisions | 4 | 0 | 4 | 🔴 Unit only |
-| Interests | 4 | 8 | 12 | ✅ 100% unit |
-| Questions/Statements | 4 | 15 | 19 | ✅ 100% unit |
-| Oral Questions | 3 | 8 | 11 | ✅ 100% unit |
-| Treaties | 4 | 6 | 10 | ✅ 100% unit |
-| Erskine May | 3 | 6 | 9 | ✅ 100% unit |
-| NOW | 4 | 4 | 8 | ✅ 100% unit |
-| **TOTAL** | **53** | **83** | **136** | **86 passing** |
+| Petitions | 3 | 10 | 13 | ✅ |
+| Members | 3 | 11 | 14 | ✅ |
+| Bills | 2 | 9 | 11 | ✅ |
+| Committees | 2 | 10 | 12 | ✅ |
+| Commons Divisions | 2 | 5 | 7 | ✅ |
+| Lords Divisions | 2 | 5 | 7 | ✅ |
+| Interests | 3 | 8 | 11 | ✅ |
+| Questions/Statements | 4 | 10 | 14 | ✅ |
+| Oral Questions | 4 | 6 | 10 | ✅ |
+| Treaties | 4 | 6 | 10 | ✅ |
+| Erskine May | 3 | 6 | 9 | ✅ |
+| NOW | 3 | 3 | 6 | ✅ |
+| Client/Misc | 2 | 10 | 12 | ✅ |
+| **TOTAL** | **40** | **99** | **139** | **44 unit passing** |
+
+---
+
+## API Endpoint Coverage
+
+The library covers all core/primary endpoints for each API. Some APIs have additional sub-endpoints not yet implemented:
+
+| API | Implemented | Available | Coverage | Notes |
+|-----|------------|-----------|----------|-------|
+| Petitions | 4 | ~4 | ✅ 100% | Full coverage |
+| NOW (Annunciator) | 2 | 2 | ✅ 100% | Full coverage |
+| Written Q&A | 7 | 7 | ✅ 100% | Full coverage |
+| Interests | 8 | 8 | ✅ 100% | Including CSV export and document download |
+| Treaties | 6 | 6 | ✅ 100% | Full coverage |
+| Erskine May | 11 | 11 | ✅ 100% | Full coverage |
+| Divisions (Commons) | 5 | ~5 | ✅ ~100% | Core voting endpoints |
+| Divisions (Lords) | 4 | ~4 | ✅ ~100% | Core voting endpoints |
+| Oral Questions | 3 | ~3+ | ✅ Core | No Swagger spec available |
+| Members | 4 | 40 | ⚠️ Core | Missing: biography, voting, portraits, parties, posts, etc. |
+| Bills | 3 | 21 | ⚠️ Core | Missing: stages, amendments, publications, RSS, sittings |
+| Committees | 2 | 37 | ⚠️ Core | Missing: events, evidence, publications, members |
 
 ---
 
 ## Documentation
 
 - [MASTER_PLAN.md](MASTER_PLAN.md) - Complete implementation roadmap
-- [LOGGING_AND_DIAGNOSTICS.md](LOGGING_AND_DIAGNOSTICS.md) - HTTP logging guide
-- [500_ERROR_ANALYSIS.md](500_ERROR_ANALYSIS.md) - Parliament API issues
-- [UK_PARLIAMENT_API_REFERENCE.md](UK_PARLIAMENT_API_REFERENCE.md) - Complete API reference
+- [API_ISSUES.md](API_ISSUES.md) - Known Parliament API issues
 
 ---
 
 ## Known Issues
 
-- **Committees API**: Intermittent 500 errors from Parliament servers
-- **Divisions APIs**: 100% API failure rate (Parliament infrastructure issue)
-- These are server-side problems being tracked with UK Parliament Digital Service
+- **Divisions APIs**: Responses are currently untyped (`object`); `GetAllAsync` is not available — use the raw interface methods with manual paging
+- **Committees API**: Occasional intermittent 500 errors from Parliament servers
+- **Members API**: Many sub-endpoints (biography, voting history, portraits) not yet implemented
+- **Bills API**: Stage/amendment/publication sub-endpoints not yet implemented
+- **Committees API**: Evidence, events, and publication sub-endpoints not yet implemented
 
 ---
 
@@ -451,19 +603,27 @@ if (result.Ok) { /* use result.Data */ }
 **v2.0+:**
 ```csharp
 var client = new ParliamentClient();
-var petition = await client.Petitions.GetByIdAsync(123);
+var petition = await client.Petitions.GetByIdAsync(123, cancellationToken);
 // Direct access, throws ApiException on error
 ```
+
+## Migration from v10.0.x to v10.1
+
+All query-parameter overloads have been replaced by request model overloads, and
+pagination is now handled by `client.GetAllAsync(...)` / `client.GetAllListAsync(...)`.
+See [Breaking Change in v10.1](#️-breaking-change-in-v101--request-model-migration) at the top of this page for a full before/after guide.
 
 ---
 
 ## Contributing
 
 Contributions welcome! Priority areas:
-1. Fix Divisions APIs when Parliament resolves 500 errors
-2. Add more integration tests
-3. Improve documentation
-4. Report issues
+1. Add strongly-typed models to Divisions APIs (Commons & Lords) to enable `GetAllAsync`
+2. Expand Members API (biography, voting history, portraits, etc.)
+3. Expand Bills API (stages, amendments, publications)
+4. Add more integration tests
+5. Improve documentation
+6. Report issues
 
 ---
 

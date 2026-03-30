@@ -39,9 +39,8 @@ public interface IOralQuestionsMotionsApi
 	/// <remarks>
 	/// Use <see cref="GetOralQuestionsAsync(GetOralQuestionsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetOralQuestionsAsync(GetOralQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetOralQuestionsAsync(GetOralQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/oralquestions/list")]
 	Task<OralQuestionsResponse<OralQuestion>> GetOralQuestionsAsync(
 		[Query] int? askingMemberId = null,
@@ -78,9 +77,8 @@ public interface IOralQuestionsMotionsApi
 	/// <remarks>
 	/// Use <see cref="GetMotionsAsync(GetMotionsRequest, CancellationToken)"/> instead.
 	/// Example: <c>GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use GetMotionsAsync(GetMotionsRequest request, CancellationToken cancellationToken) instead. Example: GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use GetMotionsAsync(GetMotionsRequest request, CancellationToken cancellationToken) instead. Example: GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/EarlyDayMotions/list")]
 	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
 		[Query] int? proposingMemberId = null,

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Uk.Parliament.Extensions;
 
 namespace Uk.Parliament.Test;
 
@@ -34,7 +33,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var response = await client
 			.Committees
 			.GetCommitteesAsync(
-				take: 10,
+				new GetCommitteesRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -51,9 +50,9 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var page1 = await client.Committees.GetCommitteesAsync(skip: 0, take: 5,
+		var page1 = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Skip = 0, Take = 5 },
 			cancellationToken: CancellationToken);
-		var page2 = await client.Committees.GetCommitteesAsync(skip: 5, take: 5,
+		var page2 = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Skip = 5, Take = 5 },
 			cancellationToken: CancellationToken);
 
 		// Assert
@@ -69,7 +68,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10,
+		var response = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert
@@ -87,7 +86,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10,
+		var response = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert - At least some committees should have categories
@@ -103,7 +102,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10,
+		var response = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert - At least some committees should have types
@@ -123,7 +122,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10,
+		var response = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert - Check that house information is present
@@ -141,9 +140,8 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 
 		// Act - Keep pageSize small and limit iterations to avoid API 500 errors
 		await foreach (var committee in client
-			.Committees
-			.GetAllCommitteesAsync(pageSize: 5,
-			cancellationToken: CancellationToken))
+			.GetAllAsync(new GetCommitteesRequest { Take = 5 },
+			CancellationToken))
 		{
 			_ = committee.Should().NotBeNull();
 			_ = committee.Name.Should().NotBeNullOrWhiteSpace();
@@ -167,10 +165,9 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 
 		// Act - Use small page size to avoid API errors
 		var allCommittees = await client
-			.Committees
-			.GetAllCommitteesListAsync(
-				pageSize: 5,
-				cancellationToken: CancellationToken);
+			.GetAllListAsync(
+				new GetCommitteesRequest { Take = 5 },
+				CancellationToken);
 
 		// Assert
 		_ = allCommittees.Should().NotBeNull();
@@ -186,7 +183,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10,
+		var response = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert - Some committees should have contact information
@@ -201,7 +198,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		var client = CreateClient();
 
 		// Act
-		var response = await client.Committees.GetCommitteesAsync(take: 10,
+		var response = await client.Committees.GetCommitteesAsync(new GetCommitteesRequest { Take = 10 },
 			cancellationToken: CancellationToken);
 
 		// Assert - All committees should have start dates

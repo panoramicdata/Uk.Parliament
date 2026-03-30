@@ -1,12 +1,13 @@
 #pragma warning disable CS1591
 using Refit;
+using Uk.Parliament.Models;
 
 namespace Uk.Parliament.Requests;
 
 /// <summary>
 /// Request for retrieving petitions.
 /// </summary>
-public sealed record class GetPetitionsRequest : PageRequest
+public sealed record class GetPetitionsRequest : PageRequest, IPaginatedRequest<Petition>
 {
 	/// <summary>
 	/// Optional search term.

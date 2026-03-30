@@ -38,6 +38,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			var divisions = await client
 				.CommonsDivisions
 				.GetDivisionsAsync(
+					new GetCommonsDivisionsRequest(),
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -70,7 +71,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			var divisions = await client
 				.CommonsDivisions
 				.SearchDivisionsAsync(
-					"Budget",
+					new SearchCommonsDivisionsRequest { SearchTerm = "Budget" },
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -95,7 +96,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			var votingHistory = await client
 				.CommonsDivisions
 				.GetMemberVotingAsync(
-					memberId: 172,
+					new GetCommonsMemberVotingRequest { MemberId = 172 },
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -120,9 +121,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			var page1 = await client
 				.CommonsDivisions
 				.SearchDivisionsAsync(
-					"Budget",
-					skip: 0,
-					take: 10,
+					new SearchCommonsDivisionsRequest { SearchTerm = "Budget", Skip = 0, Take = 10 },
 					cancellationToken: CancellationToken);
 
 			// Assert

@@ -1,12 +1,13 @@
 #pragma warning disable CS1591
 using Refit;
+using Uk.Parliament.Models.Interests;
 
 namespace Uk.Parliament.Requests;
 
 /// <summary>
 /// Request for searching interests.
 /// </summary>
-public sealed record class SearchInterestsRequest : SkipTakeRequest
+public sealed record class SearchInterestsRequest : SkipTakeRequest, IPaginatedRequest<Interest>
 {
 	/// <summary>
 	/// Optional member identifier.

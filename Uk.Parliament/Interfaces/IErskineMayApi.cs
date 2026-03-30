@@ -76,4 +76,59 @@ public interface IErskineMayApi
 	Task<ErskineMaySearchResponse> SearchParagraphsAsync(
 		string searchTerm,
 		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Search for index terms
+	/// </summary>
+	/// <param name="searchTerm">Search term</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Search response with results</returns>
+	[Get("/api/Search/IndexTermSearchResults/{searchTerm}")]
+	Task<ErskineMaySearchResponse> SearchIndexTermsAsync(
+		string searchTerm,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get a paragraph by reference
+	/// </summary>
+	/// <param name="reference">Paragraph reference</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Search response with results</returns>
+	[Get("/api/Search/Paragraph/{reference}")]
+	Task<ErskineMaySearchResponse> GetParagraphByReferenceAsync(
+		string reference,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get an index term by ID
+	/// </summary>
+	/// <param name="indexTermId">Index term identifier</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Index term details</returns>
+	[Get("/api/IndexTerm/{indexTermId}")]
+	Task<object> GetIndexTermByIdAsync(
+		int indexTermId,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Browse index terms
+	/// </summary>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>List of index terms</returns>
+	[Get("/api/IndexTerm/browse")]
+	Task<object> BrowseIndexTermsAsync(
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get a section with a specific step
+	/// </summary>
+	/// <param name="sectionId">Section identifier</param>
+	/// <param name="step">Step value</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Section details</returns>
+	[Get("/api/Section/{sectionId},{step}")]
+	Task<ErskineMaySection> GetSectionWithStepAsync(
+		int sectionId,
+		int step,
+		CancellationToken cancellationToken = default);
 }

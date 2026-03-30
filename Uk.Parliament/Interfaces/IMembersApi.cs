@@ -34,9 +34,8 @@ public interface IMembersApi
 	/// <remarks>
 	/// Use <see cref="SearchAsync(SearchMembersRequest, CancellationToken)"/> instead.
 	/// Example: <c>SearchAsync(new SearchMembersRequest { Name = name, Skip = skip, Take = take, House = house, IsCurrentMember = isCurrentMember }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use SearchAsync(SearchMembersRequest request, CancellationToken cancellationToken) instead. Example: SearchAsync(new SearchMembersRequest { Name = name, Skip = skip, Take = take, House = house, IsCurrentMember = isCurrentMember }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use SearchAsync(SearchMembersRequest request, CancellationToken cancellationToken) instead. Example: SearchAsync(new SearchMembersRequest { Name = name, Skip = skip, Take = take, House = house, IsCurrentMember = isCurrentMember }, cancellationToken).", true)]
 	[Get("/api/Members/Search")]
 	Task<PaginatedResponse<Member>> SearchAsync(
 		[Query] string? name = null,
@@ -76,9 +75,8 @@ public interface IMembersApi
 	/// <remarks>
 	/// Use <see cref="SearchConstituenciesAsync(SearchConstituenciesRequest, CancellationToken)"/> instead.
 	/// Example: <c>SearchConstituenciesAsync(new SearchConstituenciesRequest { SearchText = searchText, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// This overload remains temporarily as a warning-only migration path.
 	/// </remarks>
-	[Obsolete("Use SearchConstituenciesAsync(SearchConstituenciesRequest request, CancellationToken cancellationToken) instead. Example: SearchConstituenciesAsync(new SearchConstituenciesRequest { SearchText = searchText, Skip = skip, Take = take }, cancellationToken). This overload remains temporarily as a warning-only migration path.")]
+	[Obsolete("Use SearchConstituenciesAsync(SearchConstituenciesRequest request, CancellationToken cancellationToken) instead. Example: SearchConstituenciesAsync(new SearchConstituenciesRequest { SearchText = searchText, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/Location/Constituency/Search")]
 	Task<PaginatedResponse<Constituency>> SearchConstituenciesAsync(
 		[Query] string? searchText = null,
