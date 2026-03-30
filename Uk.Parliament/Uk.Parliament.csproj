@@ -15,7 +15,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>Icon.png</PackageIcon>
-		<PackageReleaseNotes>v10.0.9 - 100% API COVERAGE! All 12 UK Parliament APIs now supported. New: Interests, Written Questions, Oral Questions, Treaties, Erskine May, and NOW APIs. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
+		<PackageReleaseNotes>v10.1 - Request model migration: all API methods now use strongly-typed request objects. Generic GetAllAsync/GetAllListAsync pagination. Fully typed Divisions, Erskine May, and Treaties models. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
 
 		<!-- Symbol Package Configuration -->
 		<IncludeSymbols>true</IncludeSymbols>
