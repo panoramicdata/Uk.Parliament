@@ -1,4 +1,3 @@
-using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Interests;
 
 namespace Uk.Parliament.Test;
@@ -33,7 +32,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Interests
 			.SearchInterestsAsync(
-				take: 10,
+				new SearchInterestsRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -52,8 +51,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Interests
 			.SearchInterestsAsync(
-				searchTerm: searchTerm,
-				take: 10,
+				new SearchInterestsRequest { SearchTerm = searchTerm, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -71,8 +69,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Interests
 			.SearchInterestsAsync(
-				categoryId: categoryId,
-				take: 10,
+				new SearchInterestsRequest { CategoryId = categoryId, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -85,8 +82,8 @@ public class InterestsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var interests = await CollectStreamedItemsAsync(
-			Client.Interests.GetAllInterestsAsync(pageSize: 5,
-			cancellationToken: CancellationToken));
+			Client.GetAllAsync(new SearchInterestsRequest { Take = 5 },
+			CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(interests);
@@ -167,16 +164,12 @@ public class InterestsApiUnitTests : IntegrationTestBase
 		};
 
 		_ = mockApi.Setup(x => x.SearchInterestsAsync(
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<string?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+			It.IsAny<SearchInterestsRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.SearchInterestsAsync(searchTerm: "test",
+		var result = await mockApi.Object.SearchInterestsAsync(new SearchInterestsRequest { SearchTerm = "test" },
 			cancellationToken: CancellationToken);
 
 		// Assert

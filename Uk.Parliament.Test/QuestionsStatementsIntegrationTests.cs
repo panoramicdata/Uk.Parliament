@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -16,8 +14,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-				take: 10,
-				cancellationToken: CancellationToken);
+			   new GetWrittenQuestionsRequest { Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result);
@@ -33,9 +31,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-				askingMemberId: memberId,
-				take: 10,
-				cancellationToken: CancellationToken);
+			   new GetWrittenQuestionsRequest { AskingMemberId = memberId, Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
@@ -52,10 +49,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-				tabledWhenFrom: fromDate,
-				tabledWhenTo: toDate,
-				take: 10,
-				cancellationToken: CancellationToken);
+			   new GetWrittenQuestionsRequest { TabledWhenFrom = fromDate, TabledWhenTo = toDate, Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result, item =>
@@ -72,9 +67,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-				isAnswered: true,
-				take: 10,
-				cancellationToken: CancellationToken);
+			   new GetWrittenQuestionsRequest { IsAnswered = true, Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result, item =>
@@ -91,8 +85,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.QuestionsStatements
 			.GetWrittenQuestionsAsync(
-				take: 1,
-				cancellationToken: CancellationToken);
+				new GetWrittenQuestionsRequest { Take = 1 },
+				CancellationToken);
 
 		// Check if using Results or Items property
 		var hasResults = listResult.Results != null && listResult.Results.Count > 0;
@@ -127,10 +121,9 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var questions = await CollectStreamedItemsAsync(
-			Client.QuestionsStatements.GetAllWrittenQuestionsAsync(
-				house: "Commons",
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetWrittenQuestionsRequest { House = "Commons", Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify we can stream without error
 		_ = questions.Should().NotBeNull();
@@ -147,8 +140,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenStatementsAsync(
-				take: 10,
-				cancellationToken: CancellationToken);
+			   new GetWrittenStatementsRequest { Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result);
@@ -165,10 +158,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetWrittenStatementsAsync(
-				madeWhenFrom: fromDate,
-				madeWhenTo: toDate,
-				take: 10,
-				cancellationToken: CancellationToken);
+			 new GetWrittenStatementsRequest { MadeWhenFrom = fromDate, MadeWhenTo = toDate, Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result, item =>
@@ -185,8 +176,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.QuestionsStatements
 			.GetWrittenStatementsAsync(
-				take: 1,
-				cancellationToken: CancellationToken);
+				new GetWrittenStatementsRequest { Take = 1 },
+				CancellationToken);
 
 		// Check if using Results or Items property
 		var hasResults = listResult.Results != null && listResult.Results.Count > 0;
@@ -220,9 +211,9 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var statements = await CollectStreamedItemsAsync(
-			Client.QuestionsStatements.GetAllWrittenStatementsAsync(
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetWrittenStatementsRequest { Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify we can stream without error
 		_ = statements.Should().NotBeNull();
@@ -243,10 +234,8 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.QuestionsStatements
 			.GetDailyReportsAsync(
-				dateFrom: fromDate,
-				dateTo: toDate,
-				take: 10,
-				cancellationToken: CancellationToken);
+			 new GetDailyReportsRequest { DateFrom = fromDate, DateTo = toDate, Take = 10 },
+				CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();
@@ -261,10 +250,9 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 		// Act
 		var reports = await CollectStreamedItemsAsync(
-			Client.QuestionsStatements.GetAllDailyReportsAsync(
-				dateFrom: fromDate,
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetDailyReportsRequest { DateFrom = fromDate, Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify we can stream without error
 		_ = reports.Should().NotBeNull();

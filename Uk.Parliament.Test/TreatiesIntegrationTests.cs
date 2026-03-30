@@ -1,4 +1,3 @@
-using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Treaties;
 
 namespace Uk.Parliament.Test;
@@ -15,8 +14,8 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Treaties
 			.GetTreatiesAsync(
-				take: 10,
-				cancellationToken: CancellationToken);
+			   new GetTreatiesRequest { Take = 10 },
+				CancellationToken);
 
 		// Assert
 		AssertValidPaginatedResponse(result);
@@ -32,9 +31,8 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.Treaties
 			.GetTreatiesAsync(
-				status: status,
-				take: 10,
-				cancellationToken: CancellationToken);
+			 new GetTreatiesRequest { Status = status, Take = 10 },
+				CancellationToken);
 
 		// Assert - API returns results but Status field may not be populated
 		_ = result.Should().NotBeNull();
@@ -48,8 +46,8 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.Treaties
 			.GetTreatiesAsync(
-				take: 1,
-				cancellationToken: CancellationToken);
+				new GetTreatiesRequest { Take = 1 },
+				CancellationToken);
 
 		if (listResult.Items == null || listResult.Items.Count == 0)
 		{
@@ -77,8 +75,8 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.Treaties
 			.GetTreatiesAsync(
-				take: 1,
-				cancellationToken: CancellationToken);
+				new GetTreatiesRequest { Take = 1 },
+				CancellationToken);
 
 		if (listResult.Items == null || listResult.Items.Count == 0)
 		{
@@ -129,9 +127,9 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var treaties = await CollectStreamedItemsAsync(
-			Client.Treaties.GetAllTreatiesAsync(
-				pageSize: 5,
-				cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetTreatiesRequest { Take = 5 },
+				CancellationToken));
 
 		// Assert - Just verify streaming works
 		_ = treaties.Should().NotBeNull();
@@ -189,19 +187,14 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 		};
 
 		_ = mockApi.Setup(x => x.GetTreatiesAsync(
-			It.IsAny<int?>(),
-			It.IsAny<string?>(),
-			It.IsAny<string?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<DateTime?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
+			  It.IsAny<GetTreatiesRequest>(),
+			  It.IsAny<CancellationToken>()))
+			  .ReturnsAsync(expectedResponse);
 
 		// Act
-		var result = await mockApi.Object.GetTreatiesAsync(take: 10,
-			cancellationToken: CancellationToken);
+		var result = await mockApi.Object.GetTreatiesAsync(
+			new GetTreatiesRequest { Take = 10 },
+			CancellationToken);
 
 		// Assert
 		_ = result.Should().NotBeNull();

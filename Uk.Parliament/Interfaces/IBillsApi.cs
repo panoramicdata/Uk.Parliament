@@ -1,7 +1,9 @@
+#pragma warning disable CS1572, CS1573
 using System.Threading;
 using System.Threading.Tasks;
 using Refit;
 using Uk.Parliament.Models.Bills;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -20,6 +22,19 @@ public interface IBillsApi
 	/// <param name="take">Number of results to take (default: 20)</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>List of bills</returns>
+	[Get("/api/v1/Bills")]
+	Task<BillsListResponse<Bill>> GetBillsAsync(
+		[Query] GetBillsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get list of bills with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetBillsAsync(GetBillsRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetBillsAsync(new GetBillsRequest { SearchTerm = searchTerm, Session = session, CurrentHouse = currentHouse, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetBillsAsync(GetBillsRequest request, CancellationToken cancellationToken) instead. Example: GetBillsAsync(new GetBillsRequest { SearchTerm = searchTerm, Session = session, CurrentHouse = currentHouse, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/v1/Bills")]
 	Task<BillsListResponse<Bill>> GetBillsAsync(
 		[Query] string? searchTerm = null,
@@ -49,3 +64,4 @@ public interface IBillsApi
 	Task<BillsListResponse<BillType>> GetBillTypesAsync(
 		CancellationToken cancellationToken = default);
 }
+#pragma warning restore CS1572, CS1573

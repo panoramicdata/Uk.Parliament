@@ -1,8 +1,10 @@
+#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Models;
 using Uk.Parliament.Models.Questions;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -30,6 +32,19 @@ public interface IQuestionsStatementsApi
 	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of written questions</returns>
+	[Get("/api/writtenquestions/questions")]
+	Task<PaginatedResponse<WrittenQuestion>> GetWrittenQuestionsAsync(
+		[Query] GetWrittenQuestionsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get written questions with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetWrittenQuestionsAsync(GetWrittenQuestionsRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetWrittenQuestionsAsync(new GetWrittenQuestionsRequest { AskingMemberId = askingMemberId, AnsweringMemberId = answeringMemberId, AnsweringDepartment = answeringDepartment, House = house, TabledWhenFrom = tabledWhenFrom, TabledWhenTo = tabledWhenTo, AnsweredWhenFrom = answeredWhenFrom, AnsweredWhenTo = answeredWhenTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetWrittenQuestionsAsync(GetWrittenQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetWrittenQuestionsAsync(new GetWrittenQuestionsRequest { AskingMemberId = askingMemberId, AnsweringMemberId = answeringMemberId, AnsweringDepartment = answeringDepartment, House = house, TabledWhenFrom = tabledWhenFrom, TabledWhenTo = tabledWhenTo, AnsweredWhenFrom = answeredWhenFrom, AnsweredWhenTo = answeredWhenTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/writtenquestions/questions")]
 	Task<PaginatedResponse<WrittenQuestion>> GetWrittenQuestionsAsync(
 		[Query] int? askingMemberId = null,
@@ -83,6 +98,19 @@ public interface IQuestionsStatementsApi
 	/// <returns>Paginated list of written statements</returns>
 	[Get("/api/writtenstatements/statements")]
 	Task<PaginatedResponse<WrittenStatement>> GetWrittenStatementsAsync(
+		[Query] GetWrittenStatementsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get written statements with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetWrittenStatementsAsync(GetWrittenStatementsRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetWrittenStatementsAsync(new GetWrittenStatementsRequest { MakingMemberId = makingMemberId, Department = department, House = house, MadeWhenFrom = madeWhenFrom, MadeWhenTo = madeWhenTo, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetWrittenStatementsAsync(GetWrittenStatementsRequest request, CancellationToken cancellationToken) instead. Example: GetWrittenStatementsAsync(new GetWrittenStatementsRequest { MakingMemberId = makingMemberId, Department = department, House = house, MadeWhenFrom = madeWhenFrom, MadeWhenTo = madeWhenTo, Skip = skip, Take = take }, cancellationToken).", true)]
+	[Get("/api/writtenstatements/statements")]
+	Task<PaginatedResponse<WrittenStatement>> GetWrittenStatementsAsync(
 		[Query] int? makingMemberId = null,
 		[Query] string? department = null,
 		[Query] string? house = null,
@@ -128,6 +156,19 @@ public interface IQuestionsStatementsApi
 	/// <returns>Paginated list of daily reports</returns>
 	[Get("/api/dailyreports/dailyreports")]
 	Task<PaginatedResponse<DailyReport>> GetDailyReportsAsync(
+		[Query] GetDailyReportsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get daily reports with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetDailyReportsAsync(GetDailyReportsRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetDailyReportsAsync(new GetDailyReportsRequest { DateFrom = dateFrom, DateTo = dateTo, House = house, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetDailyReportsAsync(GetDailyReportsRequest request, CancellationToken cancellationToken) instead. Example: GetDailyReportsAsync(new GetDailyReportsRequest { DateFrom = dateFrom, DateTo = dateTo, House = house, Skip = skip, Take = take }, cancellationToken).", true)]
+	[Get("/api/dailyreports/dailyreports")]
+	Task<PaginatedResponse<DailyReport>> GetDailyReportsAsync(
 		[Query] DateTime? dateFrom = null,
 		[Query] DateTime? dateTo = null,
 		[Query] string? house = null,
@@ -135,3 +176,4 @@ public interface IQuestionsStatementsApi
 		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 }
+#pragma warning restore CS1572, CS1573

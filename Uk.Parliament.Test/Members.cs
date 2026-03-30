@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -14,7 +12,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchAsync(
-				take: 10,
+				new SearchMembersRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -31,8 +29,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchAsync(
-				name: "Johnson",
-				take: 10,
+				new SearchMembersRequest { Name = "Johnson", Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -54,8 +51,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchAsync(
-				isCurrentMember: true,
-				take: 20,
+				new SearchMembersRequest { IsCurrentMember = true, Take = 20 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -72,9 +68,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchAsync(
-				house: 1,
-				isCurrentMember: true,
-				take: 10,
+				new SearchMembersRequest { House = 1, IsCurrentMember = true, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -95,9 +89,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchAsync(
-				house: 2,
-				isCurrentMember: true,
-				take: 10,
+				new SearchMembersRequest { House = 2, IsCurrentMember = true, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -119,7 +111,7 @@ public class Members : IntegrationTestBase
 		var searchResponse = await Client
 			.Members
 			.SearchAsync(
-				take: 1,
+				new SearchMembersRequest { Take = 1 },
 				cancellationToken: CancellationToken);
 		var memberId = searchResponse.Items[0].Value.Id;
 
@@ -145,18 +137,14 @@ public class Members : IntegrationTestBase
 		var page1 = await Client
 			.Members
 			.SearchAsync(
-				skip: 0,
-				take: 10,
-				isCurrentMember: true,
+				new SearchMembersRequest { Skip = 0, Take = 10, IsCurrentMember = true },
 				cancellationToken: CancellationToken);
 
 		// Act - Get second page
 		var page2 = await Client
 			.Members
 			.SearchAsync(
-				skip: 10,
-				take: 10,
-				isCurrentMember: true,
+				new SearchMembersRequest { Skip = 10, Take = 10, IsCurrentMember = true },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -172,7 +160,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchConstituenciesAsync(
-				take: 10,
+				new SearchConstituenciesRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -189,8 +177,7 @@ public class Members : IntegrationTestBase
 		var response = await Client
 			.Members
 			.SearchConstituenciesAsync(
-				searchText: "Westminster",
-				take: 10,
+				new SearchConstituenciesRequest { SearchText = "Westminster", Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -213,7 +200,7 @@ public class Members : IntegrationTestBase
 		var searchResponse = await Client
 			.Members
 			.SearchConstituenciesAsync(
-				take: 1,
+				new SearchConstituenciesRequest { Take = 1 },
 				cancellationToken: CancellationToken);
 		var constituencyId = searchResponse.Items[0].Value.Id;
 
@@ -238,7 +225,7 @@ public class Members : IntegrationTestBase
 		var count = 0;
 
 		// Act
-		await foreach (var member in Client.Members.GetAllAsync(name: "Brown", pageSize: 5, cancellationToken: CancellationToken))
+		await foreach (var member in Client.GetAllAsync(new SearchMembersRequest { Name = "Brown", Take = 5 }, CancellationToken))
 		{
 			_ = member.Should().NotBeNull();
 			_ = member.NameDisplayAs.Should().NotBeNullOrWhiteSpace();
@@ -258,11 +245,9 @@ public class Members : IntegrationTestBase
 	public async Task GetAllListAsync_RetrievesMultiplePages()
 	{
 		// Act
-		var allMembers = await Client.Members.GetAllListAsync(
-			house: 1, // Commons
-			isCurrentMember: true,
-			pageSize: 20,
-			cancellationToken: CancellationToken);
+		var allMembers = await Client.GetAllListAsync(
+			new SearchMembersRequest { House = 1, IsCurrentMember = true, Take = 20 },
+			CancellationToken);
 
 		// Assert
 		_ = allMembers.Should().NotBeNull();

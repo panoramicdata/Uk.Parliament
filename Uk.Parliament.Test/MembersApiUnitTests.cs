@@ -1,4 +1,3 @@
-using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.Members;
 
 namespace Uk.Parliament.Test;
@@ -26,16 +25,12 @@ public class MembersApiUnitTests : IntegrationTestBase
 		};
 
 		_ = mockApi.Setup(x => x.SearchAsync(
-			It.IsAny<string>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
-			It.IsAny<bool?>(),
+			It.IsAny<SearchMembersRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedMembers);
 
 		// Act
-		var result = await mockApi.Object.SearchAsync(take: 2,
+		var result = await mockApi.Object.SearchAsync(new SearchMembersRequest { Take = 2 },
 			cancellationToken: CancellationToken);
 
 		// Assert
@@ -86,66 +81,16 @@ public class MembersApiUnitTests : IntegrationTestBase
 		};
 
 		_ = mockApi.Setup(x => x.SearchConstituenciesAsync(
-			It.IsAny<string>(),
-			It.IsAny<int?>(),
-			It.IsAny<int?>(),
+			It.IsAny<SearchConstituenciesRequest>(),
 			It.IsAny<CancellationToken>()))
 			.ReturnsAsync(expectedConstituencies);
 
 		// Act
-		var result = await mockApi.Object.SearchConstituenciesAsync(take: 1,
+		var result = await mockApi.Object.SearchConstituenciesAsync(new SearchConstituenciesRequest { Take = 1 },
 			cancellationToken: CancellationToken);
 
 		// Assert
 		_ = result.Items.Should().ContainSingle();
 		_ = result.Items[0].Value.Name.Should().Be("Test Constituency");
-	}
-
-	[Fact]
-	public async Task GetAllAsync_WithMock_PaginatesCorrectly()
-	{
-		// Arrange
-		var mockApi = new Mock<IMembersApi>();
-
-		// Page 1
-		_ = mockApi.Setup(x => x.SearchAsync(null, 0, 2, null, null, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(new PaginatedResponse<Member>
-			{
-				TotalResults = 3,
-				Skip = 0,
-				Take = 2,
-				Items =
-				[
-					new() { Value = new Member { Id = 1 } },
-					new() { Value = new Member { Id = 2 } }
-				]
-			});
-
-		// Page 2
-		_ = mockApi.Setup(x => x.SearchAsync(null, 2, 2, null, null, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(new PaginatedResponse<Member>
-			{
-				TotalResults = 3,
-				Skip = 2,
-				Take = 2,
-				Items =
-				[
-					new() { Value = new Member { Id = 3 } }
-				]
-			});
-
-		var allMembers = new List<Member>();
-
-		// Act
-		await foreach (var member in mockApi.Object.GetAllAsync(pageSize: 2,
-			cancellationToken: CancellationToken))
-		{
-			allMembers.Add(member);
-		}
-
-		// Assert
-		_ = allMembers.Should().HaveCount(3);
-		_ = allMembers[0].Id.Should().Be(1);
-		_ = allMembers[2].Id.Should().Be(3);
 	}
 }

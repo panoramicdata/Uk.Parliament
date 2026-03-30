@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -16,7 +14,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.OralQuestionsMotions
 			.GetOralQuestionsAsync(
-				take: 10,
+				new GetOralQuestionsRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -37,8 +35,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.OralQuestionsMotions
 			.GetOralQuestionsAsync(
-				askingMemberId: memberId,
-				take: 10,
+				new GetOralQuestionsRequest { AskingMemberId = memberId, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -51,9 +48,9 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var questions = await CollectStreamedItemsAsync(
-			Client.OralQuestionsMotions.GetAllOralQuestionsAsync(
-				pageSize: 5,
-			cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetOralQuestionsRequest { Take = 5 },
+			CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(questions);
@@ -70,7 +67,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.OralQuestionsMotions
 			.GetMotionsAsync(
-				take: 10,
+				new GetMotionsRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -87,8 +84,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var result = await Client
 			.OralQuestionsMotions
 			.GetMotionsAsync(
-				isActive: true,
-				take: 10,
+				new GetMotionsRequest { IsActive = true, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -104,7 +100,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		var listResult = await Client
 			.OralQuestionsMotions
 			.GetMotionsAsync(
-				take: 1,
+				new GetMotionsRequest { Take = 1 },
 				cancellationToken: CancellationToken);
 
 		if (listResult.Response == null || listResult.Response.Count == 0)
@@ -139,9 +135,9 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var motions = await CollectStreamedItemsAsync(
-			Client.OralQuestionsMotions.GetAllMotionsAsync(
-				pageSize: 5,
-			cancellationToken: CancellationToken));
+			Client.GetAllAsync(
+				new GetMotionsRequest { Take = 5 },
+			CancellationToken));
 
 		// Assert
 		AssertValidStreamedResults(motions);

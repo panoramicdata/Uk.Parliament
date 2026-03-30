@@ -1,4 +1,3 @@
-using Uk.Parliament.Extensions;
 using Uk.Parliament.Models.ErskineMay;
 
 namespace Uk.Parliament.Test;
@@ -127,12 +126,16 @@ public class ErskineMayIntegrationTests : IntegrationTestBase
 		var results = new List<ErskineMaySearchResult>();
 
 		// Act
-		await foreach (var result in Client.ErskineMay.SearchAllAsync(searchTerm, cancellationToken: CancellationToken))
+		var searchResponse = await Client.ErskineMay.SearchAsync(searchTerm, CancellationToken);
+		if (searchResponse?.SearchResults != null)
 		{
-			results.Add(result);
-			if (results.Count >= 10)
+			foreach (var result in searchResponse.SearchResults)
 			{
-				break;
+				results.Add(result);
+				if (results.Count >= 10)
+				{
+					break;
+				}
 			}
 		}
 

@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 public class Petitions : IntegrationTestBase
@@ -12,10 +10,8 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-				search: "Electric Vehicles",
-				page: 1,
-				pageSize: 10,
-				cancellationToken: CancellationToken);
+				new GetPetitionsRequest { Search = "Electric Vehicles", Page = 1, PageSize = 10 },
+				CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
@@ -28,10 +24,8 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-				state: "open",
-				page: 1,
-				pageSize: 5,
-				cancellationToken: CancellationToken);
+			  new GetPetitionsRequest { State = "open", Page = 1, PageSize = 5 },
+				CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
@@ -44,10 +38,8 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-				state: "closed",
-				page: 1,
-				pageSize: 5,
-				cancellationToken: CancellationToken);
+				new GetPetitionsRequest { State = "closed", Page = 1, PageSize = 5 },
+				CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
@@ -60,10 +52,8 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-				state: "rejected",
-				page: 1,
-				pageSize: 5,
-				cancellationToken: CancellationToken);
+			  new GetPetitionsRequest { State = "rejected", Page = 1, PageSize = 5 },
+				CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
@@ -131,10 +121,8 @@ public class Petitions : IntegrationTestBase
 		var page1 = await Client
 			.Petitions
 			.GetAsync(
-				state: "open",
-				page: 1,
-				pageSize: 10,
-				cancellationToken: CancellationToken);
+			  new GetPetitionsRequest { State = "open", Page = 1, PageSize = 10 },
+				CancellationToken);
 
 		_ = page1.Data.Should().NotBeNull();
 		_ = page1.Data.Should().NotBeEmpty();
@@ -142,10 +130,8 @@ public class Petitions : IntegrationTestBase
 		var page2 = await Client
 			.Petitions
 			.GetAsync(
-				state: "open",
-				page: 2,
-				pageSize: 10,
-				cancellationToken: CancellationToken);
+			  new GetPetitionsRequest { State = "open", Page = 2, PageSize = 10 },
+				CancellationToken);
 
 		_ = page2.Data.Should().NotBeNull();
 		_ = page2.Data.Should().NotBeEmpty();
@@ -158,8 +144,8 @@ public class Petitions : IntegrationTestBase
 		var response = await Client
 			.Petitions
 			.GetAsync(
-				pageSize: 5,
-				cancellationToken: CancellationToken);
+				new GetPetitionsRequest { PageSize = 5 },
+				CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
@@ -169,10 +155,9 @@ public class Petitions : IntegrationTestBase
 	[Fact]
 	public async Task GetAllListAsync_WithStateFilter_RetrievesMultiplePages()
 	{
-		var allPetitions = await Client.Petitions.GetAllListAsync(
-			state: "rejected",
-			pageSize: 10,
-			cancellationToken: CancellationToken); // Small page size to ensure we get multiple pages
+		var allPetitions = await Client.GetAllListAsync(
+			new GetPetitionsRequest { State = "rejected", PageSize = 10 },
+			CancellationToken);
 
 		_ = allPetitions.Should().NotBeNull();
 		_ = allPetitions.Should().NotBeEmpty();
@@ -185,7 +170,7 @@ public class Petitions : IntegrationTestBase
 	{
 		var count = 0;
 
-		await foreach (var petition in Client.Petitions.GetAllAsync(state: "open", pageSize: 5, cancellationToken: CancellationToken))
+		await foreach (var petition in Client.GetAllAsync(new GetPetitionsRequest { State = "open", PageSize = 5 }, CancellationToken))
 		{
 			_ = petition.Should().NotBeNull();
 			_ = petition.Attributes.Should().NotBeNull();

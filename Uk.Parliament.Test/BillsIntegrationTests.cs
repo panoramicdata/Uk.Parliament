@@ -1,5 +1,3 @@
-using Uk.Parliament.Extensions;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -14,7 +12,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var response = await Client
 			.Bills
 			.GetBillsAsync(
-				take: 10,
+				new GetBillsRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -31,7 +29,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var billsList = await Client
 			.Bills
 			.GetBillsAsync(
-				take: 1,
+				new GetBillsRequest { Take = 1 },
 				cancellationToken: CancellationToken);
 		var billId = billsList.Items[0].BillId;
 
@@ -55,14 +53,12 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var page1 = await Client
 			.Bills
 			.GetBillsAsync(
-				skip: 0,
-				take: 10,
+				new GetBillsRequest { Skip = 0, Take = 10 },
 				cancellationToken: CancellationToken);
 		var page2 = await Client
 			.Bills
 			.GetBillsAsync(
-				skip: 10,
-				take: 10,
+				new GetBillsRequest { Skip = 10, Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -78,8 +74,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var response = await Client
 			.Bills
 			.GetBillsAsync(
-				currentHouse: "Commons",
-				take: 10,
+				new GetBillsRequest { CurrentHouse = "Commons", Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -95,8 +90,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var response = await Client
 			.Bills
 			.GetBillsAsync(
-				searchTerm: "Bill",
-				take: 10,
+				new GetBillsRequest { SearchTerm = "Bill", Take = 10 },
 				cancellationToken: CancellationToken);
 
 		// Assert
@@ -128,7 +122,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 	{
 		// Act
 		var bills = await CollectStreamedItemsAsync(
-			Client.Bills.GetAllBillsAsync(currentHouse: "Commons", pageSize: 10, cancellationToken: CancellationToken),
+			Client.GetAllAsync(new GetBillsRequest { CurrentHouse = "Commons", Take = 10 }, CancellationToken),
 			maxItems: 25);
 
 		// Assert
@@ -145,10 +139,9 @@ public class BillsIntegrationTests : IntegrationTestBase
 	public async Task GetAllBillsListAsync_RetrievesMultiplePages()
 	{
 		// Act
-		var allBills = await Client.Bills.GetAllBillsListAsync(
-			currentHouse: "Lords",
-			pageSize: 15,
-			cancellationToken: CancellationToken);
+		var allBills = await Client.GetAllListAsync(
+			new GetBillsRequest { CurrentHouse = "Lords", Take = 15 },
+			CancellationToken);
 
 		// Assert
 		_ = allBills.Should().NotBeNull();
@@ -164,7 +157,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var billsList = await Client
 			.Bills
 			.GetBillsAsync(
-				take: 1,
+				new GetBillsRequest { Take = 1 },
 				cancellationToken: CancellationToken);
 		var billId = billsList.Items[0].BillId;
 
@@ -188,7 +181,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var billsList = await Client
 			.Bills
 			.GetBillsAsync(
-				take: 10,
+				new GetBillsRequest { Take = 10 },
 				cancellationToken: CancellationToken);
 		var billWithSponsors = billsList.Items.FirstOrDefault(b => b.Sponsors?.Count > 0);
 

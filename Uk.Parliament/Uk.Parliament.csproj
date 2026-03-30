@@ -56,8 +56,5 @@
 		<None Include="Icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Divisions\" />
-	</ItemGroup>
 
-</Project>
+	</Project>

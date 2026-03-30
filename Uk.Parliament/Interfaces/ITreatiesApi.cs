@@ -1,8 +1,10 @@
+#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Models;
 using Uk.Parliament.Models.Treaties;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -26,6 +28,19 @@ public interface ITreatiesApi
 	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of treaties</returns>
+	[Get("/api/Treaty")]
+	Task<PaginatedResponse<Treaty>> GetTreatiesAsync(
+		[Query] GetTreatiesRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get treaties with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetTreatiesAsync(GetTreatiesRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetTreatiesAsync(GetTreatiesRequest request, CancellationToken cancellationToken) instead. Example: GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/api/Treaty")]
 	Task<PaginatedResponse<Treaty>> GetTreatiesAsync(
 		[Query] int? governmentOrganisationId = null,
@@ -60,6 +75,26 @@ public interface ITreatiesApi
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
+	/// Get a specific business item by ID
+	/// </summary>
+	/// <param name="id">Business item identifier</param>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Business item details</returns>
+	[Get("/api/BusinessItem/{id}")]
+	Task<TreatyBusinessItem> GetBusinessItemByIdAsync(
+		string id,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get series memberships
+	/// </summary>
+	/// <param name="cancellationToken">Cancellation token</param>
+	/// <returns>Paginated list of series memberships</returns>
+	[Get("/api/SeriesMembership")]
+	Task<PaginatedResponse<SeriesMembership>> GetSeriesMembershipsAsync(
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
 	/// Get all government organizations
 	/// </summary>
 	/// <param name="cancellationToken">Cancellation token</param>
@@ -68,3 +103,4 @@ public interface ITreatiesApi
 	Task<PaginatedResponse<GovernmentOrganisation>> GetGovernmentOrganisationsAsync(
 		CancellationToken cancellationToken = default);
 }
+#pragma warning restore CS1572, CS1573

@@ -1,7 +1,9 @@
+#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
 using Uk.Parliament.Models.OralQuestions;
+using Uk.Parliament.Requests;
 
 namespace Uk.Parliament.Interfaces;
 
@@ -26,6 +28,19 @@ public interface IOralQuestionsMotionsApi
 	/// <param name="take">Number of results to take</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of oral questions</returns>
+	[Get("/oralquestions/list")]
+	Task<OralQuestionsResponse<OralQuestion>> GetOralQuestionsAsync(
+		[Query] GetOralQuestionsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get oral questions with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetOralQuestionsAsync(GetOralQuestionsRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetOralQuestionsAsync(GetOralQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken).", true)]
 	[Get("/oralquestions/list")]
 	Task<OralQuestionsResponse<OralQuestion>> GetOralQuestionsAsync(
 		[Query] int? askingMemberId = null,
@@ -53,6 +68,19 @@ public interface IOralQuestionsMotionsApi
 	/// <returns>Paginated list of Early Day Motions</returns>
 	[Get("/EarlyDayMotions/list")]
 	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
+		[Query] GetMotionsRequest request,
+		CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Get Early Day Motions with optional filtering.
+	/// </summary>
+	/// <remarks>
+	/// Use <see cref="GetMotionsAsync(GetMotionsRequest, CancellationToken)"/> instead.
+	/// Example: <c>GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken)</c>.
+	/// </remarks>
+	[Obsolete("Use GetMotionsAsync(GetMotionsRequest request, CancellationToken cancellationToken) instead. Example: GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken).", true)]
+	[Get("/EarlyDayMotions/list")]
+	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
 		[Query] int? proposingMemberId = null,
 		[Query] string? house = null,
 		[Query] DateTime? dateFrom = null,
@@ -74,3 +102,4 @@ public interface IOralQuestionsMotionsApi
 		int id,
 		CancellationToken cancellationToken = default);
 }
+#pragma warning restore CS1572, CS1573
