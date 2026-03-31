@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Refit;
 
 namespace Uk.Parliament.Requests;
@@ -38,4 +37,3 @@ public abstract record class PageRequest
 	[AliasAs("page_size")]
 	public int? PageSize { get; init; }
 }
-#pragma warning restore CS1591

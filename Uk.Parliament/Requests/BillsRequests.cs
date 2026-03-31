@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Refit;
 using Uk.Parliament.Models.Bills;
 
@@ -27,4 +26,3 @@ public sealed record class GetBillsRequest : SkipTakeRequest, IPaginatedRequest<
 	[AliasAs("currentHouse")]
 	public string? CurrentHouse { get; init; }
 }
-#pragma warning restore CS1591

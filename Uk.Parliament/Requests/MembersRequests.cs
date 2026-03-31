@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Refit;
 using Uk.Parliament.Models.Members;
 
@@ -39,4 +38,3 @@ public sealed record class SearchConstituenciesRequest : SkipTakeRequest, IPagin
 	[AliasAs("searchText")]
 	public string? SearchText { get; init; }
 }
-#pragma warning restore CS1591

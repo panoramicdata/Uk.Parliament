@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Refit;
 using Uk.Parliament.Models;
 
@@ -21,4 +20,3 @@ public sealed record class GetPetitionsRequest : PageRequest, IPaginatedRequest<
 	[AliasAs("state")]
 	public string? State { get; init; }
 }
-#pragma warning restore CS1591

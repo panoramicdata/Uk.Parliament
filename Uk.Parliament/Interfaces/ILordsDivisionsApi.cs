@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Uk.Parliament.Models.Divisions;
 using Uk.Parliament.Requests;
 
-#pragma warning disable CS1572, CS1573
 namespace Uk.Parliament.Interfaces;
 
 /// <summary>
@@ -85,4 +84,3 @@ public interface ILordsDivisionsApi
 		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 }
-#pragma warning restore CS1572, CS1573

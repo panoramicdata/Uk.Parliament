@@ -1,4 +1,3 @@
-#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
@@ -110,4 +109,3 @@ public interface ICommonsDivisionsApi
 		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 }
-#pragma warning restore CS1572, CS1573

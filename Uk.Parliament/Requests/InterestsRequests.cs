@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Refit;
 using Uk.Parliament.Models.Interests;
 
@@ -27,4 +26,3 @@ public sealed record class SearchInterestsRequest : SkipTakeRequest, IPaginatedR
 	[AliasAs("searchTerm")]
 	public string? SearchTerm { get; init; }
 }
-#pragma warning restore CS1591
