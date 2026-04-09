@@ -6,5 +6,6 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
         <NuGetAuditMode>All</NuGetAuditMode>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 </Project>

@@ -3,6 +3,7 @@
   "versionHeightOffset": 0,
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
-    "^refs/tags/v1\\.\\d+\\.\\d+"
+    "^refs/tags/v1\\.\\d+\\.\\d+",
+    "^refs/tags/\\d+\\.\\d+\\.\\d+$"
   ]
 }
