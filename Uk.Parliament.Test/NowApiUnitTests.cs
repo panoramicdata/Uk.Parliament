@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class NowApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="INowApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void NowApi_CanBeMocked()
 	{
@@ -17,6 +18,7 @@ public class NowApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="INowApi.GetCurrentMessageAsync"/> returns the mocked annunciator message with slides.</summary>
 	[Fact]
 	public async Task GetCurrentMessageAsync_WithMock_ReturnsExpectedData()
 	{
@@ -65,6 +67,7 @@ public class NowApiUnitTests : IntegrationTestBase
 		_ = result.ShowCommonsBell.Should().BeTrue();
 	}
 
+	/// <summary>Verifies that <see cref="INowApi.GetMessageByDateAsync"/> returns the mocked annunciator message for the given date.</summary>
 	[Fact]
 	public async Task GetMessageByDateAsync_WithMock_ReturnsMessage()
 	{

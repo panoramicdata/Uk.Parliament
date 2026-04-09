@@ -3,10 +3,11 @@ using Uk.Parliament.Models.Questions;
 namespace Uk.Parliament.Test;
 
 /// <summary>
-/// Unit tests for Questions & Statements API (mocking)
+/// Unit tests for Questions &amp; Statements API (mocking)
 /// </summary>
 public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="IQuestionsStatementsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void QuestionsStatementsApi_CanBeMocked()
 	{
@@ -17,6 +18,7 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that a mocked <c>GetWrittenQuestionsAsync</c> returns the expected written questions data.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -77,6 +79,7 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(response);
 
+	/// <summary>Verifies that a mocked <c>GetWrittenStatementsAsync</c> returns the expected statements data.</summary>
 	[Fact]
 	public async Task GetWrittenStatementsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -130,6 +133,7 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 		_ = result.Items.Should().HaveCount(2);
 	}
 
+	/// <summary>Verifies that a mocked <c>GetDailyReportsAsync</c> returns the expected daily report data.</summary>
 	[Fact]
 	public async Task GetDailyReportsAsync_WithMock_ReturnsExpectedData()
 	{

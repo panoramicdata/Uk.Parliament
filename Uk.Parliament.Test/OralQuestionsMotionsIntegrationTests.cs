@@ -7,6 +7,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 {
 	#region Oral Questions Tests
 
+	/// <summary>Verifies that fetching oral questions without filters returns a successful non-empty response.</summary>
 	[Fact]
 	public async Task GetOralQuestionsAsync_WithNoFilters_Succeeds()
 	{
@@ -24,6 +25,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		_ = result.PagingInfo.Total.Should().BePositive();
 	}
 
+	/// <summary>Verifies that filtering oral questions by member ID returns a successful response.</summary>
 	[Fact]
 	public async Task GetOralQuestionsAsync_FilterByMember_ReturnsQuestions()
 	{
@@ -43,6 +45,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		_ = result.Success.Should().BeTrue();
 	}
 
+	/// <summary>Verifies that streaming all oral questions via async enumerable yields a non-empty collection.</summary>
 	[Fact]
 	public async Task GetAllOralQuestionsAsync_StreamsResults()
 	{
@@ -60,6 +63,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 
 	#region Motions Tests
 
+	/// <summary>Verifies that fetching motions without filters returns a successful non-empty response.</summary>
 	[Fact]
 	public async Task GetMotionsAsync_WithNoFilters_Succeeds()
 	{
@@ -77,6 +81,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		_ = result.PagingInfo.Total.Should().BePositive();
 	}
 
+	/// <summary>Verifies that filtering motions to active-only returns a successful response.</summary>
 	[Fact]
 	public async Task GetMotionsAsync_FilterByActive_ReturnsActiveMotions()
 	{
@@ -93,6 +98,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		// Note: API may return empty results or items that don't match the filter exactly
 	}
 
+	/// <summary>Verifies that fetching a motion by a valid ID returns a successful response.</summary>
 	[Fact]
 	public async Task GetMotionByIdAsync_WithValidId_ReturnsMotion()
 	{
@@ -130,6 +136,7 @@ public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 		}
 	}
 
+	/// <summary>Verifies that streaming all motions via async enumerable yields a non-empty collection.</summary>
 	[Fact]
 	public async Task GetAllMotionsAsync_StreamsResults()
 	{

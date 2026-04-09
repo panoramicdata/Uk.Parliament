@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class InterestsIntegrationTests : IntegrationTestBase
 {
+	/// <summary>Verifies that fetching member interest categories returns a non-empty list with names and IDs.</summary>
 	[Fact]
 	public async Task GetCategoriesAsync_ReturnsCategories()
 	{
@@ -25,6 +26,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that searching member interests without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task SearchInterestsAsync_WithNoFilters_ReturnsResults()
 	{
@@ -41,6 +43,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		_ = result.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that searching member interests by search term returns filtered results.</summary>
 	[Fact]
 	public async Task SearchInterestsAsync_WithSearchTerm_ReturnsFilteredResults()
 	{
@@ -59,6 +62,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		_ = result.Items.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that searching member interests by category ID returns interests in that category.</summary>
 	[Fact]
 	public async Task SearchInterestsAsync_WithCategoryFilter_ReturnsFilteredResults()
 	{
@@ -77,6 +81,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 		_ = result.Items.Should().AllSatisfy(interest => interest.Category.Id.Should().Be(categoryId));
 	}
 
+	/// <summary>Verifies that streaming all member interests via async enumerable yields a non-empty collection.</summary>
 	[Fact]
 	public async Task GetAllInterestsAsync_StreamsResults()
 	{
@@ -95,6 +100,7 @@ public class InterestsIntegrationTests : IntegrationTestBase
 /// </summary>
 public class InterestsApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="IInterestsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void InterestsApi_CanBeMocked()
 	{
@@ -105,6 +111,7 @@ public class InterestsApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="IInterestsApi.GetCategoriesAsync"/> returns the mocked categories list.</summary>
 	[Fact]
 	public async Task GetCategoriesAsync_WithMock_ReturnsCategories()
 	{
@@ -134,6 +141,7 @@ public class InterestsApiUnitTests : IntegrationTestBase
 		_ = result.Items[1].Name.Should().Be("Donations");
 	}
 
+	/// <summary>Verifies that <c>SearchInterestsAsync</c> returns the mocked interests result.</summary>
 	[Fact]
 	public async Task SearchInterestsAsync_WithMock_ReturnsResults()
 	{

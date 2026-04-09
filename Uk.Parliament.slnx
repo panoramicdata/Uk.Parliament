@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
@@ -12,6 +13,8 @@
     <File Path="README.md" />
     <File Path="Uk.Parliament.ico" />
     <File Path="version.json" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="SECURITY.md" />
   </Folder>
   <Project Path="Uk.Parliament.Test/Uk.Parliament.Test.csproj" />
   <Project Path="Uk.Parliament/Uk.Parliament.csproj" />

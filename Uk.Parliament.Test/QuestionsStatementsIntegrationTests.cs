@@ -7,6 +7,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 {
 	#region Written Questions Tests
 
+	/// <summary>Verifies that fetching written questions without filters returns a valid paginated result.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_WithNoFilters_Succeeds()
 	{
@@ -21,6 +22,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
+	/// <summary>Verifies that filtering written questions by member ID returns questions from that member.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByMember_ReturnsQuestions()
 	{
@@ -38,6 +40,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
 	}
 
+	/// <summary>Verifies that filtering written questions by a date range returns questions within that range.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByDateRange_ReturnsQuestions()
 	{
@@ -60,6 +63,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that filtering written questions to answered-only returns questions with answer text.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByAnswered_ReturnsAnsweredQuestions()
 	{
@@ -78,6 +82,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that fetching a written question by a valid ID returns that specific question.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionByIdAsync_WithValidId_ReturnsQuestion()
 	{
@@ -116,6 +121,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		_ = result.Value.QuestionText.Should().NotBeNullOrEmpty();
 	}
 
+	/// <summary>Verifies that streaming all written questions via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllWrittenQuestionsAsync_StreamsResults()
 	{
@@ -133,6 +139,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 	#region Written Statements Tests
 
+	/// <summary>Verifies that fetching written statements without filters returns a valid paginated result.</summary>
 	[Fact]
 	public async Task GetWrittenStatementsAsync_WithNoFilters_Succeeds()
 	{
@@ -147,6 +154,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
+	/// <summary>Verifies that filtering written statements by date range returns statements within that range.</summary>
 	[Fact]
 	public async Task GetWrittenStatementsAsync_FilterByDateRange_ReturnsStatements()
 	{
@@ -169,6 +177,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that fetching a written statement by a valid ID returns that specific statement.</summary>
 	[Fact]
 	public async Task GetWrittenStatementByIdAsync_WithValidId_ReturnsStatement()
 	{
@@ -206,6 +215,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		_ = result.Value.Id.Should().Be(validStatementId);
 	}
 
+	/// <summary>Verifies that streaming all written statements via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllWrittenStatementsAsync_StreamsResults()
 	{
@@ -223,6 +233,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 
 	#region Daily Reports Tests
 
+	/// <summary>Verifies that fetching daily reports within a date range returns the reports collection.</summary>
 	[Fact]
 	public async Task GetDailyReportsAsync_WithDateRange_ReturnsReports()
 	{
@@ -242,6 +253,7 @@ public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 		_ = result.Items.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that streaming daily reports via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllDailyReportsAsync_StreamsResults()
 	{

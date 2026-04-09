@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class CommonsDivisionsApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="ICommonsDivisionsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void CommonsDivisionsApi_CanBeMocked()
 	{
@@ -17,6 +18,7 @@ public class CommonsDivisionsApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that the <see cref="ICommonsDivisionsApi"/> interface is defined and accessible.</summary>
 	[Fact]
 	public void CommonsDivisionsApi_InterfaceExists()
 	{
@@ -25,6 +27,7 @@ public class CommonsDivisionsApiUnitTests : IntegrationTestBase
 		_ = interfaceType.Name.Should().Be("ICommonsDivisionsApi");
 	}
 
+	/// <summary>Verifies that <c>SearchDivisionsAsync</c> returns mocked Commons division data.</summary>
 	[Fact]
 	public async Task SearchDivisionsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -59,6 +62,7 @@ public class CommonsDivisionsApiUnitTests : IntegrationTestBase
 		_ = result[0].AyeCount.Should().Be(357);
 	}
 
+	/// <summary>Verifies that <see cref="ICommonsDivisionsApi.GetDivisionByIdAsync"/> returns the mocked division including tellers.</summary>
 	[Fact]
 	public async Task GetDivisionByIdAsync_WithMock_ReturnsDivision()
 	{
@@ -89,6 +93,7 @@ public class CommonsDivisionsApiUnitTests : IntegrationTestBase
 		_ = result.AyeTellers[0].Party.Should().Be("Labour");
 	}
 
+	/// <summary>Verifies that <c>GetMemberVotingAsync</c> returns the mocked member voting history.</summary>
 	[Fact]
 	public async Task GetMemberVotingAsync_WithMock_ReturnsVotingHistory()
 	{

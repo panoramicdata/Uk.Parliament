@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class BillsIntegrationTests : IntegrationTestBase
 {
+	/// <summary>Verifies that retrieving bills without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task GetBillsAsync_WithNoFilters_Succeeds()
 	{
@@ -21,6 +22,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = response.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that retrieving a bill by a valid ID returns the expected bill.</summary>
 	[Fact]
 	public async Task GetBillByIdAsync_WithValidId_ReturnsBill()
 	{
@@ -46,6 +48,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = bill.ShortTitle.Should().NotBeNullOrWhiteSpace();
 	}
 
+	/// <summary>Verifies that pagination returns different bills on successive pages.</summary>
 	[Fact]
 	public async Task GetBillsAsync_WithPagination_Succeeds()
 	{
@@ -67,6 +70,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = page1.Items[0].BillId.Should().NotBe(page2.Items[0].BillId, "different pages should have different bills");
 	}
 
+	/// <summary>Verifies that filtering bills by current house (Commons) returns only Commons bills.</summary>
 	[Fact]
 	public async Task GetBillsAsync_FilterByCurrentHouse_Succeeds()
 	{
@@ -83,6 +87,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = response.Items.Should().AllSatisfy(bill => _ = bill.CurrentHouse.Should().Be("Commons"));
 	}
 
+	/// <summary>Verifies that filtering bills by a search term returns a non-empty result.</summary>
 	[Fact]
 	public async Task GetBillsAsync_WithSearchTerm_Succeeds()
 	{
@@ -99,6 +104,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = response.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that the bill types endpoint returns a list of named bill type categories.</summary>
 	[Fact]
 	public async Task GetBillTypesAsync_ReturnsTypes()
 	{
@@ -117,6 +123,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that streaming all bills via async enumerable yields at least 25 items.</summary>
 	[Fact]
 	public async Task GetAllBillsAsync_StreamingResults_Works()
 	{
@@ -135,6 +142,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that <c>GetAllListAsync</c> retrieves all Lords bills across multiple pages.</summary>
 	[Fact]
 	public async Task GetAllBillsListAsync_RetrievesMultiplePages()
 	{
@@ -150,6 +158,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = allBills.Should().AllSatisfy(b => _ = b.CurrentHouse.Should().Be("Lords"));
 	}
 
+	/// <summary>Verifies that a retrieved bill includes a current stage with a description.</summary>
 	[Fact]
 	public async Task GetBillByIdAsync_HasCurrentStage()
 	{
@@ -173,6 +182,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		_ = bill.CurrentStage.Description.Should().NotBeNullOrWhiteSpace();
 	}
 
+	/// <summary>Verifies that a bill with sponsors has the sponsors collection populated.</summary>
 	[Fact]
 	public async Task GetBillByIdAsync_MayHaveSponsors()
 	{

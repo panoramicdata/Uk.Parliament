@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class PetitionsApiMockTests : IntegrationTestBase
 {
+	/// <summary>Verifies that a mocked <c>GetAsync</c> call returns the expected petition list.</summary>
 	[Fact]
 	public async Task GetAsync_WithMock_ReturnsExpectedData()
 	{
@@ -37,6 +38,7 @@ public class PetitionsApiMockTests : IntegrationTestBase
 		_ = result.Data[0].Attributes.Action.Should().Be("Test Petition 1");
 	}
 
+	/// <summary>Verifies that a mocked <see cref="IPetitionsApi.GetByIdAsync"/> call returns the expected petition.</summary>
 	[Fact]
 	public async Task GetByIdAsync_WithMock_ReturnsExpectedPetition()
 	{
@@ -75,6 +77,7 @@ public class PetitionsApiMockTests : IntegrationTestBase
 		_ = result.Data.Attributes.SignatureCount.Should().Be(1000);
 	}
 
+	/// <summary>Verifies that a mocked <c>GetArchivedAsync</c> call returns archived petitions.</summary>
 	[Fact]
 	public async Task GetArchivedAsync_WithMock_ReturnsArchivedPetitions()
 	{

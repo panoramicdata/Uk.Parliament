@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class BillsApiUnitTests
 {
+	/// <summary>Verifies that <see cref="IBillsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void BillsApi_CanBeMocked()
 	{
@@ -15,6 +16,7 @@ public class BillsApiUnitTests
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that the <see cref="IBillsApi"/> interface is defined and accessible.</summary>
 	[Fact]
 	public void BillsApi_InterfaceExists()
 	{

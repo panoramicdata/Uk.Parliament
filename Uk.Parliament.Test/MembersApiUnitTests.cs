@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class MembersApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <c>SearchAsync</c> returns the mocked paginated members list.</summary>
 	[Fact]
 	public async Task SearchAsync_WithMock_ReturnsExpectedData()
 	{
@@ -38,6 +39,7 @@ public class MembersApiUnitTests : IntegrationTestBase
 		_ = result.Items[0].Value.NameDisplayAs.Should().Be("Test Member 1");
 	}
 
+	/// <summary>Verifies that <see cref="IMembersApi.GetByIdAsync"/> returns the mocked member wrapper.</summary>
 	[Fact]
 	public async Task GetByIdAsync_WithMock_ReturnsMember()
 	{
@@ -66,6 +68,7 @@ public class MembersApiUnitTests : IntegrationTestBase
 		_ = result.Value.NameDisplayAs.Should().Be("Test Member");
 	}
 
+	/// <summary>Verifies that <c>SearchConstituenciesAsync</c> returns the mocked constituency list.</summary>
 	[Fact]
 	public async Task SearchConstituenciesAsync_WithMock_ReturnsConstituencies()
 	{

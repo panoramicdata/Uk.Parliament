@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class ParliamentClientTests
 {
+	/// <summary>Verifies that constructing a <see cref="ParliamentClient"/> with default options succeeds and all API accessors are non-null.</summary>
 	[Fact]
 	public void Constructor_WithDefaultOptions_Succeeds()
 	{
@@ -27,6 +28,7 @@ public class ParliamentClientTests
 		_ = client.Now.Should().NotBeNull(); // Phase 8.2
 	}
 
+	/// <summary>Verifies that constructing a <see cref="ParliamentClient"/> with custom options uses those options.</summary>
 	[Fact]
 	public void Constructor_WithCustomOptions_UsesOptions()
 	{
@@ -46,6 +48,7 @@ public class ParliamentClientTests
 		_ = client.Petitions.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that constructing a <see cref="ParliamentClient"/> with an injected <see cref="HttpClient"/> succeeds.</summary>
 	[Fact]
 	public void Constructor_WithHttpClient_Succeeds()
 	{
@@ -60,6 +63,7 @@ public class ParliamentClientTests
 		_ = client.Petitions.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that passing a null <see cref="HttpClient"/> to the constructor throws an <see cref="ArgumentNullException"/>.</summary>
 	[Fact]
 	public void Constructor_WithNullHttpClient_ThrowsArgumentNullException()
 	{
@@ -70,6 +74,7 @@ public class ParliamentClientTests
 		_ = act.Should().Throw<ArgumentNullException>();
 	}
 
+	/// <summary>Verifies that disposing a <see cref="ParliamentClient"/> that owns its HTTP client disposes that client.</summary>
 	[Fact]
 	public void Dispose_DisposesOwnedHttpClient()
 	{
@@ -83,6 +88,7 @@ public class ParliamentClientTests
 		_ = client.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that disposing a <see cref="ParliamentClient"/> with an injected HTTP client does not dispose that client.</summary>
 	[Fact]
 	public void Dispose_DoesNotDisposeInjectedHttpClient()
 	{
@@ -104,6 +110,7 @@ public class ParliamentClientTests
 /// </summary>
 public class PlaceholderApisTests
 {
+	/// <summary>Verifies that <see cref="IMembersApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void MembersApi_CanBeMocked()
 	{
@@ -114,6 +121,7 @@ public class PlaceholderApisTests
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="IBillsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void BillsApi_CanBeMocked()
 	{
@@ -124,6 +132,7 @@ public class PlaceholderApisTests
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="ICommitteesApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void CommitteesApi_CanBeMocked()
 	{
@@ -134,6 +143,7 @@ public class PlaceholderApisTests
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="ICommonsDivisionsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void CommonsDivisionsApi_CanBeMocked()
 	{
@@ -144,6 +154,7 @@ public class PlaceholderApisTests
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="ILordsDivisionsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void LordsDivisionsApi_CanBeMocked()
 	{

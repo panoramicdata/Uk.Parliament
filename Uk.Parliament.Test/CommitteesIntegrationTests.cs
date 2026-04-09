@@ -23,6 +23,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		return new ParliamentClient(options);
 	}
 
+	/// <summary>Verifies that fetching committees without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_WithNoFilters_Succeeds()
 	{
@@ -43,6 +44,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = response.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that successive pages return different committees.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_WithPagination_Succeeds()
 	{
@@ -61,6 +63,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = page1.Items[0].Id.Should().NotBe(page2.Items[0].Id, "different pages should have different committees");
 	}
 
+	/// <summary>Verifies that returned committees have non-empty names and positive IDs.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_ReturnsCommitteesWithNames()
 	{
@@ -79,6 +82,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		});
 	}
 
+	/// <summary>Verifies that at least some committees have category information populated.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_ReturnsCommitteesWithCategories()
 	{
@@ -95,6 +99,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = committeesWithCategories.Should().AllSatisfy(committee => _ = committee.Category!.Name.Should().NotBeNullOrWhiteSpace());
 	}
 
+	/// <summary>Verifies that at least some committees have committee type information populated.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_ReturnsCommitteesWithTypes()
 	{
@@ -115,6 +120,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		});
 	}
 
+	/// <summary>Verifies that at least some committees have house information set to a valid value.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_ReturnsCommitteesWithHouse()
 	{
@@ -131,6 +137,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = committeesWithHouse.Should().AllSatisfy(committee => _ = committee.House.Should().BeOneOf("Commons", "Lords", "Both"));
 	}
 
+	/// <summary>Verifies that streaming committees via async enumerable yields at least 15 items.</summary>
 	[Fact]
 	public async Task GetAllCommitteesAsync_StreamingResults_Works()
 	{
@@ -157,6 +164,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = count.Should().BeGreaterThanOrEqualTo(15);
 	}
 
+	/// <summary>Verifies that <c>GetAllListAsync</c> retrieves more committees than a single page.</summary>
 	[Fact]
 	public async Task GetAllCommitteesListAsync_RetrievesMultiplePages()
 	{
@@ -176,6 +184,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = allCommittees.Count.Should().BeGreaterThan(5, "should have retrieved multiple pages");
 	}
 
+	/// <summary>Verifies that at least some committees have a contact email address.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_CommitteesHaveContactInformation()
 	{
@@ -191,6 +200,7 @@ public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationT
 		_ = committeesWithContact.Should().NotBeEmpty();
 	}
 
+	/// <summary>Verifies that all returned committees have a start date set.</summary>
 	[Fact]
 	public async Task GetCommitteesAsync_CommitteesHaveDates()
 	{

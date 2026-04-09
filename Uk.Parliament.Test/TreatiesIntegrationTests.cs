@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class TreatiesIntegrationTests : IntegrationTestBase
 {
+	/// <summary>Verifies that fetching treaties without filters returns a valid paginated result.</summary>
 	[Fact]
 	public async Task GetTreatiesAsync_WithNoFilters_Succeeds()
 	{
@@ -21,6 +22,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		AssertValidPaginatedResponse(result);
 	}
 
+	/// <summary>Verifies that filtering treaties by status returns a non-null result.</summary>
 	[Fact]
 	public async Task GetTreatiesAsync_FilterByStatus_ReturnsTreaties()
 	{
@@ -39,6 +41,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		_ = result.Items.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that fetching a treaty by a valid ID returns a non-null result.</summary>
 	[Fact]
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
@@ -68,6 +71,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		_ = result.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that fetching business items for a valid treaty ID returns a result without error.</summary>
 	[Fact]
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
@@ -104,6 +108,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		}
 	}
 
+	/// <summary>Verifies that fetching government organisations returns a non-empty list of named organisations.</summary>
 	[Fact]
 	public async Task GetGovernmentOrganisationsAsync_ReturnsOrganisations()
 	{
@@ -122,6 +127,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that streaming all treaties via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllTreatiesAsync_StreamsResults()
 	{
@@ -141,6 +147,7 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 /// </summary>
 public class TreatiesApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="ITreatiesApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void TreatiesApi_CanBeMocked()
 	{
@@ -151,6 +158,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that a mocked <c>GetTreatiesAsync</c> returns the expected treaty list.</summary>
 	[Fact]
 	public async Task GetTreatiesAsync_WithMock_ReturnsExpectedData()
 	{
@@ -202,6 +210,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 		_ = result.Items.Should().HaveCount(2);
 	}
 
+	/// <summary>Verifies that a mocked <see cref="ITreatiesApi.GetGovernmentOrganisationsAsync"/> returns the expected organisations.</summary>
 	[Fact]
 	public async Task GetGovernmentOrganisationsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -237,6 +246,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 		_ = result.Items[1].Value.Abbreviation.Should().Be("DBT");
 	}
 
+	/// <summary>Verifies that a mocked <see cref="ITreatiesApi.GetTreatyBusinessItemsAsync"/> returns the expected business items.</summary>
 	[Fact]
 	public async Task GetTreatyBusinessItemsAsync_WithMock_ReturnsExpectedData()
 	{

@@ -1,9 +1,11 @@
 namespace Uk.Parliament.Test;
 
+/// <summary>Integration tests for the Petitions API (requires live API).</summary>
 public class Petitions : IntegrationTestBase
 {
 	private const int ValidPetitionId = 700143; // A known closed petition with data
 
+	/// <summary>Verifies that searching petitions by text term returns a non-empty result.</summary>
 	[Fact]
 	public async Task GetAsync_WithTextSearch_Succeeds()
 	{
@@ -18,6 +20,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Should().NotBeEmpty();
 	}
 
+	/// <summary>Verifies that filtering petitions by state 'open' returns open petitions.</summary>
 	[Fact]
 	public async Task GetAsync_WithStateFilter_Open_Succeeds()
 	{
@@ -32,6 +35,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Should().NotBeEmpty();
 	}
 
+	/// <summary>Verifies that filtering petitions by state 'closed' returns only closed petitions.</summary>
 	[Fact]
 	public async Task GetAsync_WithStateFilter_Closed_Succeeds()
 	{
@@ -46,6 +50,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Closed));
 	}
 
+	/// <summary>Verifies that filtering petitions by state 'rejected' returns only rejected petitions.</summary>
 	[Fact]
 	public async Task GetAsync_WithStateFilter_Rejected_Succeeds()
 	{
@@ -60,6 +65,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
 	}
 
+	/// <summary>Verifies that retrieving a petition by its known ID returns correct attributes.</summary>
 	[Fact]
 	public async Task GetByIdAsync_Succeeds()
 	{
@@ -77,6 +83,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Attributes.SignatureCount.Should().BePositive();
 	}
 
+	/// <summary>Verifies that a known petition has non-empty signatures-by-country data including a GB entry.</summary>
 	[Fact]
 	public async Task GetByIdAsync_HasSignaturesByCountry()
 	{
@@ -96,6 +103,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Attributes.SignaturesByCountry.Should().Contain(s => s.Code == "GB");
 	}
 
+	/// <summary>Verifies that a known petition has non-empty signatures-by-constituency data.</summary>
 	[Fact]
 	public async Task GetByIdAsync_HasSignaturesByConstituency()
 	{
@@ -115,6 +123,7 @@ public class Petitions : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that successive pages of petitions return different results.</summary>
 	[Fact]
 	public async Task GetAsync_WithPagination_Succeeds()
 	{
@@ -138,6 +147,7 @@ public class Petitions : IntegrationTestBase
 		_ = page1.Data[0].Id.Should().NotBe(page2.Data[0].Id);
 	}
 
+	/// <summary>Verifies that fetching petitions without any filters returns a non-empty result.</summary>
 	[Fact]
 	public async Task GetAsync_NoFilters_Succeeds()
 	{
@@ -152,6 +162,7 @@ public class Petitions : IntegrationTestBase
 		_ = response.Data.Should().NotBeEmpty();
 	}
 
+	/// <summary>Verifies that <c>GetAllListAsync</c> retrieves all rejected petitions across multiple pages.</summary>
 	[Fact]
 	public async Task GetAllListAsync_WithStateFilter_RetrievesMultiplePages()
 	{
@@ -165,6 +176,7 @@ public class Petitions : IntegrationTestBase
 		_ = allPetitions.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
 	}
 
+	/// <summary>Verifies that streaming open petitions via async enumerable yields at least 15 results.</summary>
 	[Fact]
 	public async Task GetAllAsync_StreamingResults_Works()
 	{

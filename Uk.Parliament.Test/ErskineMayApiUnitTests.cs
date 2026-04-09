@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class ErskineMayApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="IErskineMayApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void ErskineMayApi_CanBeMocked()
 	{
@@ -17,6 +18,7 @@ public class ErskineMayApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <see cref="IErskineMayApi.GetPartsAsync"/> returns the mocked list of Erskine May parts.</summary>
 	[Fact]
 	public async Task GetPartsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -40,6 +42,7 @@ public class ErskineMayApiUnitTests : IntegrationTestBase
 		_ = result[0].Title.Should().Be("Parliamentary Procedure");
 	}
 
+	/// <summary>Verifies that <see cref="IErskineMayApi.SearchAsync"/> returns the mocked search response.</summary>
 	[Fact]
 	public async Task SearchAsync_WithMock_ReturnsExpectedData()
 	{

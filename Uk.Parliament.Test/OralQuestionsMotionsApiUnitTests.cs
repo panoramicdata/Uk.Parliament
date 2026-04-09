@@ -3,10 +3,11 @@ using Uk.Parliament.Models.OralQuestions;
 namespace Uk.Parliament.Test;
 
 /// <summary>
-/// Unit tests for Oral Questions & Motions API (mocking)
+/// Unit tests for Oral Questions &amp; Motions API (mocking)
 /// </summary>
 public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 {
+	/// <summary>Verifies that <see cref="IOralQuestionsMotionsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void OralQuestionsMotionsApi_CanBeMocked()
 	{
@@ -17,6 +18,7 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 		_ = mock.Object.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that <c>GetOralQuestionsAsync</c> returns the mocked oral questions response.</summary>
 	[Fact]
 	public async Task GetOralQuestionsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -35,6 +37,7 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 		_ = result.Response.Should().HaveCount(2);
 	}
 
+	/// <summary>Verifies that <c>GetMotionsAsync</c> returns the mocked motions response with signature count.</summary>
 	[Fact]
 	public async Task GetMotionsAsync_WithMock_ReturnsExpectedData()
 	{
@@ -119,6 +122,7 @@ public class OralQuestionsMotionsApiUnitTests : IntegrationTestBase
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(response);
 
+	/// <summary>Verifies that <see cref="IOralQuestionsMotionsApi.GetMotionByIdAsync"/> returns the mocked motion by its ID.</summary>
 	[Fact]
 	public async Task GetMotionByIdAsync_WithMock_ReturnsMotion()
 	{

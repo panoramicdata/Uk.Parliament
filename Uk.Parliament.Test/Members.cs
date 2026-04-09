@@ -3,8 +3,12 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for the Members API
 /// </summary>
+/// <summary>
+/// Integration tests for the Members API (requires live API).
+/// </summary>
 public class Members : IntegrationTestBase
 {
+	/// <summary>Verifies that searching members without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task SearchAsync_WithNoFilters_Succeeds()
 	{
@@ -22,6 +26,7 @@ public class Members : IntegrationTestBase
 		_ = response.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that filtering members by name returns results matching the name filter.</summary>
 	[Fact]
 	public async Task SearchAsync_WithNameFilter_Succeeds()
 	{
@@ -44,6 +49,7 @@ public class Members : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that filtering members to current members returns a non-empty result.</summary>
 	[Fact]
 	public async Task SearchAsync_ForCurrentMembers_Succeeds()
 	{
@@ -61,6 +67,7 @@ public class Members : IntegrationTestBase
 		_ = response.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that filtering members to current House of Commons members returns only Commons members.</summary>
 	[Fact]
 	public async Task SearchAsync_ForCommonsMembers_Succeeds()
 	{
@@ -82,6 +89,7 @@ public class Members : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that filtering members to current House of Lords members returns only Lords members.</summary>
 	[Fact]
 	public async Task SearchAsync_ForLordsMembers_Succeeds()
 	{
@@ -103,6 +111,7 @@ public class Members : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that fetching a member by a valid ID returns the member with name and title.</summary>
 	[Fact]
 	public async Task GetByIdAsync_WithValidId_ReturnsMember()
 	{
@@ -130,6 +139,7 @@ public class Members : IntegrationTestBase
 		_ = memberWrapper.Value.NameFullTitle.Should().NotBeNullOrWhiteSpace();
 	}
 
+	/// <summary>Verifies that successive pages return different members.</summary>
 	[Fact]
 	public async Task SearchAsync_WithPagination_Succeeds()
 	{
@@ -153,6 +163,7 @@ public class Members : IntegrationTestBase
 		_ = page1.Items[0].Value.Id.Should().NotBe(page2.Items[0].Value.Id, "different pages should have different members");
 	}
 
+	/// <summary>Verifies that searching constituencies without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task SearchConstituenciesAsync_WithNoFilters_Succeeds()
 	{
@@ -170,6 +181,7 @@ public class Members : IntegrationTestBase
 		_ = response.TotalResults.Should().BePositive();
 	}
 
+	/// <summary>Verifies that searching constituencies by text returns matching constituencies with names and IDs.</summary>
 	[Fact]
 	public async Task SearchConstituenciesAsync_WithSearchText_Succeeds()
 	{
@@ -192,6 +204,7 @@ public class Members : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that fetching a constituency by a valid ID returns the constituency with name and correct ID.</summary>
 	[Fact]
 	public async Task GetConstituencyByIdAsync_WithValidId_ReturnsConstituency()
 	{
@@ -218,6 +231,7 @@ public class Members : IntegrationTestBase
 		_ = constituencyWrapper.Value.Name.Should().NotBeNullOrWhiteSpace();
 	}
 
+	/// <summary>Verifies that streaming members via async enumerable returns members with valid name data.</summary>
 	[Fact]
 	public async Task GetAllAsync_StreamingMembers_Works()
 	{
@@ -241,6 +255,7 @@ public class Members : IntegrationTestBase
 		_ = count.Should().BePositive();
 	}
 
+	/// <summary>Verifies that <c>GetAllListAsync</c> retrieves all current Commons members across multiple pages.</summary>
 	[Fact]
 	public async Task GetAllListAsync_RetrievesMultiplePages()
 	{

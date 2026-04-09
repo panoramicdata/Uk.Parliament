@@ -26,6 +26,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 		});
 	}
 
+	/// <summary>Verifies that fetching Lords divisions without filters returns a non-empty list.</summary>
 	[Fact]
 	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
 	{
@@ -56,6 +57,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 		}
 	}
 
+	/// <summary>Verifies that fetching a Lords division by a valid ID returns the division with a title.</summary>
 	[Fact]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 	{
@@ -95,6 +97,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 		}
 	}
 
+	/// <summary>Verifies that searching Lords divisions by search term returns results.</summary>
 	[Fact]
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
 	{
@@ -121,6 +124,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 		}
 	}
 
+	/// <summary>Verifies that paginated Lords division retrieval returns a page within the take limit.</summary>
 	[Fact]
 	public async Task GetDivisionsAsync_WithPagination_Succeeds()
 	{

@@ -1,61 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<TargetFrameworks>net10.0</TargetFrameworks>
-		<ApplicationIcon />
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
-		<!-- Package Metadata -->
-		<PackageId>Uk.Parliament</PackageId>
-		<Description>The most comprehensive .NET client for UK Parliament APIs. 100% API coverage - all 12 public Parliament APIs supported including Petitions, Members, Bills, Committees, Divisions, Interests, Questions, Treaties, Erskine May, and NOW.</Description>
-		<PackageTags>uk;parliament;petitions;members;bills;committees;divisions;api;government;refit;interests;questions;treaties;erskine-may;now</PackageTags>
-		<PackageProjectUrl>https://github.com/panoramicdata/Uk.Parliament</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/panoramicdata/Uk.Parliament</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>Icon.png</PackageIcon>
-		<PackageReleaseNotes>v10.1 - Request model migration: all API methods now use strongly-typed request objects. Generic GetAllAsync/GetAllListAsync pagination. Fully typed Divisions, Erskine May, and Treaties models. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
-
-		<!-- Symbol Package Configuration -->
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-		<!-- Source Link Configuration -->
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-
-		<!-- Deterministic Build -->
-		<Deterministic>true</Deterministic>
-
-		<!-- Documentation -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NeutralResourcesLanguage>en</NeutralResourcesLanguage>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<!-- Refit for type-safe REST API -->
-		<PackageReference Include="Nerdbank.GitVersioning">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Refit" />
-		<PackageReference Include="Refit.HttpClientFactory" />
-
-		<!-- Microsoft Extensions for DI support -->
-		<PackageReference Include="Microsoft.Extensions.Http" />
-		<PackageReference Include="Microsoft.Extensions.Http.Polly" />
-		<PackageReference Include="Microsoft.Extensions.Options" />
-
-		<!-- Source Link -->
-		<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="\" />
-		<None Include="Icon.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
-
-
-	</Project>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <ApplicationIcon />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <!-- Package Metadata -->
+    <PackageId>Uk.Parliament</PackageId>
+    <Description>The most comprehensive .NET client for UK Parliament APIs. 100% API coverage - all 12 public Parliament APIs supported including Petitions, Members, Bills, Committees, Divisions, Interests, Questions, Treaties, Erskine May, and NOW.</Description>
+    <PackageTags>uk;parliament;petitions;members;bills;committees;divisions;api;government;refit;interests;questions;treaties;erskine-may;now</PackageTags>
+    <PackageProjectUrl>https://github.com/panoramicdata/Uk.Parliament</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/panoramicdata/Uk.Parliament</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageReleaseNotes>v10.1 - Request model migration: all API methods now use strongly-typed request objects. Generic GetAllAsync/GetAllListAsync pagination. Fully typed Divisions, Erskine May, and Treaties models. See https://github.com/panoramicdata/Uk.Parliament/releases</PackageReleaseNotes>
+    <!-- Symbol Package Configuration -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- Source Link Configuration -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <!-- Deterministic Build -->
+    <Deterministic>true</Deterministic>
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NeutralResourcesLanguage>en</NeutralResourcesLanguage>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Refit for type-safe REST API -->
+    <PackageReference Include="Nerdbank.GitVersioning">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Refit" />
+    <PackageReference Include="Refit.HttpClientFactory" />
+    <!-- Microsoft Extensions for DI support -->
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <!-- Source Link -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

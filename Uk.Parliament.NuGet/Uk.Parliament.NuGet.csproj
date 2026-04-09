@@ -1,19 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <PackageId>Uk.Parliament.NuGet</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/panoramicdata/Uk.Parliament</PackageProjectUrl>
+    <PackageIcon>Icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/panoramicdata/Uk.Parliament</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NeutralResourcesLanguage>en</NeutralResourcesLanguage>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\Uk.Parliament\Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-
 </Project>

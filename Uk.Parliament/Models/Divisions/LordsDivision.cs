@@ -114,10 +114,10 @@ public class LordsDivision
 	public string? AmendmentMotionNotes { get; set; }
 
 	/// <summary>
-	/// Whether the government won
+	/// Whether the government won. Can be null when the source data omits this value.
 	/// </summary>
 	[JsonPropertyName("isGovernmentWin")]
-	public bool IsGovernmentWin { get; set; }
+	public bool? IsGovernmentWin { get; set; }
 
 	/// <summary>
 	/// Start time of remote voting (if applicable)

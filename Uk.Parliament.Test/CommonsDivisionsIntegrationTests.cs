@@ -26,6 +26,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 		});
 	}
 
+	/// <summary>Verifies that fetching Commons divisions without filters returns a non-empty list.</summary>
 	[Fact]
 	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
 	{
@@ -56,6 +57,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 		}
 	}
 
+	/// <summary>Verifies that fetching a Commons division by a valid ID returns the division with a title.</summary>
 	[Fact]
 	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
 	{
@@ -95,6 +97,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 		}
 	}
 
+	/// <summary>Verifies that searching Commons divisions by search term returns results.</summary>
 	[Fact]
 	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
 	{
@@ -121,6 +124,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 		}
 	}
 
+	/// <summary>Verifies that fetching a Commons member's voting history returns populated records.</summary>
 	[Fact]
 	public async Task GetMemberVotingAsync_WithMemberId_ReturnsVotingHistory()
 	{
@@ -151,6 +155,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 		}
 	}
 
+	/// <summary>Verifies that paginated Commons division search returns a page of results within the take limit.</summary>
 	[Fact]
 	public async Task SearchDivisionsAsync_WithPagination_Succeeds()
 	{

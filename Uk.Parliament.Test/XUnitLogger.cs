@@ -11,14 +11,17 @@ public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel
 {
 	private readonly Stack<object> _scopes = new();
 
+	/// <summary>Begins a logical operation scope for log entries.</summary>
 	public IDisposable? BeginScope<TState>(TState state) where TState : notnull
 	{
 		_scopes.Push(state);
 		return new ScopeDisposable(() => _scopes.Pop());
 	}
 
+	/// <summary>Determines whether the given log level is enabled.</summary>
 	public bool IsEnabled(LogLevel logLevel) => logLevel >= minLevel;
 
+	/// <summary>Writes a log entry to the xUnit test output.</summary>
 	public void Log<TState>(
 		LogLevel logLevel,
 		EventId eventId,
@@ -100,13 +103,16 @@ public class XUnitLogger(ITestOutputHelper output, string categoryName, LogLevel
 /// </summary>
 public class XUnitLoggerFactory(ITestOutputHelper output, LogLevel minLevel = LogLevel.Debug) : ILoggerFactory
 {
+	/// <summary>Not implemented for the test logger; provided to satisfy <see cref="ILoggerFactory"/>.</summary>
 	public void AddProvider(ILoggerProvider provider)
 	{
 		// Not needed for test logger
 	}
 
+	/// <summary>Creates an <see cref="XUnitLogger"/> for the specified category name.</summary>
 	public ILogger CreateLogger(string categoryName) => new XUnitLogger(output, categoryName, minLevel);
 
+	/// <summary>Disposes the logger factory (no-op for the test logger).</summary>
 	public void Dispose()
 	{
 		// Nothing to dispose

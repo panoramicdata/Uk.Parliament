@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class ErskineMayIntegrationTests : IntegrationTestBase
 {
+	/// <summary>Verifies that fetching all Erskine May parts returns a non-empty list with valid part numbers and titles.</summary>
 	[Fact]
 	public async Task GetPartsAsync_ReturnsAllParts()
 	{
@@ -25,6 +26,7 @@ public class ErskineMayIntegrationTests : IntegrationTestBase
 		});
 	}
 
+	/// <summary>Verifies that fetching Erskine May part 1 returns the part with the correct part number and a title.</summary>
 	[Fact]
 	public async Task GetPartAsync_ForValidPartNumber_ReturnsPart()
 	{
@@ -44,6 +46,7 @@ public class ErskineMayIntegrationTests : IntegrationTestBase
 		_ = result.Title.Should().NotBeNullOrEmpty();
 	}
 
+	/// <summary>Verifies that fetching Erskine May chapter 1 returns the chapter with the correct number and a title.</summary>
 	[Fact]
 	public async Task GetChapterAsync_ForValidChapterNumber_ReturnsChapter()
 	{
@@ -63,6 +66,7 @@ public class ErskineMayIntegrationTests : IntegrationTestBase
 		_ = result.Title.Should().NotBeNullOrEmpty();
 	}
 
+	/// <summary>Verifies that fetching an Erskine May section by a valid ID returns the section.</summary>
 	[Fact]
 	public async Task GetSectionByIdAsync_WithValidId_ReturnsSection()
 	{
@@ -100,6 +104,7 @@ public class ErskineMayIntegrationTests : IntegrationTestBase
 		}
 	}
 
+	/// <summary>Verifies that searching Erskine May for a term returns a non-empty set of results.</summary>
 	[Fact]
 	public async Task SearchAsync_WithSearchTerm_ReturnsResults()
 	{
@@ -118,6 +123,7 @@ public class ErskineMayIntegrationTests : IntegrationTestBase
 		_ = result.SearchResults.Should().NotBeEmpty();
 	}
 
+	/// <summary>Verifies that iterating Erskine May search results yields a non-empty collection.</summary>
 	[Fact]
 	public async Task SearchAllAsync_StreamsResults()
 	{

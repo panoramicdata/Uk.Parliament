@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// </summary>
 public class NowIntegrationTests : IntegrationTestBase
 {
+	/// <summary>Verifies that fetching the current Commons annunciator message returns a valid response.</summary>
 	[Fact]
 	public async Task GetCurrentMessageAsync_ForCommons_ReturnsMessage()
 	{
@@ -21,6 +22,7 @@ public class NowIntegrationTests : IntegrationTestBase
 		_ = result.Slides.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that fetching the current Lords annunciator message returns a valid response.</summary>
 	[Fact]
 	public async Task GetCurrentMessageAsync_ForLords_ReturnsMessage()
 	{
@@ -37,6 +39,7 @@ public class NowIntegrationTests : IntegrationTestBase
 		_ = result.Slides.Should().NotBeNull();
 	}
 
+	/// <summary>Verifies that fetching the Commons annunciator message for today's date returns a valid response.</summary>
 	[Fact]
 	public async Task GetMessageByDateAsync_ForCommonsToday_ReturnsMessage()
 	{
