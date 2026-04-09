@@ -3,7 +3,8 @@
   "version": "10.1",
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
-    "^refs/heads/release/\\d+\\.\\d+$",
+    "^refs/heads/release/\\d+\.\\d+$",
+    "^refs/tags/v1\.\\d+\.\\d+",
     "^refs/tags/\\d+\\.\\d+\\.\\d+$"
   ]
 }

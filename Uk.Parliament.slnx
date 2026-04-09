@@ -3,6 +3,8 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="API_ISSUES.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="MASTER_PLAN.md" />
