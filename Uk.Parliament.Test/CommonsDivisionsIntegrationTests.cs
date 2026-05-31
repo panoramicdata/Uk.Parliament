@@ -155,6 +155,38 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 		}
 	}
 
+	/// <summary>Verifies that filtering a Commons member's voting history by division number returns results matching the division number.</summary>
+	[Fact]
+	public async Task GetMemberVotingAsync_WithDivisionNumberFilter_Succeeds()
+	{
+		// Arrange
+		var client = CreateClientWithLogging();
+
+		try
+		{
+			// Act
+			var votingHistory = await client
+				.CommonsDivisions
+				.GetMemberVotingAsync(
+					new GetCommonsMemberVotingRequest { MemberId = 172, DivisionNumber = 512, Take = 5 },
+					cancellationToken: CancellationToken);
+
+			// Assert
+			_ = votingHistory.Should().NotBeNull();
+			_ = votingHistory.Should().NotBeEmpty();
+			_ = votingHistory.Should().AllSatisfy(r =>
+			{
+				_ = r.MemberId.Should().Be(172);
+				_ = r.PublishedDivision.Should().NotBeNull();
+				_ = r.PublishedDivision.Number.Should().Be(512);
+			});
+		}
+		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+		{
+			_output.WriteLine("Commons Divisions Member Voting API returned 404 - endpoint may not be available");
+		}
+	}
+
 	/// <summary>Verifies that paginated Commons division search returns a page of results within the take limit.</summary>
 	[Fact]
 	public async Task SearchDivisionsAsync_WithPagination_Succeeds()
