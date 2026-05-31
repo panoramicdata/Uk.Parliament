@@ -34,7 +34,7 @@ public sealed record class GetCommonsMemberVotingRequest : SkipTakeRequest
 	/// Optional division number filter.
 	/// </summary>
 	[AliasAs("divisionNumber")]
-	public int? DivisionNumber { get; set; }
+	public int? DivisionNumber { get; init; }
 }
 
 /// <summary>
