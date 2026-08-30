@@ -8,6 +8,12 @@ public abstract class IntegrationTestBase : IDisposable
 	/// <summary>Gets the cancellation token for the current test run.</summary>
 	protected static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
 
+	/// <summary>The minimum number of streamed results a test expects by default.</summary>
+	protected const int DefaultMinimumStreamedCount = 5;
+
+	/// <summary>The number of items collected from a stream by default.</summary>
+	protected const int DefaultMaxStreamedItems = 10;
+
 	/// <summary>
 	/// Initializes a new instance of the integration test base class
 	/// </summary>
@@ -64,8 +70,16 @@ public abstract class IntegrationTestBase : IDisposable
 	/// </summary>
 	/// <typeparam name="T">The type of items in the collection</typeparam>
 	/// <param name="items">The collected items from streaming</param>
-	/// <param name="minimumCount">The minimum expected count (default is 5)</param>
-	protected static void AssertValidStreamedResults<T>(List<T> items, int minimumCount = 5)
+	protected static void AssertValidStreamedResults<T>(List<T> items)
+		=> AssertValidStreamedResults(items, DefaultMinimumStreamedCount);
+
+	/// <summary>
+	/// Common assertion helper for streamed results
+	/// </summary>
+	/// <typeparam name="T">The type of items in the collection</typeparam>
+	/// <param name="items">The collected items from streaming</param>
+	/// <param name="minimumCount">The minimum expected count</param>
+	protected static void AssertValidStreamedResults<T>(List<T> items, int minimumCount)
 	{
 		_ = items.Should().NotBeEmpty();
 		_ = items.Should().HaveCountGreaterThanOrEqualTo(minimumCount);
@@ -76,11 +90,20 @@ public abstract class IntegrationTestBase : IDisposable
 	/// </summary>
 	/// <typeparam name="T">The type of items being streamed</typeparam>
 	/// <param name="stream">The async enumerable stream</param>
-	/// <param name="maxItems">Maximum number of items to collect (default is 10)</param>
+	/// <returns>A list of collected items</returns>
+	protected static Task<List<T>> CollectStreamedItemsAsync<T>(IAsyncEnumerable<T> stream)
+		=> CollectStreamedItemsAsync(stream, DefaultMaxStreamedItems);
+
+	/// <summary>
+	/// Helper method to collect a limited number of items from an async enumerable stream
+	/// </summary>
+	/// <typeparam name="T">The type of items being streamed</typeparam>
+	/// <param name="stream">The async enumerable stream</param>
+	/// <param name="maxItems">Maximum number of items to collect</param>
 	/// <returns>A list of collected items</returns>
 	protected static async Task<List<T>> CollectStreamedItemsAsync<T>(
 		IAsyncEnumerable<T> stream,
-		int maxItems = 10)
+		int maxItems)
 	{
 		var items = new List<T>();
 		await foreach (var item in stream)

@@ -96,12 +96,19 @@ public class ParliamentClient : IDisposable
 	public INowApi Now { get; }
 
 	/// <summary>
+	/// Constructor using the default options (creates own HttpClient)
+	/// </summary>
+	public ParliamentClient() : this(new ParliamentClientOptions())
+	{
+	}
+
+	/// <summary>
 	/// Constructor with options (creates own HttpClient)
 	/// </summary>
 	/// <param name="options">Configuration options</param>
-	public ParliamentClient(ParliamentClientOptions? options = null)
+	public ParliamentClient(ParliamentClientOptions options)
 	{
-		options ??= new ParliamentClientOptions();
+		ArgumentNullException.ThrowIfNull(options);
 		_options = options;
 
 		_ownedHttpClient = new HttpClient
@@ -144,15 +151,22 @@ public class ParliamentClient : IDisposable
 	}
 
 	/// <summary>
+	/// Constructor with custom HttpClient and the default options (for dependency injection)
+	/// </summary>
+	/// <param name="httpClient">Pre-configured HttpClient</param>
+	public ParliamentClient(HttpClient httpClient) : this(httpClient, new ParliamentClientOptions())
+	{
+	}
+
+	/// <summary>
 	/// Constructor with custom HttpClient (for dependency injection)
 	/// </summary>
 	/// <param name="httpClient">Pre-configured HttpClient</param>
 	/// <param name="options">Configuration options</param>
-	public ParliamentClient(HttpClient httpClient, ParliamentClientOptions? options = null)
+	public ParliamentClient(HttpClient httpClient, ParliamentClientOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(httpClient);
-
-		options ??= new ParliamentClientOptions();
+		ArgumentNullException.ThrowIfNull(options);
 
 		_disposeHttpClient = false;
 
@@ -218,7 +232,7 @@ public class ParliamentClient : IDisposable
 
 	private static T CreateApi<T>(HttpClient sourceHttpClient, string baseUrl, RefitSettings settings)
 	{
-		var httpClient = new HttpClient()
+		var httpClient = new HttpClient
 		{
 			BaseAddress = new Uri(baseUrl),
 			Timeout = sourceHttpClient.Timeout

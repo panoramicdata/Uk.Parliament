@@ -237,26 +237,25 @@ public class InterestField
 /// </summary>
 internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType == JsonTokenType.Null
-		? null
-		: reader.TokenType == JsonTokenType.String
-		? reader.GetString()
-		: reader.TokenType == JsonTokenType.Number
-		? reader.GetInt64().ToString()
-		: reader.TokenType == JsonTokenType.True
-		? "true"
-		: reader.TokenType == JsonTokenType.False ? "false" : throw new JsonException($"Unexpected token type: {reader.TokenType}");
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
+	{
+		JsonTokenType.Null => null,
+		JsonTokenType.String => reader.GetString(),
+		JsonTokenType.Number => reader.GetInt64().ToString(),
+		JsonTokenType.True => "true",
+		JsonTokenType.False => "false",
+		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
+	};
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
-		switch (value)
+		if (value is null)
 		{
-			case null:
-				writer.WriteNullValue();
-				break;
-			default:
-				writer.WriteStringValue(value);
-				break;
+			writer.WriteNullValue();
+		}
+		else
+		{
+			writer.WriteStringValue(value);
 		}
 	}
 }
@@ -276,14 +275,13 @@ internal sealed class NumberOrStringConverter : JsonConverter<string?>
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
-		switch (value)
+		if (value is null)
 		{
-			case null:
-				writer.WriteNullValue();
-				break;
-			default:
-				writer.WriteStringValue(value);
-				break;
+			writer.WriteNullValue();
+		}
+		else
+		{
+			writer.WriteStringValue(value);
 		}
 	}
 }

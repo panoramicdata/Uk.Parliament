@@ -1,4 +1,3 @@
-#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,37 +18,12 @@ public interface ITreatiesApi
 	/// <summary>
 	/// Get treaties with optional filtering
 	/// </summary>
-	/// <param name="governmentOrganisationId">Filter by government organization</param>
-	/// <param name="house">Filter by house (Commons/Lords/Both)</param>
-	/// <param name="status">Filter by treaty status</param>
-	/// <param name="dateLaidFrom">Filter by laid date from</param>
-	/// <param name="dateLaidTo">Filter by laid date to</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of treaties</returns>
 	[Get("/api/Treaty")]
 	Task<PaginatedResponse<Treaty>> GetTreatiesAsync(
 		[Query] GetTreatiesRequest request,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Get treaties with optional filtering.
-	/// </summary>
-	/// <remarks>
-	/// Use <see cref="GetTreatiesAsync(GetTreatiesRequest, CancellationToken)"/> instead.
-	/// Example: <c>GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// </remarks>
-	[Obsolete("Use GetTreatiesAsync(GetTreatiesRequest request, CancellationToken cancellationToken) instead. Example: GetTreatiesAsync(new GetTreatiesRequest { GovernmentOrganisationId = governmentOrganisationId, House = house, Status = status, DateLaidFrom = dateLaidFrom, DateLaidTo = dateLaidTo, Skip = skip, Take = take }, cancellationToken).", true)]
-	[Get("/api/Treaty")]
-	Task<PaginatedResponse<Treaty>> GetTreatiesAsync(
-		[Query] int? governmentOrganisationId = null,
-		[Query] string? house = null,
-		[Query] string? status = null,
-		[Query] DateTime? dateLaidFrom = null,
-		[Query] DateTime? dateLaidTo = null,
-		[Query] int? skip = null,
-		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -103,4 +77,3 @@ public interface ITreatiesApi
 	Task<PaginatedResponse<GovernmentOrganisation>> GetGovernmentOrganisationsAsync(
 		CancellationToken cancellationToken = default);
 }
-#pragma warning restore CS1572, CS1573

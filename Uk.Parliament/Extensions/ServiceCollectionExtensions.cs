@@ -13,14 +13,22 @@ namespace Uk.Parliament.Extensions;
 public static class ServiceCollectionExtensions
 {
 	/// <summary>
+	/// Adds the UK Parliament API client to the service collection using the default options
+	/// </summary>
+	/// <param name="services">The service collection</param>
+	/// <returns>The service collection for chaining</returns>
+	public static IServiceCollection AddUkParliamentClient(this IServiceCollection services)
+		=> services.AddUkParliamentClient(configure: null);
+
+	/// <summary>
 	/// Adds the UK Parliament API client to the service collection
 	/// </summary>
 	/// <param name="services">The service collection</param>
-	/// <param name="configure">Optional callback to configure client options</param>
+	/// <param name="configure">Callback to configure client options, or <see langword="null"/> to use the defaults</param>
 	/// <returns>The service collection for chaining</returns>
 	public static IServiceCollection AddUkParliamentClient(
 		this IServiceCollection services,
-		Action<ParliamentClientOptions>? configure = null)
+		Action<ParliamentClientOptions>? configure)
 	{
 		// Register options
 		if (configure is not null)
@@ -50,7 +58,8 @@ public static class ServiceCollectionExtensions
 		{
 			var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 			var httpClient = httpClientFactory.CreateClient(nameof(ParliamentClient));
-			var options = serviceProvider.GetService<IOptions<ParliamentClientOptions>>()?.Value;
+			var options = serviceProvider.GetService<IOptions<ParliamentClientOptions>>()?.Value
+				?? new ParliamentClientOptions();
 
 			return new ParliamentClient(httpClient, options);
 		});
@@ -59,14 +68,22 @@ public static class ServiceCollectionExtensions
 	}
 
 	/// <summary>
+	/// Adds the UK Parliament API client with Polly resilience policies, using the default options
+	/// </summary>
+	/// <param name="services">The service collection</param>
+	/// <returns>The service collection for chaining</returns>
+	public static IServiceCollection AddUkParliamentClientWithResilience(this IServiceCollection services)
+		=> services.AddUkParliamentClientWithResilience(configure: null);
+
+	/// <summary>
 	/// Adds the UK Parliament API client with Polly resilience policies
 	/// </summary>
 	/// <param name="services">The service collection</param>
-	/// <param name="configure">Optional callback to configure client options</param>
+	/// <param name="configure">Callback to configure client options, or <see langword="null"/> to use the defaults</param>
 	/// <returns>The service collection for chaining</returns>
 	public static IServiceCollection AddUkParliamentClientWithResilience(
 		this IServiceCollection services,
-		Action<ParliamentClientOptions>? configure = null)
+		Action<ParliamentClientOptions>? configure)
 	{
 		_ = services.AddUkParliamentClient(configure);
 

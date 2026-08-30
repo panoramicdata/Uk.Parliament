@@ -1,4 +1,3 @@
-#pragma warning disable CS1572, CS1573
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,14 +17,7 @@ public interface IOralQuestionsMotionsApi
 	/// <summary>
 	/// Get oral questions with optional filtering
 	/// </summary>
-	/// <param name="askingMemberId">Filter by member who asked</param>
-	/// <param name="answeringDepartment">Filter by answering department</param>
-	/// <param name="house">Filter by house (Commons/Lords)</param>
-	/// <param name="dateFrom">Filter by date from</param>
-	/// <param name="dateTo">Filter by date to</param>
-	/// <param name="isAnswered">Filter by answered status</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of oral questions</returns>
 	[Get("/oralquestions/list")]
@@ -34,61 +26,14 @@ public interface IOralQuestionsMotionsApi
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// Get oral questions with optional filtering.
-	/// </summary>
-	/// <remarks>
-	/// Use <see cref="GetOralQuestionsAsync(GetOralQuestionsRequest, CancellationToken)"/> instead.
-	/// Example: <c>GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// </remarks>
-	[Obsolete("Use GetOralQuestionsAsync(GetOralQuestionsRequest request, CancellationToken cancellationToken) instead. Example: GetOralQuestionsAsync(new GetOralQuestionsRequest { AskingMemberId = askingMemberId, AnsweringDepartment = answeringDepartment, House = house, DateFrom = dateFrom, DateTo = dateTo, IsAnswered = isAnswered, Skip = skip, Take = take }, cancellationToken).", true)]
-	[Get("/oralquestions/list")]
-	Task<OralQuestionsResponse<OralQuestion>> GetOralQuestionsAsync(
-		[Query] int? askingMemberId = null,
-		[Query] string? answeringDepartment = null,
-		[Query] string? house = null,
-		[Query] DateTime? dateFrom = null,
-		[Query] DateTime? dateTo = null,
-		[Query] bool? isAnswered = null,
-		[Query] int? skip = null,
-		[Query] int? take = null,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
 	/// Get Early Day Motions with optional filtering
 	/// </summary>
-	/// <param name="proposingMemberId">Filter by member who proposed</param>
-	/// <param name="house">Filter by house (Commons/Lords)</param>
-	/// <param name="dateFrom">Filter by tabled date from</param>
-	/// <param name="dateTo">Filter by tabled date to</param>
-	/// <param name="motionType">Filter by motion type</param>
-	/// <param name="isActive">Filter by active status</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of Early Day Motions</returns>
 	[Get("/EarlyDayMotions/list")]
 	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
 		[Query] GetMotionsRequest request,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Get Early Day Motions with optional filtering.
-	/// </summary>
-	/// <remarks>
-	/// Use <see cref="GetMotionsAsync(GetMotionsRequest, CancellationToken)"/> instead.
-	/// Example: <c>GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// </remarks>
-	[Obsolete("Use GetMotionsAsync(GetMotionsRequest request, CancellationToken cancellationToken) instead. Example: GetMotionsAsync(new GetMotionsRequest { ProposingMemberId = proposingMemberId, House = house, DateFrom = dateFrom, DateTo = dateTo, MotionType = motionType, IsActive = isActive, Skip = skip, Take = take }, cancellationToken).", true)]
-	[Get("/EarlyDayMotions/list")]
-	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
-		[Query] int? proposingMemberId = null,
-		[Query] string? house = null,
-		[Query] DateTime? dateFrom = null,
-		[Query] DateTime? dateTo = null,
-		[Query] string? motionType = null,
-		[Query] bool? isActive = null,
-		[Query] int? skip = null,
-		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -102,4 +47,3 @@ public interface IOralQuestionsMotionsApi
 		int id,
 		CancellationToken cancellationToken = default);
 }
-#pragma warning restore CS1572, CS1573

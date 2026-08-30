@@ -1,4 +1,3 @@
-#pragma warning disable CS1572, CS1573
 using System.Net.Http;
 using Refit;
 using System.Threading;
@@ -39,33 +38,12 @@ public interface IInterestsApi
 	/// <summary>
 	/// Search interests across all members
 	/// </summary>
-	/// <param name="memberId">Optional member filter</param>
-	/// <param name="categoryId">Optional category filter</param>
-	/// <param name="searchTerm">Search term to filter interests</param>
-	/// <param name="skip">Number of results to skip</param>
-	/// <param name="take">Number of results to take</param>
+	/// <param name="request">Request parameters</param>
 	/// <param name="cancellationToken">Cancellation token</param>
 	/// <returns>Paginated list of interests</returns>
 	[Get("/api/v1/Interests")]
 	Task<InterestsResponse<Interest>> SearchInterestsAsync(
 		[Query] SearchInterestsRequest request,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Search interests across all members.
-	/// </summary>
-	/// <remarks>
-	/// Use <see cref="SearchInterestsAsync(SearchInterestsRequest, CancellationToken)"/> instead.
-	/// Example: <c>SearchInterestsAsync(new SearchInterestsRequest { MemberId = memberId, CategoryId = categoryId, SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// </remarks>
-	[Obsolete("Use SearchInterestsAsync(SearchInterestsRequest request, CancellationToken cancellationToken) instead. Example: SearchInterestsAsync(new SearchInterestsRequest { MemberId = memberId, CategoryId = categoryId, SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken).", true)]
-	[Get("/api/v1/Interests")]
-	Task<InterestsResponse<Interest>> SearchInterestsAsync(
-		[Query] int? memberId = null,
-		[Query] int? categoryId = null,
-		[Query] string? searchTerm = null,
-		[Query] int? skip = null,
-		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
@@ -119,4 +97,3 @@ public interface IInterestsApi
 	Task<HttpResponseMessage> ExportInterestsCsvAsync(
 		CancellationToken cancellationToken = default);
 }
-#pragma warning restore CS1572, CS1573

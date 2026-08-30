@@ -23,20 +23,6 @@ public interface ILordsDivisionsApi
 		CancellationToken cancellationToken = default);
 
 	/// <summary>
-	/// List all Lords divisions.
-	/// </summary>
-	/// <remarks>
-	/// Use <see cref="GetDivisionsAsync(GetLordsDivisionsRequest, CancellationToken)"/> instead.
-	/// Example: <c>GetDivisionsAsync(new GetLordsDivisionsRequest { Skip = skip, Take = take }, cancellationToken)</c>.
-	/// </remarks>
-	[Obsolete("Use GetDivisionsAsync(GetLordsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: GetDivisionsAsync(new GetLordsDivisionsRequest { Skip = skip, Take = take }, cancellationToken).", true)]
-	[Get("/data/Divisions")]
-	Task<List<LordsDivision>> GetDivisionsAsync(
-		[Query] int? skip = null,
-		[Query] int? take = null,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
 	/// Get a specific Lords division by ID
 	/// </summary>
 	/// <param name="divisionId">Division ID</param>
@@ -67,20 +53,5 @@ public interface ILordsDivisionsApi
 	[Get("/data/Divisions/search")]
 	Task<List<LordsDivision>> SearchDivisionsAsync(
 		[Query] SearchLordsDivisionsRequest request,
-		CancellationToken cancellationToken = default);
-
-	/// <summary>
-	/// Search divisions.
-	/// </summary>
-	/// <remarks>
-	/// Use <see cref="SearchDivisionsAsync(SearchLordsDivisionsRequest, CancellationToken)"/> instead.
-	/// Example: <c>SearchDivisionsAsync(new SearchLordsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken)</c>.
-	/// </remarks>
-	[Obsolete("Use SearchDivisionsAsync(SearchLordsDivisionsRequest request, CancellationToken cancellationToken) instead. Example: SearchDivisionsAsync(new SearchLordsDivisionsRequest { SearchTerm = searchTerm, Skip = skip, Take = take }, cancellationToken).", true)]
-	[Get("/data/Divisions/search")]
-	Task<List<LordsDivision>> SearchDivisionsAsync(
-		[Query] string searchTerm,
-		[Query] int? skip = null,
-		[Query] int? take = null,
 		CancellationToken cancellationToken = default);
 }
