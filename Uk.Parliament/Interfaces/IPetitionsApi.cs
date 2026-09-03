@@ -20,7 +20,7 @@ public interface IPetitionsApi
 	[Get("/petitions.json")]
 	Task<ParliamentApiResponse<List<Petition>>> GetAsync(
 		[Query] GetPetitionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a single petition by ID
@@ -31,7 +31,7 @@ public interface IPetitionsApi
 	[Get("/petitions/{id}.json")]
 	Task<ParliamentApiResponse<Petition>> GetByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get archived petitions with optional filtering and pagination
@@ -41,7 +41,7 @@ public interface IPetitionsApi
 	[Get("/archived/petitions.json")]
 	Task<ParliamentApiResponse<List<Petition>>> GetArchivedAsync(
 		[Query] GetPetitionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a single archived petition by ID
@@ -51,5 +51,5 @@ public interface IPetitionsApi
 	[Get("/archived/petitions/{id}.json")]
 	Task<ParliamentApiResponse<Petition>> GetArchivedByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

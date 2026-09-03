@@ -20,7 +20,7 @@ public interface ICommitteesApi
 	[Get("/api/Committees")]
 	Task<CommitteesListResponse<Committee>> GetCommitteesAsync(
 		[Query] GetCommitteesRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific committee by ID
@@ -31,5 +31,5 @@ public interface ICommitteesApi
 	[Get("/api/Committees/{id}")]
 	Task<Committee> GetCommitteeByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

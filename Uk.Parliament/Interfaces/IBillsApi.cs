@@ -20,7 +20,7 @@ public interface IBillsApi
 	[Get("/api/v1/Bills")]
 	Task<BillsListResponse<Bill>> GetBillsAsync(
 		[Query] GetBillsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific bill by ID
@@ -31,7 +31,7 @@ public interface IBillsApi
 	[Get("/api/v1/Bills/{billId}")]
 	Task<Bill> GetBillByIdAsync(
 		int billId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get list of bill types
@@ -40,5 +40,5 @@ public interface IBillsApi
 	/// <returns>List of bill types</returns>
 	[Get("/api/v1/BillTypes")]
 	Task<BillsListResponse<BillType>> GetBillTypesAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

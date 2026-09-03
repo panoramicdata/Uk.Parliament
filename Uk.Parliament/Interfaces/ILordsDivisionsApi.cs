@@ -20,7 +20,7 @@ public interface ILordsDivisionsApi
 	[Get("/data/Divisions")]
 	Task<List<LordsDivision>> GetDivisionsAsync(
 		[Query] GetLordsDivisionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific Lords division by ID
@@ -31,7 +31,7 @@ public interface ILordsDivisionsApi
 	[Get("/data/Divisions/{divisionId}")]
 	Task<LordsDivision> GetDivisionByIdAsync(
 		int divisionId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get division results grouped by party
@@ -42,7 +42,7 @@ public interface ILordsDivisionsApi
 	[Get("/data/Divisions/groupedbyparty/{divisionId}")]
 	Task<LordsDivision> GetDivisionGroupedByPartyAsync(
 		int divisionId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search divisions
@@ -53,5 +53,5 @@ public interface ILordsDivisionsApi
 	[Get("/data/Divisions/search")]
 	Task<List<LordsDivision>> SearchDivisionsAsync(
 		[Query] SearchLordsDivisionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

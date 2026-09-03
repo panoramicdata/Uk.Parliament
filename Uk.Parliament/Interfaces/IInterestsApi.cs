@@ -22,7 +22,7 @@ public interface IInterestsApi
 	/// <returns>List of interest categories</returns>
 	[Get("/api/v1/Categories")]
 	Task<InterestsResponse<InterestCategory>> GetCategoriesAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific category by ID
@@ -33,7 +33,7 @@ public interface IInterestsApi
 	[Get("/api/v1/Categories/{id}")]
 	Task<InterestCategory> GetCategoryByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search interests across all members
@@ -44,7 +44,7 @@ public interface IInterestsApi
 	[Get("/api/v1/Interests")]
 	Task<InterestsResponse<Interest>> SearchInterestsAsync(
 		[Query] SearchInterestsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific interest by ID
@@ -55,7 +55,7 @@ public interface IInterestsApi
 	[Get("/api/v1/Interests/{id}")]
 	Task<Interest> GetInterestByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get all registers
@@ -64,7 +64,7 @@ public interface IInterestsApi
 	/// <returns>List of registers</returns>
 	[Get("/api/v1/Registers")]
 	Task<List<InterestRegister>> GetRegistersAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific register by ID
@@ -75,7 +75,7 @@ public interface IInterestsApi
 	[Get("/api/v1/Registers/{id}")]
 	Task<InterestRegister> GetRegisterByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a register document by register ID
@@ -86,7 +86,7 @@ public interface IInterestsApi
 	[Get("/api/v1/Registers/{id}/document")]
 	Task<HttpResponseMessage> GetRegisterDocumentAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Export interests as CSV
@@ -95,5 +95,5 @@ public interface IInterestsApi
 	/// <returns>CSV data as stream</returns>
 	[Get("/api/v1/Interests/csv")]
 	Task<HttpResponseMessage> ExportInterestsCsvAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

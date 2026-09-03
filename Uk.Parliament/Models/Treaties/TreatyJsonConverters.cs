@@ -3,9 +3,14 @@ using System.Text.Json;
 namespace Uk.Parliament.Models.Treaties;
 
 /// <summary>
-/// JSON converter that handles string, number, and boolean values
+/// Base for converters that read a JSON scalar of any primitive type into a string.
 /// </summary>
-internal sealed class AnyValueToStringConverter : JsonConverter<string?>
+/// <remarks>
+/// The Treaties API returns several fields as a string in one response and as a number or
+/// boolean in the next, so every one of them needs the same scalar handling. Derived types
+/// differ only in what they do with a non-scalar token.
+/// </remarks>
+internal abstract class ScalarToStringConverter : JsonConverter<string?>
 {
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{
@@ -14,37 +19,14 @@ internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 		JsonTokenType.Number => reader.GetInt64().ToString(),
 		JsonTokenType.True => "true",
 		JsonTokenType.False => "false",
-		JsonTokenType.StartArray => ReadArrayAsString(ref reader),
-		JsonTokenType.StartObject => ReadObjectAsString(ref reader),
-		JsonTokenType.None => throw new NotImplementedException(),
-		JsonTokenType.EndObject => throw new NotImplementedException(),
-		JsonTokenType.EndArray => throw new NotImplementedException(),
-		JsonTokenType.PropertyName => throw new NotImplementedException(),
-		JsonTokenType.Comment => throw new NotImplementedException(),
-		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
+		_ => ReadNonScalar(ref reader)
 	};
 
-	private static string ReadArrayAsString(ref Utf8JsonReader reader)
-	{
-		var depth = reader.CurrentDepth;
-		while (reader.Read() && reader.CurrentDepth > depth)
-		{
-			// Skip through the array
-		}
-
-		return "[]";
-	}
-
-	private static string ReadObjectAsString(ref Utf8JsonReader reader)
-	{
-		var depth = reader.CurrentDepth;
-		while (reader.Read() && reader.CurrentDepth > depth)
-		{
-			// Skip through the object
-		}
-
-		return "{}";
-	}
+	/// <summary>
+	/// Reads a token that is not a JSON scalar. Not valid unless a derived type allows it.
+	/// </summary>
+	protected virtual string? ReadNonScalar(ref Utf8JsonReader reader)
+		=> throw new JsonException($"Unexpected token type: {reader.TokenType}");
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{
@@ -56,40 +38,39 @@ internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 		{
 			writer.WriteStringValue(value);
 		}
+	}
+
+	/// <summary>
+	/// Consumes the container the reader is positioned on and returns <paramref name="representation"/>
+	/// in its place, so a structured value does not fail the whole deserialization.
+	/// </summary>
+	protected static string SkipContainer(ref Utf8JsonReader reader, string representation)
+	{
+		var depth = reader.CurrentDepth;
+		while (reader.Read() && reader.CurrentDepth > depth)
+		{
+			// Skip through the container
+		}
+
+		return representation;
 	}
 }
 
 /// <summary>
 /// JSON converter that handles both string and number values
 /// </summary>
-internal sealed class StringOrNumberConverter : JsonConverter<string?>
-{
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
-	{
-		JsonTokenType.Null => null,
-		JsonTokenType.String => reader.GetString(),
-		JsonTokenType.Number => reader.GetInt64().ToString(),
-		JsonTokenType.True => "true",
-		JsonTokenType.False => "false",
-		JsonTokenType.None => throw new NotImplementedException(),
-		JsonTokenType.StartObject => throw new NotImplementedException(),
-		JsonTokenType.EndObject => throw new NotImplementedException(),
-		JsonTokenType.StartArray => throw new NotImplementedException(),
-		JsonTokenType.EndArray => throw new NotImplementedException(),
-		JsonTokenType.PropertyName => throw new NotImplementedException(),
-		JsonTokenType.Comment => throw new NotImplementedException(),
-		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
-	};
+internal sealed class StringOrNumberConverter : ScalarToStringConverter;
 
-	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+/// <summary>
+/// JSON converter that handles string, number, and boolean values, and collapses
+/// arrays and objects to a placeholder rather than failing.
+/// </summary>
+internal sealed class AnyValueToStringConverter : ScalarToStringConverter
+{
+	protected override string? ReadNonScalar(ref Utf8JsonReader reader) => reader.TokenType switch
 	{
-		if (value == null)
-		{
-			writer.WriteNullValue();
-		}
-		else
-		{
-			writer.WriteStringValue(value);
-		}
-	}
+		JsonTokenType.StartArray => SkipContainer(ref reader, "[]"),
+		JsonTokenType.StartObject => SkipContainer(ref reader, "{}"),
+		_ => base.ReadNonScalar(ref reader)
+	};
 }

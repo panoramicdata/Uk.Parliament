@@ -20,7 +20,7 @@ public interface IErskineMayApi
 	/// <returns>List of Erskine May parts</returns>
 	[Get("/api/Part")]
 	Task<List<ErskineMayPart>> GetPartsAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific part by number
@@ -31,7 +31,7 @@ public interface IErskineMayApi
 	[Get("/api/Part/{partNumber}")]
 	Task<ErskineMayPart> GetPartAsync(
 		int partNumber,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific chapter by number
@@ -42,7 +42,7 @@ public interface IErskineMayApi
 	[Get("/api/Chapter/{chapterNumber}")]
 	Task<ErskineMayChapter> GetChapterAsync(
 		int chapterNumber,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific section by ID
@@ -53,7 +53,7 @@ public interface IErskineMayApi
 	[Get("/api/Section/{sectionId}")]
 	Task<ErskineMaySection> GetSectionByIdAsync(
 		int sectionId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search for sections
@@ -64,7 +64,7 @@ public interface IErskineMayApi
 	[Get("/api/Search/SectionSearchResults/{searchTerm}")]
 	Task<ErskineMaySearchResponse> SearchAsync(
 		string searchTerm,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search for paragraphs
@@ -75,7 +75,7 @@ public interface IErskineMayApi
 	[Get("/api/Search/ParagraphSearchResults/{searchTerm}")]
 	Task<ErskineMaySearchResponse> SearchParagraphsAsync(
 		string searchTerm,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search for index terms
@@ -86,7 +86,7 @@ public interface IErskineMayApi
 	[Get("/api/Search/IndexTermSearchResults/{searchTerm}")]
 	Task<ErskineMaySearchResponse> SearchIndexTermsAsync(
 		string searchTerm,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a paragraph by reference
@@ -97,7 +97,7 @@ public interface IErskineMayApi
 	[Get("/api/Search/Paragraph/{reference}")]
 	Task<ErskineMaySearchResponse> GetParagraphByReferenceAsync(
 		string reference,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get an index term by ID
@@ -108,7 +108,7 @@ public interface IErskineMayApi
 	[Get("/api/IndexTerm/{indexTermId}")]
 	Task<ErskineMayIndexTerm> GetIndexTermByIdAsync(
 		int indexTermId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Browse index terms
@@ -117,7 +117,7 @@ public interface IErskineMayApi
 	/// <returns>Paginated list of index terms</returns>
 	[Get("/api/IndexTerm/browse")]
 	Task<ErskineMaySearchResponse> BrowseIndexTermsAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a section with a specific step
@@ -130,5 +130,5 @@ public interface IErskineMayApi
 	Task<ErskineMaySection> GetSectionWithStepAsync(
 		int sectionId,
 		int step,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

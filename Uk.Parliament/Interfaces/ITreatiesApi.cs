@@ -24,7 +24,7 @@ public interface ITreatiesApi
 	[Get("/api/Treaty")]
 	Task<PaginatedResponse<Treaty>> GetTreatiesAsync(
 		[Query] GetTreatiesRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific treaty by ID
@@ -35,7 +35,7 @@ public interface ITreatiesApi
 	[Get("/api/Treaty/{id}")]
 	Task<Treaty> GetTreatyByIdAsync(
 		string id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get business items for a specific treaty
@@ -46,7 +46,7 @@ public interface ITreatiesApi
 	[Get("/api/Treaty/{treatyId}/BusinessItem")]
 	Task<List<TreatyBusinessItem>> GetTreatyBusinessItemsAsync(
 		string treatyId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific business item by ID
@@ -57,7 +57,7 @@ public interface ITreatiesApi
 	[Get("/api/BusinessItem/{id}")]
 	Task<TreatyBusinessItem> GetBusinessItemByIdAsync(
 		string id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get series memberships
@@ -66,7 +66,7 @@ public interface ITreatiesApi
 	/// <returns>Paginated list of series memberships</returns>
 	[Get("/api/SeriesMembership")]
 	Task<PaginatedResponse<SeriesMembership>> GetSeriesMembershipsAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get all government organizations
@@ -75,5 +75,5 @@ public interface ITreatiesApi
 	/// <returns>List of government organizations</returns>
 	[Get("/api/GovernmentOrganisation")]
 	Task<PaginatedResponse<GovernmentOrganisation>> GetGovernmentOrganisationsAsync(
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

@@ -23,7 +23,7 @@ public interface IOralQuestionsMotionsApi
 	[Get("/oralquestions/list")]
 	Task<OralQuestionsResponse<OralQuestion>> GetOralQuestionsAsync(
 		[Query] GetOralQuestionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get Early Day Motions with optional filtering
@@ -34,7 +34,7 @@ public interface IOralQuestionsMotionsApi
 	[Get("/EarlyDayMotions/list")]
 	Task<OralQuestionsResponse<Motion>> GetMotionsAsync(
 		[Query] GetMotionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific Early Day Motion by ID
@@ -45,5 +45,5 @@ public interface IOralQuestionsMotionsApi
 	[Get("/EarlyDayMotion/{id}")]
 	Task<OralQuestionsResponse<Motion>> GetMotionByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

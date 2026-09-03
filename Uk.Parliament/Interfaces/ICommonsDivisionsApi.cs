@@ -20,7 +20,7 @@ public interface ICommonsDivisionsApi
 	[Get("/data/divisions.json")]
 	Task<List<CommonsDivision>> GetDivisionsAsync(
 		[Query] GetCommonsDivisionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific Commons division by ID
@@ -31,7 +31,7 @@ public interface ICommonsDivisionsApi
 	[Get("/data/division/{divisionId}.json")]
 	Task<CommonsDivision> GetDivisionByIdAsync(
 		int divisionId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get division results grouped by party
@@ -42,7 +42,7 @@ public interface ICommonsDivisionsApi
 	[Get("/data/divisions.json/groupedbyparty/{divisionId}")]
 	Task<CommonsDivision> GetDivisionGroupedByPartyAsync(
 		int divisionId,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search divisions
@@ -53,7 +53,7 @@ public interface ICommonsDivisionsApi
 	[Get("/data/divisions.json/search")]
 	Task<List<CommonsDivision>> SearchDivisionsAsync(
 		[Query] SearchCommonsDivisionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get member voting records
@@ -64,5 +64,5 @@ public interface ICommonsDivisionsApi
 	[Get("/data/divisions.json/membervoting")]
 	Task<List<MemberVotingRecord>> GetMemberVotingAsync(
 		[Query] GetCommonsMemberVotingRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

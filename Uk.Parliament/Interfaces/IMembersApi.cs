@@ -21,7 +21,7 @@ public interface IMembersApi
 	[Get("/api/Members/Search")]
 	Task<PaginatedResponse<Member>> SearchAsync(
 		[Query] SearchMembersRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific member by ID
@@ -32,7 +32,7 @@ public interface IMembersApi
 	[Get("/api/Members/{id}")]
 	Task<ValueWrapper<Member>> GetByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Search for constituencies
@@ -43,7 +43,7 @@ public interface IMembersApi
 	[Get("/api/Location/Constituency/Search")]
 	Task<PaginatedResponse<Constituency>> SearchConstituenciesAsync(
 		[Query] SearchConstituenciesRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific constituency by ID
@@ -54,5 +54,5 @@ public interface IMembersApi
 	[Get("/api/Location/Constituency/{id}")]
 	Task<ValueWrapper<Constituency>> GetConstituencyByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

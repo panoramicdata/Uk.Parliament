@@ -24,7 +24,7 @@ public interface IQuestionsStatementsApi
 	[Get("/api/writtenquestions/questions")]
 	Task<PaginatedResponse<WrittenQuestion>> GetWrittenQuestionsAsync(
 		[Query] GetWrittenQuestionsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific written question by ID
@@ -35,7 +35,7 @@ public interface IQuestionsStatementsApi
 	[Get("/api/writtenquestions/questions/{id}")]
 	Task<ValueWrapper<WrittenQuestion>> GetWrittenQuestionByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a written question by date and UIN
@@ -48,7 +48,7 @@ public interface IQuestionsStatementsApi
 	Task<ValueWrapper<WrittenQuestion>> GetWrittenQuestionByDateAndUinAsync(
 		DateTime date,
 		string uin,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get written statements with optional filtering
@@ -59,7 +59,7 @@ public interface IQuestionsStatementsApi
 	[Get("/api/writtenstatements/statements")]
 	Task<PaginatedResponse<WrittenStatement>> GetWrittenStatementsAsync(
 		[Query] GetWrittenStatementsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a specific written statement by ID
@@ -70,7 +70,7 @@ public interface IQuestionsStatementsApi
 	[Get("/api/writtenstatements/statements/{id}")]
 	Task<ValueWrapper<WrittenStatement>> GetWrittenStatementByIdAsync(
 		int id,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get a written statement by date and UIN
@@ -83,7 +83,7 @@ public interface IQuestionsStatementsApi
 	Task<ValueWrapper<WrittenStatement>> GetWrittenStatementByDateAndUinAsync(
 		DateTime date,
 		string uin,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get daily reports with optional filtering
@@ -94,5 +94,5 @@ public interface IQuestionsStatementsApi
 	[Get("/api/dailyreports/dailyreports")]
 	Task<PaginatedResponse<DailyReport>> GetDailyReportsAsync(
 		[Query] GetDailyReportsRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

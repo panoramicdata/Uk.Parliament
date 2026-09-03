@@ -22,7 +22,7 @@ public interface INowApi
 	[Get("/api/Message/message/{annunciator}/current")]
 	Task<AnnunciatorMessage> GetCurrentMessageAsync(
 		string annunciator,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Get annunciator message for a specific annunciator and date
@@ -35,5 +35,5 @@ public interface INowApi
 	Task<AnnunciatorMessage> GetMessageByDateAsync(
 		string annunciator,
 		string date,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }
