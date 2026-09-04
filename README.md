@@ -538,7 +538,7 @@ var client = new ParliamentClient(options);
 | Members | 3 | 11 | 14 | ✅ |
 | Bills | 2 | 9 | 11 | ✅ |
 | Committees | 2 | 10 | 12 | ✅ |
-| Commons Divisions | 2 | 5 | 7 | ✅ |
+| Commons Divisions | 2 | 6 | 8 | ✅ |
 | Lords Divisions | 2 | 5 | 7 | ✅ |
 | Interests | 3 | 8 | 11 | ✅ |
 | Questions/Statements | 4 | 10 | 14 | ✅ |
@@ -547,7 +547,7 @@ var client = new ParliamentClient(options);
 | Erskine May | 3 | 6 | 9 | ✅ |
 | NOW | 3 | 3 | 6 | ✅ |
 | Client/Misc | 2 | 10 | 12 | ✅ |
-| **TOTAL** | **40** | **99** | **139** | **44 unit passing** |
+| **TOTAL** | **40** | **100** | **140** | **44 unit passing** |
 
 ---
 

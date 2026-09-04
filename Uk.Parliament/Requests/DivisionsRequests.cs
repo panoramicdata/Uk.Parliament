@@ -29,6 +29,12 @@ public sealed record class GetCommonsMemberVotingRequest : SkipTakeRequest
 	/// </summary>
 	[AliasAs("memberId")]
 	public required int MemberId { get; init; }
+
+	/// <summary>
+	/// Optional division number filter.
+	/// </summary>
+	[AliasAs("divisionNumber")]
+	public int? DivisionNumber { get; init; }
 }
 
 /// <summary>
