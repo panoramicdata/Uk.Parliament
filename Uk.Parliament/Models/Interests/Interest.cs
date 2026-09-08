@@ -233,17 +233,22 @@ public class InterestField
 }
 
 /// <summary>
-/// JSON converter that handles string, number, and boolean values
+/// Base JSON converter for values that may be strings, numbers, or (optionally) booleans
 /// </summary>
-internal sealed class AnyValueToStringConverter : JsonConverter<string?>
+internal abstract class FlexibleStringValueConverter : JsonConverter<string?>
 {
+	/// <summary>
+	/// Whether boolean tokens are accepted
+	/// </summary>
+	protected abstract bool AllowBooleans { get; }
+
 	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
 	{
 		JsonTokenType.Null => null,
 		JsonTokenType.String => reader.GetString(),
 		JsonTokenType.Number => reader.GetInt64().ToString(),
-		JsonTokenType.True => "true",
-		JsonTokenType.False => "false",
+		JsonTokenType.True when AllowBooleans => "true",
+		JsonTokenType.False when AllowBooleans => "false",
 		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
 	};
 
@@ -261,27 +266,17 @@ internal sealed class AnyValueToStringConverter : JsonConverter<string?>
 }
 
 /// <summary>
+/// JSON converter that handles string, number, and boolean values
+/// </summary>
+internal sealed class AnyValueToStringConverter : FlexibleStringValueConverter
+{
+	protected override bool AllowBooleans => true;
+}
+
+/// <summary>
 /// JSON converter that handles both number and string values
 /// </summary>
-internal sealed class NumberOrStringConverter : JsonConverter<string?>
+internal sealed class NumberOrStringConverter : FlexibleStringValueConverter
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
-	{
-		JsonTokenType.Null => null,
-		JsonTokenType.String => reader.GetString(),
-		JsonTokenType.Number => reader.GetInt64().ToString(),
-		_ => throw new JsonException($"Unexpected token type: {reader.TokenType}")
-	};
-
-	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
-	{
-		if (value is null)
-		{
-			writer.WriteNullValue();
-		}
-		else
-		{
-			writer.WriteStringValue(value);
-		}
-	}
+	protected override bool AllowBooleans => false;
 }

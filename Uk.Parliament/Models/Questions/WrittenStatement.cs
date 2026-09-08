@@ -8,6 +8,17 @@ namespace Uk.Parliament.Models.Questions;
 public class WrittenStatement
 {
 	/// <summary>
+	/// Initializes a new instance of the <see cref="WrittenStatement"/> class.
+	/// </summary>
+	public WrittenStatement()
+	{
+		Uin = string.Empty;
+		House = string.Empty;
+		Title = string.Empty;
+		StatementText = string.Empty;
+	}
+
+	/// <summary>
 	/// Statement identifier
 	/// </summary>
 	[JsonPropertyName("id")]
@@ -17,7 +28,7 @@ public class WrittenStatement
 	/// Unique Identifier Number (UIN) for the statement
 	/// </summary>
 	[JsonPropertyName("uin")]
-	public string Uin { get; set; } = string.Empty;
+	public string Uin { get; set; }
 
 	/// <summary>
 	/// Notice number for the statement
@@ -60,7 +71,7 @@ public class WrittenStatement
 	/// House where statement was made (Commons/Lords)
 	/// </summary>
 	[JsonPropertyName("house")]
-	public string House { get; set; } = string.Empty;
+	public string House { get; set; }
 
 	/// <summary>
 	/// Answering body ID
@@ -78,7 +89,7 @@ public class WrittenStatement
 	/// Department that issued the statement
 	/// </summary>
 	[JsonPropertyName("answeringBody")]
-	public string? Department { get; set; }
+	public string? Department { get; set; } = null;
 
 	/// <summary>
 	/// Date the statement was made
@@ -90,37 +101,37 @@ public class WrittenStatement
 	/// Statement title/heading
 	/// </summary>
 	[JsonPropertyName("title")]
-	public string Title { get; set; } = string.Empty;
+	public string Title { get; set; }
 
 	/// <summary>
 	/// Statement text/content
 	/// </summary>
 	[JsonPropertyName("statementText")]
-	public string StatementText { get; set; } = string.Empty;
+	public string StatementText { get; set; }
 
 	/// <summary>
 	/// Text (alternative to statementText)
 	/// </summary>
 	[JsonPropertyName("text")]
-	public string? Text { get; set; }
+	public string? Text { get; set; } = null;
 
 	/// <summary>
 	/// Related document URL
 	/// </summary>
 	[JsonPropertyName("documentUrl")]
-	public string? DocumentUrl { get; set; }
+	public string? DocumentUrl { get; set; } = null;
 
 	/// <summary>
 	/// Whether this is a correction statement
 	/// </summary>
 	[JsonPropertyName("isCorrection")]
-	public bool IsCorrection { get; set; }
+	public bool IsCorrection { get; set; } = false;
 
 	/// <summary>
 	/// Whether this statement has been withdrawn
 	/// </summary>
 	[JsonPropertyName("isWithdrawn")]
-	public bool IsWithdrawn { get; set; }
+	public bool IsWithdrawn { get; set; } = false;
 
 	/// <summary>
 	/// Whether this statement has attachments
@@ -150,9 +161,19 @@ internal sealed class NumberOrStringConverter : JsonConverter<string?>
 	{
 		JsonTokenType.Null => null,
 		JsonTokenType.String => reader.GetString(),
-		JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString() : reader.GetDouble().ToString(),
+		JsonTokenType.Number => ReadNumberAsText(ref reader),
 		_ => null
 	};
+
+	private static string ReadNumberAsText(ref Utf8JsonReader reader)
+	{
+		if (reader.TryGetInt64(out var number))
+		{
+			return number.ToString();
+		}
+
+		return reader.GetDouble().ToString();
+	}
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
 	{

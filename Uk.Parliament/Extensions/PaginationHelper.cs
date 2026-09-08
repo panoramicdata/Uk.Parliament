@@ -17,28 +17,18 @@ internal static class PaginationHelper
 	{
 		var skip = 0;
 
-		while (!cancellationToken.IsCancellationRequested)
+		await foreach (var item in GetAllPagesAsync(
+			request,
+			pageSize,
+			withPagination,
+			fetchPage,
+			getItems,
+			() => skip,
+			_ => skip += pageSize,
+			response => skip + pageSize >= getTotalResults(response),
+			cancellationToken))
 		{
-			var pageRequest = withPagination(request, skip, pageSize);
-			var response = await fetchPage(pageRequest, cancellationToken);
-			var items = response is null ? null : getItems(response);
-
-			if (items is null || items.Count == 0)
-			{
-				yield break;
-			}
-
-			foreach (var item in items)
-			{
-				yield return item;
-			}
-
-			if (items.Count < pageSize || skip + pageSize >= getTotalResults(response!))
-			{
-				yield break;
-			}
-
-			skip += pageSize;
+			yield return item;
 		}
 	}
 
@@ -52,9 +42,35 @@ internal static class PaginationHelper
 	{
 		var page = 1;
 
+		await foreach (var item in GetAllPagesAsync(
+			request,
+			pageSize,
+			withPagination,
+			fetchPage,
+			getItems,
+			() => page,
+			_ => page++,
+			_ => false,
+			cancellationToken))
+		{
+			yield return item;
+		}
+	}
+
+	private static async IAsyncEnumerable<TItem> GetAllPagesAsync<TRequest, TResponse, TItem>(
+		TRequest request,
+		int pageSize,
+		Func<TRequest, int, int, TRequest> withPagination,
+		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
+		Func<TResponse, IReadOnlyList<TItem>?> getItems,
+		Func<int> getCurrentIndex,
+		Action<int> advanceIndex,
+		Func<TResponse, bool> isLastPage,
+		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+	{
 		while (!cancellationToken.IsCancellationRequested)
 		{
-			var pageRequest = withPagination(request, page, pageSize);
+			var pageRequest = withPagination(request, getCurrentIndex(), pageSize);
 			var response = await fetchPage(pageRequest, cancellationToken);
 			var items = response is null ? null : getItems(response);
 
@@ -68,12 +84,12 @@ internal static class PaginationHelper
 				yield return item;
 			}
 
-			if (items.Count < pageSize)
+			if (items.Count < pageSize || isLastPage(response!))
 			{
 				yield break;
 			}
 
-			page++;
+			advanceIndex(pageSize);
 		}
 	}
 

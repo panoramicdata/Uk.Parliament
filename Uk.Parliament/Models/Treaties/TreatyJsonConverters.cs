@@ -12,14 +12,18 @@ namespace Uk.Parliament.Models.Treaties;
 /// </remarks>
 internal abstract class ScalarToStringConverter : JsonConverter<string?>
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
+	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		=> reader.TokenType is JsonTokenType.Null or JsonTokenType.String or JsonTokenType.Number or JsonTokenType.True or JsonTokenType.False
+		? ReadScalar(ref reader)
+		: ReadNonScalar(ref reader);
+
+	private static string? ReadScalar(ref Utf8JsonReader reader) => reader.TokenType switch
 	{
-		JsonTokenType.Null => null,
 		JsonTokenType.String => reader.GetString(),
 		JsonTokenType.Number => reader.GetInt64().ToString(),
 		JsonTokenType.True => "true",
 		JsonTokenType.False => "false",
-		_ => ReadNonScalar(ref reader)
+		_ => null
 	};
 
 	/// <summary>
@@ -67,10 +71,8 @@ internal sealed class StringOrNumberConverter : ScalarToStringConverter;
 /// </summary>
 internal sealed class AnyValueToStringConverter : ScalarToStringConverter
 {
-	protected override string? ReadNonScalar(ref Utf8JsonReader reader) => reader.TokenType switch
-	{
-		JsonTokenType.StartArray => SkipContainer(ref reader, "[]"),
-		JsonTokenType.StartObject => SkipContainer(ref reader, "{}"),
-		_ => base.ReadNonScalar(ref reader)
-	};
+	protected override string? ReadNonScalar(ref Utf8JsonReader reader)
+		=> reader.TokenType is JsonTokenType.StartArray or JsonTokenType.StartObject
+		? SkipContainer(ref reader, reader.TokenType == JsonTokenType.StartArray ? "[]" : "{}")
+		: base.ReadNonScalar(ref reader);
 }

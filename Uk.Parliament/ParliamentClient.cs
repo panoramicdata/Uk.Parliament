@@ -272,21 +272,104 @@ public class ParliamentClient : IDisposable
 	public IAsyncEnumerable<TItem> GetAllAsync<TItem>(
 		IPaginatedRequest<TItem> request,
 		CancellationToken cancellationToken) => request switch
-		{
-			GetBillsRequest r => (IAsyncEnumerable<TItem>)GetAllBillsCore(r, cancellationToken),
-			GetPetitionsRequest r => (IAsyncEnumerable<TItem>)GetAllPetitionsCore(r, cancellationToken),
-			SearchMembersRequest r => (IAsyncEnumerable<TItem>)GetAllMembersCore(r, cancellationToken),
-			SearchConstituenciesRequest r => (IAsyncEnumerable<TItem>)GetAllConstituenciesCore(r, cancellationToken),
-			GetCommitteesRequest r => (IAsyncEnumerable<TItem>)GetAllCommitteesCore(r, cancellationToken),
-			SearchInterestsRequest r => (IAsyncEnumerable<TItem>)GetAllInterestsCore(r, cancellationToken),
-			GetWrittenQuestionsRequest r => (IAsyncEnumerable<TItem>)GetAllWrittenQuestionsCore(r, cancellationToken),
-			GetWrittenStatementsRequest r => (IAsyncEnumerable<TItem>)GetAllWrittenStatementsCore(r, cancellationToken),
-			GetDailyReportsRequest r => (IAsyncEnumerable<TItem>)GetAllDailyReportsCore(r, cancellationToken),
-			GetOralQuestionsRequest r => (IAsyncEnumerable<TItem>)GetAllOralQuestionsCore(r, cancellationToken),
-			GetMotionsRequest r => (IAsyncEnumerable<TItem>)GetAllMotionsCore(r, cancellationToken),
-			GetTreatiesRequest r => (IAsyncEnumerable<TItem>)GetAllTreatiesCore(r, cancellationToken),
-			_ => throw new NotSupportedException($"Pagination is not supported for request type {request.GetType().Name}.")
-		};
+	{
+		GetBillsRequest billsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			billsRequest,
+			billsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Bills.GetBillsAsync(r, ct),
+			resp => resp.Items,
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetPetitionsRequest petitionsRequest => (IAsyncEnumerable<TItem>)PaginationHelper.GetAllPageAsync(
+			petitionsRequest,
+			petitionsRequest.PageSize ?? 50,
+			static (r, page, size) => r with { Page = page, PageSize = size },
+			(r, ct) => Petitions.GetAsync(r, ct),
+			resp => resp.Data,
+			cancellationToken),
+		SearchMembersRequest membersRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			membersRequest,
+			membersRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Members.SearchAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		SearchConstituenciesRequest constituenciesRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			constituenciesRequest,
+			constituenciesRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Members.SearchConstituenciesAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetCommitteesRequest committeesRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			committeesRequest,
+			committeesRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Committees.GetCommitteesAsync(r, ct),
+			resp => resp.Items,
+			resp => resp.TotalResults,
+			cancellationToken),
+		SearchInterestsRequest interestsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			interestsRequest,
+			interestsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Interests.SearchInterestsAsync(r, ct),
+			resp => resp.Items,
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetWrittenQuestionsRequest writtenQuestionsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			writtenQuestionsRequest,
+			writtenQuestionsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => QuestionsStatements.GetWrittenQuestionsAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetWrittenStatementsRequest writtenStatementsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			writtenStatementsRequest,
+			writtenStatementsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => QuestionsStatements.GetWrittenStatementsAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetDailyReportsRequest dailyReportsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			dailyReportsRequest,
+			dailyReportsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => QuestionsStatements.GetDailyReportsAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetOralQuestionsRequest oralQuestionsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			oralQuestionsRequest,
+			oralQuestionsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => OralQuestionsMotions.GetOralQuestionsAsync(r, ct),
+			resp => resp.Response,
+			resp => resp.PagingInfo.Total,
+			cancellationToken),
+		GetMotionsRequest motionsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			motionsRequest,
+			motionsRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => OralQuestionsMotions.GetMotionsAsync(r, ct),
+			resp => resp.Response,
+			resp => resp.PagingInfo.Total,
+			cancellationToken),
+		GetTreatiesRequest treatiesRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+			treatiesRequest,
+			treatiesRequest.Take ?? 20,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Treaties.GetTreatiesAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		_ => throw new NotSupportedException($"Pagination is not supported for request type {request.GetType().Name}.")
+	};
 
 	/// <summary>
 	/// Automatically paginate through all results and return them as a materialized list.
@@ -302,151 +385,21 @@ public class ParliamentClient : IDisposable
 
 	#region Pagination core methods
 
-	private IAsyncEnumerable<Bill> GetAllBillsCore(GetBillsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
+	private static IAsyncEnumerable<TItem> GetAllOffsetCore<TRequest, TResponse, TItem>(
+		TRequest request,
+		int pageSize,
+		Func<TRequest, int, int, TRequest> withPagination,
+		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
+		Func<TResponse, IReadOnlyList<TItem>?> getItems,
+		Func<TResponse, int> getTotalResults,
+		CancellationToken cancellationToken)
+		=> PaginationHelper.GetAllOffsetAsync(
 			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => Bills.GetBillsAsync(r, ct),
-			static resp => resp.Items,
-			static resp => resp.TotalResults,
+			withPagination,
+			fetchPage,
+			getItems,
+			getTotalResults,
 			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Petition> GetAllPetitionsCore(GetPetitionsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.PageSize ?? 50;
-		return PaginationHelper.GetAllPageAsync(
-			request, pageSize,
-			static (c, page, size) => c with { Page = page, PageSize = size },
-			(r, ct) => Petitions.GetAsync(r, ct),
-			static resp => resp.Data,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Member> GetAllMembersCore(SearchMembersRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => Members.SearchAsync(r, ct),
-			static resp => resp.Items?.ConvertAll(static i => i.Value)
-				?? resp.Results?.ConvertAll(static i => i.Value),
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Constituency> GetAllConstituenciesCore(SearchConstituenciesRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => Members.SearchConstituenciesAsync(r, ct),
-			static resp => resp.Items?.ConvertAll(static i => i.Value)
-				?? resp.Results?.ConvertAll(static i => i.Value),
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Committee> GetAllCommitteesCore(GetCommitteesRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => Committees.GetCommitteesAsync(r, ct),
-			static resp => resp.Items,
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Interest> GetAllInterestsCore(SearchInterestsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => Interests.SearchInterestsAsync(r, ct),
-			static resp => resp.Items,
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<WrittenQuestion> GetAllWrittenQuestionsCore(GetWrittenQuestionsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetWrittenQuestionsAsync(r, ct),
-			static resp => GetWrappedItems(resp),
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<WrittenStatement> GetAllWrittenStatementsCore(GetWrittenStatementsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetWrittenStatementsAsync(r, ct),
-			static resp => GetWrappedItems(resp),
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<DailyReport> GetAllDailyReportsCore(GetDailyReportsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetDailyReportsAsync(r, ct),
-			static resp => GetWrappedItems(resp),
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<OralQuestion> GetAllOralQuestionsCore(GetOralQuestionsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => OralQuestionsMotions.GetOralQuestionsAsync(r, ct),
-			static resp => resp.Response,
-			static resp => resp.PagingInfo.Total,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Motion> GetAllMotionsCore(GetMotionsRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => OralQuestionsMotions.GetMotionsAsync(r, ct),
-			static resp => resp.Response,
-			static resp => resp.PagingInfo.Total,
-			cancellationToken);
-	}
-
-	private IAsyncEnumerable<Treaty> GetAllTreatiesCore(GetTreatiesRequest request, CancellationToken cancellationToken)
-	{
-		var pageSize = request.Take ?? 20;
-		return PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			static (c, skip, take) => c with { Skip = skip, Take = take },
-			(r, ct) => Treaties.GetTreatiesAsync(r, ct),
-			static resp => resp.Items?.ConvertAll(static i => i.Value)
-				?? resp.Results?.ConvertAll(static i => i.Value),
-			static resp => resp.TotalResults,
-			cancellationToken);
-	}
 
 	private static List<T>? GetWrappedItems<T>(PaginatedResponse<T>? response)
 		=> response?.Items?.ConvertAll(static item => item.Value)
