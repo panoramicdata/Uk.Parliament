@@ -23,6 +23,12 @@ namespace Uk.Parliament;
 /// </summary>
 public class ParliamentClient : IDisposable
 {
+	/// <summary>Page size used when a skip/take request does not specify one.</summary>
+	private const int DefaultTakePageSize = 20;
+
+	/// <summary>Page size used when a Petitions request does not specify one.</summary>
+	private const int DefaultPetitionsPageSize = 50;
+
 	private readonly HttpClient? _ownedHttpClient;
 	private readonly bool _disposeHttpClient;
 	private readonly ParliamentClientOptions? _options;
@@ -271,104 +277,138 @@ public class ParliamentClient : IDisposable
 	/// <exception cref="NotSupportedException">Thrown when the request type does not have a registered pagination strategy.</exception>
 	public IAsyncEnumerable<TItem> GetAllAsync<TItem>(
 		IPaginatedRequest<TItem> request,
-		CancellationToken cancellationToken) => request switch
+		CancellationToken cancellationToken)
 	{
-		GetBillsRequest billsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+		// Split by API area so that adding a request type touches one small dispatcher rather than
+		// one switch covering every API. Each dispatcher returns null for a request it does not own.
+		var pager = GetLegislationPager(request, cancellationToken)
+			?? GetPeoplePager(request, cancellationToken)
+			?? GetQuestionsPager(request, cancellationToken)
+			?? throw new NotSupportedException($"Pagination is not supported for request type {request.GetType().Name}.");
+
+		return (IAsyncEnumerable<TItem>)pager;
+	}
+
+	/// <summary>
+	/// Pager for the bills, committees and treaties APIs, or null if the request belongs to another area.
+	/// </summary>
+	private object? GetLegislationPager(object request, CancellationToken cancellationToken) => request switch
+	{
+		GetBillsRequest billsRequest => GetAllOffsetCore(
 			billsRequest,
-			billsRequest.Take ?? 20,
+			billsRequest.Take ?? DefaultTakePageSize,
 			static (r, skip, take) => r with { Skip = skip, Take = take },
 			(r, ct) => Bills.GetBillsAsync(r, ct),
 			resp => resp.Items,
 			resp => resp.TotalResults,
 			cancellationToken),
-		GetPetitionsRequest petitionsRequest => (IAsyncEnumerable<TItem>)PaginationHelper.GetAllPageAsync(
-			petitionsRequest,
-			petitionsRequest.PageSize ?? 50,
-			static (r, page, size) => r with { Page = page, PageSize = size },
-			(r, ct) => Petitions.GetAsync(r, ct),
-			resp => resp.Data,
-			cancellationToken),
-		SearchMembersRequest membersRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			membersRequest,
-			membersRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Members.SearchAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		SearchConstituenciesRequest constituenciesRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			constituenciesRequest,
-			constituenciesRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Members.SearchConstituenciesAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetCommitteesRequest committeesRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+		GetCommitteesRequest committeesRequest => GetAllOffsetCore(
 			committeesRequest,
-			committeesRequest.Take ?? 20,
+			committeesRequest.Take ?? DefaultTakePageSize,
 			static (r, skip, take) => r with { Skip = skip, Take = take },
 			(r, ct) => Committees.GetCommitteesAsync(r, ct),
 			resp => resp.Items,
 			resp => resp.TotalResults,
 			cancellationToken),
-		SearchInterestsRequest interestsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			interestsRequest,
-			interestsRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Interests.SearchInterestsAsync(r, ct),
-			resp => resp.Items,
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetWrittenQuestionsRequest writtenQuestionsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			writtenQuestionsRequest,
-			writtenQuestionsRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetWrittenQuestionsAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetWrittenStatementsRequest writtenStatementsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			writtenStatementsRequest,
-			writtenStatementsRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetWrittenStatementsAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetDailyReportsRequest dailyReportsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			dailyReportsRequest,
-			dailyReportsRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetDailyReportsAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetOralQuestionsRequest oralQuestionsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			oralQuestionsRequest,
-			oralQuestionsRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => OralQuestionsMotions.GetOralQuestionsAsync(r, ct),
-			resp => resp.Response,
-			resp => resp.PagingInfo.Total,
-			cancellationToken),
-		GetMotionsRequest motionsRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
-			motionsRequest,
-			motionsRequest.Take ?? 20,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => OralQuestionsMotions.GetMotionsAsync(r, ct),
-			resp => resp.Response,
-			resp => resp.PagingInfo.Total,
-			cancellationToken),
-		GetTreatiesRequest treatiesRequest => (IAsyncEnumerable<TItem>)GetAllOffsetCore(
+		GetTreatiesRequest treatiesRequest => GetAllOffsetCore(
 			treatiesRequest,
-			treatiesRequest.Take ?? 20,
+			treatiesRequest.Take ?? DefaultTakePageSize,
 			static (r, skip, take) => r with { Skip = skip, Take = take },
 			(r, ct) => Treaties.GetTreatiesAsync(r, ct),
 			resp => GetWrappedItems(resp),
 			resp => resp.TotalResults,
 			cancellationToken),
-		_ => throw new NotSupportedException($"Pagination is not supported for request type {request.GetType().Name}.")
+		_ => null
+	};
+
+	/// <summary>
+	/// Pager for the members, constituencies, interests and petitions APIs, or null if the request
+	/// belongs to another area.
+	/// </summary>
+	private object? GetPeoplePager(object request, CancellationToken cancellationToken) => request switch
+	{
+		SearchMembersRequest membersRequest => GetAllOffsetCore(
+			membersRequest,
+			membersRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Members.SearchAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		SearchConstituenciesRequest constituenciesRequest => GetAllOffsetCore(
+			constituenciesRequest,
+			constituenciesRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Members.SearchConstituenciesAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		SearchInterestsRequest interestsRequest => GetAllOffsetCore(
+			interestsRequest,
+			interestsRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => Interests.SearchInterestsAsync(r, ct),
+			resp => resp.Items,
+			resp => resp.TotalResults,
+			cancellationToken),
+		// Petitions is the one API that pages by page number rather than by skip/take.
+		GetPetitionsRequest petitionsRequest => PaginationHelper.GetAllPageAsync(
+			petitionsRequest,
+			petitionsRequest.PageSize ?? DefaultPetitionsPageSize,
+			static (r, page, size) => r with { Page = page, PageSize = size },
+			(r, ct) => Petitions.GetAsync(r, ct),
+			resp => resp.Data,
+			cancellationToken),
+		_ => null
+	};
+
+	/// <summary>
+	/// Pager for the written questions, statements, daily reports, oral questions and motions APIs,
+	/// or null if the request belongs to another area.
+	/// </summary>
+	private object? GetQuestionsPager(object request, CancellationToken cancellationToken) => request switch
+	{
+		GetWrittenQuestionsRequest writtenQuestionsRequest => GetAllOffsetCore(
+			writtenQuestionsRequest,
+			writtenQuestionsRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => QuestionsStatements.GetWrittenQuestionsAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetWrittenStatementsRequest writtenStatementsRequest => GetAllOffsetCore(
+			writtenStatementsRequest,
+			writtenStatementsRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => QuestionsStatements.GetWrittenStatementsAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetDailyReportsRequest dailyReportsRequest => GetAllOffsetCore(
+			dailyReportsRequest,
+			dailyReportsRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => QuestionsStatements.GetDailyReportsAsync(r, ct),
+			resp => GetWrappedItems(resp),
+			resp => resp.TotalResults,
+			cancellationToken),
+		GetOralQuestionsRequest oralQuestionsRequest => GetAllOffsetCore(
+			oralQuestionsRequest,
+			oralQuestionsRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => OralQuestionsMotions.GetOralQuestionsAsync(r, ct),
+			resp => resp.Response,
+			resp => resp.PagingInfo.Total,
+			cancellationToken),
+		GetMotionsRequest motionsRequest => GetAllOffsetCore(
+			motionsRequest,
+			motionsRequest.Take ?? DefaultTakePageSize,
+			static (r, skip, take) => r with { Skip = skip, Take = take },
+			(r, ct) => OralQuestionsMotions.GetMotionsAsync(r, ct),
+			resp => resp.Response,
+			resp => resp.PagingInfo.Total,
+			cancellationToken),
+		_ => null
 	};
 
 	/// <summary>

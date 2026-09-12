@@ -89,7 +89,7 @@ public class WrittenStatement
 	/// Department that issued the statement
 	/// </summary>
 	[JsonPropertyName("answeringBody")]
-	public string? Department { get; set; } = null;
+	public string? Department { get; set; }
 
 	/// <summary>
 	/// Date the statement was made
@@ -113,25 +113,25 @@ public class WrittenStatement
 	/// Text (alternative to statementText)
 	/// </summary>
 	[JsonPropertyName("text")]
-	public string? Text { get; set; } = null;
+	public string? Text { get; set; }
 
 	/// <summary>
 	/// Related document URL
 	/// </summary>
 	[JsonPropertyName("documentUrl")]
-	public string? DocumentUrl { get; set; } = null;
+	public string? DocumentUrl { get; set; }
 
 	/// <summary>
 	/// Whether this is a correction statement
 	/// </summary>
 	[JsonPropertyName("isCorrection")]
-	public bool IsCorrection { get; set; } = false;
+	public bool IsCorrection { get; set; }
 
 	/// <summary>
 	/// Whether this statement has been withdrawn
 	/// </summary>
 	[JsonPropertyName("isWithdrawn")]
-	public bool IsWithdrawn { get; set; } = false;
+	public bool IsWithdrawn { get; set; }
 
 	/// <summary>
 	/// Whether this statement has attachments
