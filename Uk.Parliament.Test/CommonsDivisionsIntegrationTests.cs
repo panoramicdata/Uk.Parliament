@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -9,31 +7,19 @@ namespace Uk.Parliament.Test;
 /// WARNING: The Commons Divisions API endpoints may return 404 errors.
 /// These tests handle these errors gracefully.
 /// </remarks>
-public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : IntegrationTestBase
+public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : LoggingIntegrationTestBase(output)
 {
-	private readonly ITestOutputHelper _output = output;
+	private const string DivisionsApi = "Commons Divisions API";
+	private const string SearchApi = "Commons Divisions Search API";
+	private const string MemberVotingApi = "Commons Divisions Member Voting API";
 
-	private ParliamentClient CreateClientWithLogging()
-	{
-		var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
-		var logger = loggerFactory.CreateLogger("ParliamentClient");
-
-		return new ParliamentClient(new ParliamentClientOptions
-		{
-			Logger = logger,
-			EnableVerboseLogging = true,
-			EnableDebugValidation = false
-		});
-	}
+	/// <summary>A member with enough voting history for the member voting tests.</summary>
+	private const int TestMemberId = 172;
 
 	/// <summary>Verifies that fetching Commons divisions without filters returns a non-empty list.</summary>
 	[Fact]
-	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetDivisionsAsync_WithNoFilters_Succeeds()
+		=> RunTolerating404Async(DivisionsApi, async client =>
 		{
 			// Act
 			var divisions = await client
@@ -43,30 +29,15 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 					cancellationToken: CancellationToken);
 
 			// Assert
-			_ = divisions.Should().NotBeNull();
-			_ = divisions.Should().NotBeEmpty();
-			_ = divisions.Should().AllSatisfy(d =>
-			{
-				_ = d.DivisionId.Should().BePositive();
-				_ = d.Title.Should().NotBeNullOrEmpty();
-			});
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Commons Divisions API returned 404 - endpoint may not be available");
-		}
-	}
+			AssertDivisionsValid(divisions, d => d.DivisionId, d => d.Title);
+		});
 
 	/// <summary>Verifies that fetching a Commons division by a valid ID returns the division with a title.</summary>
 	[Fact]
-	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
+		=> RunTolerating404Async(DivisionsApi, async client =>
 		{
-			// First get a valid division ID
+			// Arrange - first get a valid division ID
 			var divisions = await client
 				.CommonsDivisions
 				.SearchDivisionsAsync(
@@ -75,7 +46,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 
 			if (divisions.Count == 0)
 			{
-				_output.WriteLine("No divisions found to test GetDivisionByIdAsync");
+				Output.WriteLine("No divisions found to test GetDivisionByIdAsync");
 				return;
 			}
 
@@ -90,21 +61,12 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			_ = result.Should().NotBeNull();
 			_ = result.DivisionId.Should().Be(divisionId);
 			_ = result.Title.Should().NotBeNullOrEmpty();
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Commons Divisions API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 
 	/// <summary>Verifies that searching Commons divisions by search term returns results.</summary>
 	[Fact]
-	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
+		=> RunTolerating404Async(SearchApi, async client =>
 		{
 			// Act
 			var divisions = await client
@@ -117,27 +79,18 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			_ = divisions.Should().NotBeNull();
 			_ = divisions.Should().NotBeEmpty();
 			_ = divisions[0].DivisionId.Should().BePositive();
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Commons Divisions Search API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 
 	/// <summary>Verifies that fetching a Commons member's voting history returns populated records.</summary>
 	[Fact]
-	public async Task GetMemberVotingAsync_WithMemberId_ReturnsVotingHistory()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetMemberVotingAsync_WithMemberId_ReturnsVotingHistory()
+		=> RunTolerating404Async(MemberVotingApi, async client =>
 		{
 			// Act
 			var votingHistory = await client
 				.CommonsDivisions
 				.GetMemberVotingAsync(
-					new GetCommonsMemberVotingRequest { MemberId = 172, Take = 5 },
+					new GetCommonsMemberVotingRequest { MemberId = TestMemberId, Take = 5 },
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -145,30 +98,23 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			_ = votingHistory.Should().NotBeEmpty();
 			_ = votingHistory.Should().AllSatisfy(r =>
 			{
-				_ = r.MemberId.Should().Be(172);
+				_ = r.MemberId.Should().Be(TestMemberId);
 				_ = r.PublishedDivision.Should().NotBeNull();
 			});
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Commons Divisions Member Voting API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 
 	/// <summary>Verifies that filtering a Commons member's voting history by division number returns results matching the division number.</summary>
 	[Fact]
-	public async Task GetMemberVotingAsync_WithDivisionNumberFilter_Succeeds()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetMemberVotingAsync_WithDivisionNumberFilter_Succeeds()
+		=> RunTolerating404Async(MemberVotingApi, async client =>
 		{
+			const int divisionNumber = 512;
+
 			// Act
 			var votingHistory = await client
 				.CommonsDivisions
 				.GetMemberVotingAsync(
-					new GetCommonsMemberVotingRequest { MemberId = 172, DivisionNumber = 512, Take = 5 },
+					new GetCommonsMemberVotingRequest { MemberId = TestMemberId, DivisionNumber = divisionNumber, Take = 5 },
 					cancellationToken: CancellationToken);
 
 			// Assert
@@ -176,25 +122,16 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			_ = votingHistory.Should().NotBeEmpty();
 			_ = votingHistory.Should().AllSatisfy(r =>
 			{
-				_ = r.MemberId.Should().Be(172);
+				_ = r.MemberId.Should().Be(TestMemberId);
 				_ = r.PublishedDivision.Should().NotBeNull();
-				_ = r.PublishedDivision.Number.Should().Be(512);
+				_ = r.PublishedDivision.Number.Should().Be(divisionNumber);
 			});
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Commons Divisions Member Voting API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 
 	/// <summary>Verifies that paginated Commons division search returns a page of results within the take limit.</summary>
 	[Fact]
-	public async Task SearchDivisionsAsync_WithPagination_Succeeds()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task SearchDivisionsAsync_WithPagination_Succeeds()
+		=> RunTolerating404Async(DivisionsApi, async client =>
 		{
 			// Act
 			var page1 = await client
@@ -206,10 +143,5 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Integr
 			// Assert
 			_ = page1.Should().NotBeNull();
 			_ = page1.Count.Should().BeLessThanOrEqualTo(10);
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Commons Divisions API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 }

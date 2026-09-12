@@ -1,29 +1,33 @@
+using Uk.Parliament.Models.Members;
+
 namespace Uk.Parliament.Test;
 
-/// <summary>
-/// Integration tests for the Members API
-/// </summary>
 /// <summary>
 /// Integration tests for the Members API (requires live API).
 /// </summary>
 public class Members : IntegrationTestBase
 {
+	/// <summary>House identifier for the House of Commons.</summary>
+	private const int Commons = 1;
+
+	/// <summary>House identifier for the House of Lords.</summary>
+	private const int Lords = 2;
+
+	private Task<PaginatedResponse<Member>> SearchMembersAsync(SearchMembersRequest request)
+		=> Client.Members.SearchAsync(request, CancellationToken);
+
+	private Task<PaginatedResponse<Constituency>> SearchConstituenciesAsync(SearchConstituenciesRequest request)
+		=> Client.Members.SearchConstituenciesAsync(request, CancellationToken);
+
 	/// <summary>Verifies that searching members without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task SearchAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await SearchMembersAsync(new SearchMembersRequest { Take = 10 });
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BePositive();
+		AssertItemsReturnedWithTotal(response);
 	}
 
 	/// <summary>Verifies that filtering members by name returns results matching the name filter.</summary>
@@ -31,18 +35,11 @@ public class Members : IntegrationTestBase
 	public async Task SearchAsync_WithNameFilter_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { Name = "Johnson", Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await SearchMembersAsync(new SearchMembersRequest { Name = "Johnson", Take = 10 });
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
 		// Note: API performs substring matching, so "Johnson" will match members with Johnson in their name
-		_ = response.Items.Should().AllSatisfy(item =>
+		AssertItemsReturned(response, item =>
 		{
 			_ = item.Value.NameDisplayAs.Should().NotBeNullOrWhiteSpace();
 			_ = item.Value.NameListAs.Should().NotBeNullOrWhiteSpace();
@@ -54,60 +51,27 @@ public class Members : IntegrationTestBase
 	public async Task SearchAsync_ForCurrentMembers_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { IsCurrentMember = true, Take = 20 },
-				cancellationToken: CancellationToken);
+		var response = await SearchMembersAsync(new SearchMembersRequest { IsCurrentMember = true, Take = 20 });
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BePositive();
+		AssertItemsReturnedWithTotal(response);
 	}
 
-	/// <summary>Verifies that filtering members to current House of Commons members returns only Commons members.</summary>
-	[Fact]
-	public async Task SearchAsync_ForCommonsMembers_Succeeds()
+	/// <summary>Verifies that filtering members to a single current House returns only members of that House.</summary>
+	[Theory]
+	[InlineData(Commons)]
+	[InlineData(Lords)]
+	public async Task SearchAsync_ForHouse_ReturnsOnlyThatHouse(int house)
 	{
-		// Act - House 1 = Commons
-		var response = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { House = 1, IsCurrentMember = true, Take = 10 },
-				cancellationToken: CancellationToken);
+		// Act
+		var response = await SearchMembersAsync(
+			new SearchMembersRequest { House = house, IsCurrentMember = true, Take = 10 });
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.Items.Should().AllSatisfy(item =>
+		AssertItemsReturned(response, item =>
 		{
 			_ = item.Value.LatestHouseMembership.Should().NotBeNull();
-			_ = item.Value.LatestHouseMembership.House.Should().Be(1, "should only return Commons members");
-		});
-	}
-
-	/// <summary>Verifies that filtering members to current House of Lords members returns only Lords members.</summary>
-	[Fact]
-	public async Task SearchAsync_ForLordsMembers_Succeeds()
-	{
-		// Act - House 2 = Lords
-		var response = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { House = 2, IsCurrentMember = true, Take = 10 },
-				cancellationToken: CancellationToken);
-
-		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.Items.Should().AllSatisfy(item =>
-		{
-			_ = item.Value.LatestHouseMembership.Should().NotBeNull();
-			_ = item.Value.LatestHouseMembership.House.Should().Be(2, "should only return Lords members");
+			_ = item.Value.LatestHouseMembership.House.Should().Be(house, "should only return members of the requested House");
 		});
 	}
 
@@ -115,13 +79,8 @@ public class Members : IntegrationTestBase
 	[Fact]
 	public async Task GetByIdAsync_WithValidId_ReturnsMember()
 	{
-		// Arrange
-		// First, get a valid member ID
-		var searchResponse = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { Take = 1 },
-				cancellationToken: CancellationToken);
+		// Arrange - first, get a valid member ID
+		var searchResponse = await SearchMembersAsync(new SearchMembersRequest { Take = 1 });
 		var memberId = searchResponse.Items[0].Value.Id;
 
 		// Act
@@ -143,19 +102,11 @@ public class Members : IntegrationTestBase
 	[Fact]
 	public async Task SearchAsync_WithPagination_Succeeds()
 	{
-		// Act - Get first page
-		var page1 = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { Skip = 0, Take = 10, IsCurrentMember = true },
-				cancellationToken: CancellationToken);
-
-		// Act - Get second page
-		var page2 = await Client
-			.Members
-			.SearchAsync(
-				new SearchMembersRequest { Skip = 10, Take = 10, IsCurrentMember = true },
-				cancellationToken: CancellationToken);
+		// Act
+		var page1 = await SearchMembersAsync(
+			new SearchMembersRequest { Skip = 0, Take = 10, IsCurrentMember = true });
+		var page2 = await SearchMembersAsync(
+			new SearchMembersRequest { Skip = 10, Take = 10, IsCurrentMember = true });
 
 		// Assert
 		_ = page1.Items.Should().NotBeEmpty();
@@ -168,17 +119,10 @@ public class Members : IntegrationTestBase
 	public async Task SearchConstituenciesAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Members
-			.SearchConstituenciesAsync(
-				new SearchConstituenciesRequest { Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await SearchConstituenciesAsync(new SearchConstituenciesRequest { Take = 10 });
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BePositive();
+		AssertItemsReturnedWithTotal(response);
 	}
 
 	/// <summary>Verifies that searching constituencies by text returns matching constituencies with names and IDs.</summary>
@@ -186,18 +130,11 @@ public class Members : IntegrationTestBase
 	public async Task SearchConstituenciesAsync_WithSearchText_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Members
-			.SearchConstituenciesAsync(
-				new SearchConstituenciesRequest { SearchText = "Westminster", Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await SearchConstituenciesAsync(
+			new SearchConstituenciesRequest { SearchText = "Westminster", Take = 10 });
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		// Verify all returned constituencies have data
-		_ = response.Items.Should().AllSatisfy(item =>
+		AssertItemsReturned(response, item =>
 		{
 			_ = item.Value.Name.Should().NotBeNullOrWhiteSpace();
 			_ = item.Value.Id.Should().BePositive();
@@ -208,13 +145,8 @@ public class Members : IntegrationTestBase
 	[Fact]
 	public async Task GetConstituencyByIdAsync_WithValidId_ReturnsConstituency()
 	{
-		// Arrange
-		// First, get a valid constituency ID
-		var searchResponse = await Client
-			.Members
-			.SearchConstituenciesAsync(
-				new SearchConstituenciesRequest { Take = 1 },
-				cancellationToken: CancellationToken);
+		// Arrange - first, get a valid constituency ID
+		var searchResponse = await SearchConstituenciesAsync(new SearchConstituenciesRequest { Take = 1 });
 		var constituencyId = searchResponse.Items[0].Value.Id;
 
 		// Act
@@ -261,7 +193,7 @@ public class Members : IntegrationTestBase
 	{
 		// Act
 		var allMembers = await Client.GetAllListAsync(
-			new SearchMembersRequest { House = 1, IsCurrentMember = true, Take = 20 },
+			new SearchMembersRequest { House = Commons, IsCurrentMember = true, Take = 20 },
 			CancellationToken);
 
 		// Assert
@@ -270,7 +202,7 @@ public class Members : IntegrationTestBase
 		_ = allMembers.Should().AllSatisfy(m =>
 		{
 			_ = m.LatestHouseMembership.Should().NotBeNull();
-			_ = m.LatestHouseMembership.House.Should().Be(1);
+			_ = m.LatestHouseMembership.House.Should().Be(Commons);
 		});
 	}
 }

@@ -66,6 +66,44 @@ public abstract class IntegrationTestBase : IDisposable
 	}
 
 	/// <summary>
+	/// Asserts that a paginated response came back with at least one item.
+	/// </summary>
+	/// <typeparam name="T">The type of items in the response</typeparam>
+	/// <param name="result">The paginated response to validate</param>
+	protected static void AssertItemsReturned<T>(PaginatedResponse<T> result)
+	{
+		_ = result.Should().NotBeNull();
+		_ = result.Items.Should().NotBeNull();
+		_ = result.Items.Should().NotBeEmpty();
+	}
+
+	/// <summary>
+	/// Asserts that a paginated response came back with at least one item, and applies
+	/// <paramref name="itemAssertion"/> to every item.
+	/// </summary>
+	/// <typeparam name="T">The type of items in the response</typeparam>
+	/// <param name="result">The paginated response to validate</param>
+	/// <param name="itemAssertion">Action to perform assertions on each item</param>
+	protected static void AssertItemsReturned<T>(
+		PaginatedResponse<T> result,
+		Action<ValueWrapper<T>> itemAssertion)
+	{
+		AssertItemsReturned(result);
+		_ = result.Items.Should().AllSatisfy(itemAssertion);
+	}
+
+	/// <summary>
+	/// Asserts that a paginated response came back with at least one item and a positive total count.
+	/// </summary>
+	/// <typeparam name="T">The type of items in the response</typeparam>
+	/// <param name="result">The paginated response to validate</param>
+	protected static void AssertItemsReturnedWithTotal<T>(PaginatedResponse<T> result)
+	{
+		AssertItemsReturned(result);
+		_ = result.TotalResults.Should().BePositive();
+	}
+
+	/// <summary>
 	/// Common assertion helper for streamed results
 	/// </summary>
 	/// <typeparam name="T">The type of items in the collection</typeparam>

@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -9,31 +7,15 @@ namespace Uk.Parliament.Test;
 /// WARNING: As of January 2025, the Lords Divisions API endpoints may return 404 errors.
 /// These tests handle these errors gracefully.
 /// </remarks>
-public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : IntegrationTestBase
+public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : LoggingIntegrationTestBase(output)
 {
-	private readonly ITestOutputHelper _output = output;
-
-	private ParliamentClient CreateClientWithLogging()
-	{
-		var loggerFactory = new XUnitLoggerFactory(_output, LogLevel.Debug);
-		var logger = loggerFactory.CreateLogger("ParliamentClient");
-
-		return new ParliamentClient(new ParliamentClientOptions
-		{
-			Logger = logger,
-			EnableVerboseLogging = true,
-			EnableDebugValidation = false
-		});
-	}
+	private const string DivisionsApi = "Lords Divisions API";
+	private const string SearchApi = "Lords Divisions Search API";
 
 	/// <summary>Verifies that fetching Lords divisions without filters returns a non-empty list.</summary>
 	[Fact]
-	public async Task GetDivisionsAsync_WithNoFilters_Succeeds()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetDivisionsAsync_WithNoFilters_Succeeds()
+		=> RunTolerating404Async(DivisionsApi, async client =>
 		{
 			// Act
 			var divisions = await client
@@ -43,30 +25,15 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 					cancellationToken: CancellationToken);
 
 			// Assert
-			_ = divisions.Should().NotBeNull();
-			_ = divisions.Should().NotBeEmpty();
-			_ = divisions.Should().AllSatisfy(d =>
-			{
-				_ = d.DivisionId.Should().BePositive();
-				_ = d.Title.Should().NotBeNullOrEmpty();
-			});
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Lords Divisions API returned 404 - endpoint may not be available");
-		}
-	}
+			AssertDivisionsValid(divisions, d => d.DivisionId, d => d.Title);
+		});
 
 	/// <summary>Verifies that fetching a Lords division by a valid ID returns the division with a title.</summary>
 	[Fact]
-	public async Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetDivisionByIdAsync_WithValidId_ReturnsDivision()
+		=> RunTolerating404Async(DivisionsApi, async client =>
 		{
-			// First get a valid division ID
+			// Arrange - first get a valid division ID
 			var divisions = await client
 				.LordsDivisions
 				.SearchDivisionsAsync(
@@ -75,7 +42,7 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 
 			if (divisions.Count == 0)
 			{
-				_output.WriteLine("No divisions found to test GetDivisionByIdAsync");
+				Output.WriteLine("No divisions found to test GetDivisionByIdAsync");
 				return;
 			}
 
@@ -90,21 +57,12 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 			_ = result.Should().NotBeNull();
 			_ = result.DivisionId.Should().Be(divisionId);
 			_ = result.Title.Should().NotBeNullOrEmpty();
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Lords Divisions API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 
 	/// <summary>Verifies that searching Lords divisions by search term returns results.</summary>
 	[Fact]
-	public async Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task SearchDivisionsAsync_WithSearchTerm_ReturnsResults()
+		=> RunTolerating404Async(SearchApi, async client =>
 		{
 			// Act
 			var divisions = await client
@@ -117,21 +75,12 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 			_ = divisions.Should().NotBeNull();
 			_ = divisions.Should().NotBeEmpty();
 			_ = divisions[0].DivisionId.Should().BePositive();
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Lords Divisions Search API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 
 	/// <summary>Verifies that paginated Lords division retrieval returns a page within the take limit.</summary>
 	[Fact]
-	public async Task GetDivisionsAsync_WithPagination_Succeeds()
-	{
-		// Arrange
-		var client = CreateClientWithLogging();
-
-		try
+	public Task GetDivisionsAsync_WithPagination_Succeeds()
+		=> RunTolerating404Async(DivisionsApi, async client =>
 		{
 			// Act
 			var page1 = await client
@@ -143,10 +92,5 @@ public class LordsDivisionsIntegrationTests(ITestOutputHelper output) : Integrat
 			// Assert
 			_ = page1.Should().NotBeNull();
 			_ = page1.Count.Should().BeLessThanOrEqualTo(10);
-		}
-		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-		{
-			_output.WriteLine("Lords Divisions API returned 404 - endpoint may not be available");
-		}
-	}
+		});
 }
