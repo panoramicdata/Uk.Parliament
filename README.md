@@ -73,7 +73,7 @@ var allMembers = await client.GetAllListAsync(new SearchMembersRequest { House =
 var page = await client.Bills.GetBillsAsync(new GetBillsRequest { Skip = 0, Take = 20 }, cancellationToken);
 ```
 
-> **Tip:** Each obsolete method's compiler error message includes a ready-to-use code example showing the equivalent request model call.
+> **Note:** The loose-parameter overloads have been removed, so calls in the "before" style above no longer compile. Replace each one with the request model shown opposite.
 
 All request types live in the `Uk.Parliament.Requests` namespace. Pagination request types also implement `IPaginatedRequest<TItem>`, enabling the generic `GetAllAsync<TItem>()` method. The raw Refit interface methods (e.g. `client.Bills.GetBillsAsync(...)`) should only be used when you need to implement paging yourself.
 
