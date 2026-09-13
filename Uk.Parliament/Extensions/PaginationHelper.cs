@@ -28,19 +28,19 @@ internal static class PaginationHelper
 		Action<int> Advance,
 		Func<TResponse, bool> IsLastPage);
 
-	public static async IAsyncEnumerable<TItem> GetAllOffsetAsync<TRequest, TResponse, TItem>(
+	public static IAsyncEnumerable<TItem> GetAllOffsetAsync<TRequest, TResponse, TItem>(
 		TRequest request,
 		int pageSize,
 		Func<TRequest, int, int, TRequest> withPagination,
 		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
 		Func<TResponse, IReadOnlyList<TItem>?> getItems,
 		Func<TResponse, int> getTotalResults,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+		CancellationToken cancellationToken = default)
 	{
-		// Declared inside the iterator body so that re-enumerating restarts from the first page.
+		// Declared inside the method body so that re-enumerating restarts from the first page.
 		var skip = 0;
 
-		await foreach (var item in GetAllPagesAsync(
+		return GetAllPagesAsync(
 			request,
 			pageSize,
 			new PageReader<TRequest, TResponse, TItem>(withPagination, fetchPage, getItems),
@@ -48,33 +48,27 @@ internal static class PaginationHelper
 				() => skip,
 				_ => skip += pageSize,
 				response => skip + pageSize >= getTotalResults(response)),
-			cancellationToken))
-		{
-			yield return item;
-		}
+			cancellationToken);
 	}
 
-	public static async IAsyncEnumerable<TItem> GetAllPageAsync<TRequest, TResponse, TItem>(
+	public static IAsyncEnumerable<TItem> GetAllPageAsync<TRequest, TResponse, TItem>(
 		TRequest request,
 		int pageSize,
 		Func<TRequest, int, int, TRequest> withPagination,
 		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
 		Func<TResponse, IReadOnlyList<TItem>?> getItems,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+		CancellationToken cancellationToken = default)
 	{
-		// Declared inside the iterator body so that re-enumerating restarts from the first page.
+		// Declared inside the method body so that re-enumerating restarts from the first page.
 		var page = 1;
 
-		await foreach (var item in GetAllPagesAsync(
+		return GetAllPagesAsync(
 			request,
 			pageSize,
 			new PageReader<TRequest, TResponse, TItem>(withPagination, fetchPage, getItems),
 			// A page-number API reports no total, so a short page is the only end-of-results signal.
 			new PageCursor<TResponse>(() => page, _ => page++, static _ => false),
-			cancellationToken))
-		{
-			yield return item;
-		}
+			cancellationToken);
 	}
 
 	private static async IAsyncEnumerable<TItem> GetAllPagesAsync<TRequest, TResponse, TItem>(

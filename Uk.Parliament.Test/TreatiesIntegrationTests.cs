@@ -46,19 +46,12 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
 		// Arrange - First get a valid treaty ID from the list
-		var listResult = await Client
-			.Treaties
-			.GetTreatiesAsync(
-				new GetTreatiesRequest { Take = 1 },
-				CancellationToken);
-
-		if (listResult.Items == null || listResult.Items.Count == 0)
+		var validTreatyId = await GetFirstTreatyIdAsync();
+		if (validTreatyId == null)
 		{
 			// Skip test if no treaties available
 			return;
 		}
-
-		var validTreatyId = listResult.Items[0].Value.Id;
 
 		// Act
 		var result = await Client
@@ -76,19 +69,12 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
 		// Arrange - First get a valid treaty ID from the list
-		var listResult = await Client
-			.Treaties
-			.GetTreatiesAsync(
-				new GetTreatiesRequest { Take = 1 },
-				CancellationToken);
-
-		if (listResult.Items == null || listResult.Items.Count == 0)
+		var validTreatyId = await GetFirstTreatyIdAsync();
+		if (validTreatyId == null)
 		{
 			// Skip test if no treaties available
 			return;
 		}
-
-		var validTreatyId = listResult.Items[0].Value.Id;
 
 		try
 		{
@@ -140,6 +126,25 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 		// Assert - Just verify streaming works
 		_ = treaties.Should().NotBeNull();
 	}
+
+	/// <summary>
+	/// Gets the ID of the first treaty from the API, or null if none are available.
+	/// </summary>
+	private async Task<string?> GetFirstTreatyIdAsync()
+	{
+		var listResult = await Client
+			.Treaties
+			.GetTreatiesAsync(
+				new GetTreatiesRequest { Take = 1 },
+				CancellationToken);
+
+		if (listResult.Items == null || listResult.Items.Count == 0)
+		{
+			return null;
+		}
+
+		return listResult.Items[0].Value.Id;
+	}
 }
 
 /// <summary>
@@ -152,7 +157,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 	public void TreatiesApi_CanBeMocked()
 	{
 		// Arrange
-		var mock = new Mock<ITreatiesApi>();
+		var mock = CreateMockApi();
 
 		// Assert
 		_ = mock.Object.Should().NotBeNull();
@@ -163,7 +168,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 	public async Task GetTreatiesAsync_WithMock_ReturnsExpectedData()
 	{
 		// Arrange
-		var mockApi = new Mock<ITreatiesApi>();
+		var mockApi = CreateMockApi();
 		var expectedResponse = new PaginatedResponse<Treaty>
 		{
 			TotalResults = 2,
@@ -215,7 +220,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 	public async Task GetGovernmentOrganisationsAsync_WithMock_ReturnsExpectedData()
 	{
 		// Arrange
-		var mockApi = new Mock<ITreatiesApi>();
+		var mockApi = CreateMockApi();
 		var expectedResponse = new PaginatedResponse<GovernmentOrganisation>
 		{
 			TotalResults = 2,
@@ -251,7 +256,7 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 	public async Task GetTreatyBusinessItemsAsync_WithMock_ReturnsExpectedData()
 	{
 		// Arrange
-		var mockApi = new Mock<ITreatiesApi>();
+		var mockApi = CreateMockApi();
 		var expectedItems = new List<TreatyBusinessItem>
 		{
 			new()
@@ -276,4 +281,9 @@ public class TreatiesApiUnitTests : IntegrationTestBase
 		_ = result.Should().ContainSingle();
 		_ = result[0].BusinessItemType.Should().Be("Debate");
 	}
+
+	/// <summary>
+	/// Creates a mock of <see cref="ITreatiesApi"/> for test setup.
+	/// </summary>
+	private static Mock<ITreatiesApi> CreateMockApi() => new();
 }
