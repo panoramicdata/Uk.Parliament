@@ -1,6 +1,7 @@
 namespace Uk.Parliament.Test;
 
 /// <summary>Integration tests for the Petitions API (requires live API).</summary>
+[Trait("Category", "Integration")]
 public class Petitions : IntegrationTestBase
 {
 	private const int ValidPetitionId = 700143; // A known closed petition with data

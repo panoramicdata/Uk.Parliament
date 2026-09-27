@@ -3,6 +3,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for NOW (Annunciator) API
 /// </summary>
+[Trait("Category", "Integration")]
 public class NowIntegrationTests : IntegrationTestBase
 {
 	/// <summary>Verifies that fetching the current Commons annunciator message returns a valid response.</summary>

@@ -6,6 +6,7 @@ namespace Uk.Parliament.Test;
 /// Integration tests for the Committees API (requires live API)
 /// Note: This API has limitations - larger page sizes and high skip values can cause 500 errors
 /// </summary>
+[Trait("Category", "Integration")]
 public class CommitteesIntegrationTests(ITestOutputHelper output) : IntegrationTestBase
 {
 	private ParliamentClient CreateClient()

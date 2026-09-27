@@ -7,6 +7,7 @@ namespace Uk.Parliament.Test;
 /// WARNING: The Commons Divisions API endpoints may return 404 errors.
 /// These tests handle these errors gracefully.
 /// </remarks>
+[Trait("Category", "Integration")]
 public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : LoggingIntegrationTestBase(output)
 {
 	private const string DivisionsApi = "Commons Divisions API";
