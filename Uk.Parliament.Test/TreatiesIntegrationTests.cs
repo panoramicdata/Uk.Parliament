@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Treaties API
 /// </summary>
+[Trait("Category", "Integration")]
 public class TreatiesIntegrationTests : IntegrationTestBase
 {
 	/// <summary>Verifies that fetching treaties without filters returns a valid paginated result.</summary>

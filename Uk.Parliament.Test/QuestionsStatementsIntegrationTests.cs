@@ -3,6 +3,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Written Questions and Statements API
 /// </summary>
+[Trait("Category", "Integration")]
 public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 {
 	#region Written Questions Tests

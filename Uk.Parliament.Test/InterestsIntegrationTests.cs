@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Member Interests API
 /// </summary>
+[Trait("Category", "Integration")]
 public class InterestsIntegrationTests : IntegrationTestBase
 {
 	/// <summary>Verifies that fetching member interest categories returns a non-empty list with names and IDs.</summary>

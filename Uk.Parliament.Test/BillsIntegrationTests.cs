@@ -3,6 +3,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for the Bills API (requires live API)
 /// </summary>
+[Trait("Category", "Integration")]
 public class BillsIntegrationTests : IntegrationTestBase
 {
 	/// <summary>Verifies that retrieving bills without filters returns a non-empty paginated result.</summary>

@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Erskine May API
 /// </summary>
+[Trait("Category", "Integration")]
 public class ErskineMayIntegrationTests : IntegrationTestBase
 {
 	/// <summary>Verifies that fetching all Erskine May parts returns a non-empty list with valid part numbers and titles.</summary>

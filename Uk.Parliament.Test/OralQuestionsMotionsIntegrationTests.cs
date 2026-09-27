@@ -3,6 +3,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for Oral Questions and Motions API
 /// </summary>
+[Trait("Category", "Integration")]
 public class OralQuestionsMotionsIntegrationTests : IntegrationTestBase
 {
 	#region Oral Questions Tests

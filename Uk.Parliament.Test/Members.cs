@@ -5,6 +5,7 @@ namespace Uk.Parliament.Test;
 /// <summary>
 /// Integration tests for the Members API (requires live API).
 /// </summary>
+[Trait("Category", "Integration")]
 public class Members : IntegrationTestBase
 {
 	/// <summary>House identifier for the House of Commons.</summary>
