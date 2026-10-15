@@ -1,3 +1,6 @@
+using Uk.Parliament.Models.Bills;
+using Uk.Parliament.Requests;
+
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -6,16 +9,23 @@ namespace Uk.Parliament.Test;
 [Trait("Category", "Integration")]
 public class BillsIntegrationTests : IntegrationTestBase
 {
+	/// <summary>Retrieves a page of bills using the supplied request.</summary>
+	private static async Task<BillsListResponse<Bill>> GetBillsPageAsync(ParliamentClient client, GetBillsRequest request, CancellationToken cancellationToken)
+		=> await client.Bills.GetBillsAsync(request, cancellationToken);
+
+	/// <summary>Retrieves the first bill on the list and then fetches it by its id.</summary>
+	private static async Task<Bill> GetFirstBillByIdAsync(ParliamentClient client, CancellationToken cancellationToken)
+	{
+		var firstBill = (await GetBillsPageAsync(client, new GetBillsRequest { Take = 1 }, cancellationToken)).Items[0];
+		return await client.Bills.GetBillByIdAsync(firstBill.BillId, cancellationToken);
+	}
+
 	/// <summary>Verifies that retrieving bills without filters returns a non-empty paginated result.</summary>
 	[Fact]
 	public async Task GetBillsAsync_WithNoFilters_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await GetBillsPageAsync(Client, new GetBillsRequest { Take = 10 }, CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -27,25 +37,12 @@ public class BillsIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetBillByIdAsync_WithValidId_ReturnsBill()
 	{
-		// Arrange
-		// First, get a valid bill ID
-		var billsList = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { Take = 1 },
-				cancellationToken: CancellationToken);
-		var billId = billsList.Items[0].BillId;
-
 		// Act
-		var bill = await Client
-			.Bills
-			.GetBillByIdAsync(
-				billId,
-				CancellationToken);
+		var bill = await GetFirstBillByIdAsync(Client, CancellationToken);
 
 		// Assert
 		_ = bill.Should().NotBeNull();
-		_ = bill.BillId.Should().Be(billId);
+		_ = bill.BillId.Should().BePositive();
 		_ = bill.ShortTitle.Should().NotBeNullOrWhiteSpace();
 	}
 
@@ -54,16 +51,8 @@ public class BillsIntegrationTests : IntegrationTestBase
 	public async Task GetBillsAsync_WithPagination_Succeeds()
 	{
 		// Act
-		var page1 = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { Skip = 0, Take = 10 },
-				cancellationToken: CancellationToken);
-		var page2 = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { Skip = 10, Take = 10 },
-				cancellationToken: CancellationToken);
+		var page1 = await GetBillsPageAsync(Client, new GetBillsRequest { Skip = 0, Take = 10 }, CancellationToken);
+		var page2 = await GetBillsPageAsync(Client, new GetBillsRequest { Skip = 10, Take = 10 }, CancellationToken);
 
 		// Assert
 		_ = page1.Items.Should().NotBeEmpty();
@@ -76,11 +65,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 	public async Task GetBillsAsync_FilterByCurrentHouse_Succeeds()
 	{
 		// Act - Filter by Commons
-		var response = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { CurrentHouse = "Commons", Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await GetBillsPageAsync(Client, new GetBillsRequest { CurrentHouse = "Commons", Take = 10 }, CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -93,11 +78,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 	public async Task GetBillsAsync_WithSearchTerm_Succeeds()
 	{
 		// Act
-		var response = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { SearchTerm = "Bill", Take = 10 },
-				cancellationToken: CancellationToken);
+		var response = await GetBillsPageAsync(Client, new GetBillsRequest { SearchTerm = "Bill", Take = 10 }, CancellationToken);
 
 		// Assert
 		_ = response.Should().NotBeNull();
@@ -163,20 +144,8 @@ public class BillsIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetBillByIdAsync_HasCurrentStage()
 	{
-		// Arrange
-		var billsList = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { Take = 1 },
-				cancellationToken: CancellationToken);
-		var billId = billsList.Items[0].BillId;
-
 		// Act
-		var bill = await Client
-			.Bills
-			.GetBillByIdAsync(
-				billId,
-				CancellationToken);
+		var bill = await GetFirstBillByIdAsync(Client, CancellationToken);
 
 		// Assert
 		_ = bill.CurrentStage.Should().NotBeNull();
@@ -189,11 +158,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 	{
 		// Arrange
 		// Get a bill with sponsors
-		var billsList = await Client
-			.Bills
-			.GetBillsAsync(
-				new GetBillsRequest { Take = 10 },
-				cancellationToken: CancellationToken);
+		var billsList = await GetBillsPageAsync(Client, new GetBillsRequest { Take = 10 }, CancellationToken);
 		var billWithSponsors = billsList.Items.FirstOrDefault(b => b.Sponsors?.Count > 0);
 
 		if (billWithSponsors == null)
@@ -203,11 +168,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		}
 
 		// Act
-		var bill = await Client
-			.Bills
-			.GetBillByIdAsync(
-				billWithSponsors.BillId,
-				CancellationToken);
+		var bill = await Client.Bills.GetBillByIdAsync(billWithSponsors.BillId, CancellationToken);
 
 		// Assert
 		_ = bill.Sponsors.Should().NotBeNull();

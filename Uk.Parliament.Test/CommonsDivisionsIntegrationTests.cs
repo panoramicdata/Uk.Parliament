@@ -1,3 +1,5 @@
+using Uk.Parliament.Models.Divisions;
+
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -43,7 +45,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Loggin
 				.CommonsDivisions
 				.SearchDivisionsAsync(
 					new SearchCommonsDivisionsRequest { SearchTerm = "Budget", Take = 1 },
-					cancellationToken: CancellationToken);
+					CancellationToken);
 
 			if (divisions.Count == 0)
 			{
@@ -51,12 +53,9 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Loggin
 				return;
 			}
 
-			var divisionId = divisions[0].DivisionId;
-
 			// Act
-			var result = await client
-				.CommonsDivisions
-				.GetDivisionByIdAsync(divisionId, CancellationToken);
+			var divisionId = divisions[0].DivisionId;
+			var result = await client.CommonsDivisions.GetDivisionByIdAsync(divisionId, CancellationToken);
 
 			// Assert
 			_ = result.Should().NotBeNull();
@@ -74,7 +73,7 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Loggin
 				.CommonsDivisions
 				.SearchDivisionsAsync(
 					new SearchCommonsDivisionsRequest { SearchTerm = "Budget" },
-					cancellationToken: CancellationToken);
+					CancellationToken);
 
 			// Assert
 			_ = divisions.Should().NotBeNull();
@@ -92,16 +91,10 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Loggin
 				.CommonsDivisions
 				.GetMemberVotingAsync(
 					new GetCommonsMemberVotingRequest { MemberId = TestMemberId, Take = 5 },
-					cancellationToken: CancellationToken);
+					CancellationToken);
 
 			// Assert
-			_ = votingHistory.Should().NotBeNull();
-			_ = votingHistory.Should().NotBeEmpty();
-			_ = votingHistory.Should().AllSatisfy(r =>
-			{
-				_ = r.MemberId.Should().Be(TestMemberId);
-				_ = r.PublishedDivision.Should().NotBeNull();
-			});
+			AssertMemberVotingHistory(votingHistory, null);
 		});
 
 	/// <summary>Verifies that filtering a Commons member's voting history by division number returns results matching the division number.</summary>
@@ -116,14 +109,11 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Loggin
 				.CommonsDivisions
 				.GetMemberVotingAsync(
 					new GetCommonsMemberVotingRequest { MemberId = TestMemberId, DivisionNumber = divisionNumber, Take = 5 },
-					cancellationToken: CancellationToken);
+					CancellationToken);
 
 			// Assert
-			_ = votingHistory.Should().NotBeNull();
-			_ = votingHistory.Should().NotBeEmpty();
-			_ = votingHistory.Should().AllSatisfy(r =>
+			AssertMemberVotingHistory(votingHistory, r =>
 			{
-				_ = r.MemberId.Should().Be(TestMemberId);
 				_ = r.PublishedDivision.Should().NotBeNull();
 				_ = r.PublishedDivision.Number.Should().Be(divisionNumber);
 			});
@@ -139,10 +129,30 @@ public class CommonsDivisionsIntegrationTests(ITestOutputHelper output) : Loggin
 				.CommonsDivisions
 				.SearchDivisionsAsync(
 					new SearchCommonsDivisionsRequest { SearchTerm = "Budget", Skip = 0, Take = 10 },
-					cancellationToken: CancellationToken);
+					CancellationToken);
 
 			// Assert
 			_ = page1.Should().NotBeNull();
 			_ = page1.Count.Should().BeLessThanOrEqualTo(10);
 		});
+
+	/// <summary>
+	/// Asserts that a member voting history came back non-empty, that every record belongs to the
+	/// member under test with a published division, and runs an optional record-specific check.
+	/// </summary>
+	/// <param name="votingHistory">The voting history returned by the API.</param>
+	/// <param name="recordCheck">Optional extra assertion for each record.</param>
+	private static void AssertMemberVotingHistory(
+		IReadOnlyList<MemberVotingRecord> votingHistory,
+		Action<MemberVotingRecord>? recordCheck = null)
+	{
+		_ = votingHistory.Should().NotBeNull();
+		_ = votingHistory.Should().NotBeEmpty();
+		_ = votingHistory.Should().AllSatisfy(r =>
+		{
+			_ = r.MemberId.Should().Be(TestMemberId);
+			_ = r.PublishedDivision.Should().NotBeNull();
+			recordCheck?.Invoke(r);
+		});
+	}
 }

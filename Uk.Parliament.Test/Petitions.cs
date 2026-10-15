@@ -6,19 +6,40 @@ public class Petitions : IntegrationTestBase
 {
 	private const int ValidPetitionId = 700143; // A known closed petition with data
 
-	/// <summary>Verifies that searching petitions by text term returns a non-empty result.</summary>
-	[Fact]
-	public async Task GetAsync_WithTextSearch_Succeeds()
+	private async Task<ParliamentApiResponse<List<Petition>>> GetPetitionsAsync(string? state = null, string? search = null, int page = 1, int pageSize = 5)
 	{
-		var response = await Client
-			.Petitions
-			.GetAsync(
-				new GetPetitionsRequest { Search = "Electric Vehicles", Page = 1, PageSize = 10 },
-				CancellationToken);
+		var response = await Client.Petitions.GetAsync(
+			new GetPetitionsRequest
+			{
+				Search = search,
+				State = state,
+				Page = page,
+				PageSize = pageSize
+			},
+			CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
 		_ = response.Data.Should().NotBeEmpty();
+
+		return response;
+	}
+
+	private async Task<ParliamentApiResponse<Petition>> GetPetitionAsync()
+	{
+		var response = await Client.Petitions.GetByIdAsync(ValidPetitionId, CancellationToken);
+
+		_ = response.Should().NotBeNull();
+		_ = response.Data.Should().NotBeNull();
+
+		return response;
+	}
+
+	/// <summary>Verifies that searching petitions by text term returns a non-empty result.</summary>
+	[Fact]
+	public async Task GetAsync_WithTextSearch_Succeeds()
+	{
+		await GetPetitionsAsync(search: "Electric Vehicles", pageSize: 10);
 	}
 
 	/// <summary>Verifies that filtering petitions by state 'open' returns open petitions.</summary>
