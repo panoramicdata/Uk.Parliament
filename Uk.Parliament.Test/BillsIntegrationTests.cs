@@ -13,6 +13,14 @@ public class BillsIntegrationTests : IntegrationTestBase
 	private static async Task<BillsListResponse<Bill>> GetBillsPageAsync(ParliamentClient client, GetBillsRequest request, CancellationToken cancellationToken)
 		=> await client.Bills.GetBillsAsync(request, cancellationToken);
 
+	/// <summary>Asserts that the supplied bills response is a valid non-empty paginated result.</summary>
+	private static void AssertValidBillsPage(BillsListResponse<Bill> response)
+	{
+		_ = response.Should().NotBeNull();
+		_ = response.Items.Should().NotBeEmpty();
+		_ = response.TotalResults.Should().BePositive();
+	}
+
 	/// <summary>Retrieves the first bill on the list and then fetches it by its id.</summary>
 	private static async Task<Bill> GetFirstBillByIdAsync(ParliamentClient client, CancellationToken cancellationToken)
 	{
@@ -28,9 +36,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var response = await GetBillsPageAsync(Client, new GetBillsRequest { Take = 10 }, CancellationToken);
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BePositive();
+		AssertValidBillsPage(response);
 	}
 
 	/// <summary>Verifies that retrieving a bill by a valid ID returns the expected bill.</summary>
@@ -81,9 +87,7 @@ public class BillsIntegrationTests : IntegrationTestBase
 		var response = await GetBillsPageAsync(Client, new GetBillsRequest { SearchTerm = "Bill", Take = 10 }, CancellationToken);
 
 		// Assert
-		_ = response.Should().NotBeNull();
-		_ = response.Items.Should().NotBeEmpty();
-		_ = response.TotalResults.Should().BePositive();
+		AssertValidBillsPage(response);
 	}
 
 	/// <summary>Verifies that the bill types endpoint returns a list of named bill type categories.</summary>
