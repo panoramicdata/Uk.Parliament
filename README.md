@@ -5,9 +5,11 @@
 **The most comprehensive .NET library for UK Parliament APIs**  
 All 12 public Parliament APIs supported with core endpoint coverage
 
+Supports .NET 11.0.
+
 [![NuGet](https://img.shields.io/nuget/v/Uk.Parliament.svg)](https://www.nuget.org/packages/Uk.Parliament/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![.NET 10](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download)
+[![.NET 11.0](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1099bcad8314dca94fd6215de4a7862)](https://app.codacy.com/gh/panoramicdata/Uk.Parliament/dashboard)
 
 ---
