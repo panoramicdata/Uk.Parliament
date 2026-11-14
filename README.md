@@ -646,7 +646,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 ## Copyright
 
-Copyright © 2025 Panoramic Data Limited
+Copyright © 2026 Panoramic Data Limited
 
 ---
 
