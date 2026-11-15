@@ -295,9 +295,9 @@ public partial class ParliamentClient : IDisposable
 	/// <param name="disposing">True when called from <see cref="Dispose()"/></param>
 	protected virtual void Dispose(bool disposing)
 	{
-		if (disposing)
+		if (disposing && _ownedHttpClient is not null)
 		{
-			_ownedHttpClient?.Dispose();
+			_ownedHttpClient.Dispose();
 		}
 	}
 }
