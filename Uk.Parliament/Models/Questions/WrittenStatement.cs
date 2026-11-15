@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Uk.Parliament.Models.Questions;
 
 /// <summary>
@@ -155,35 +153,7 @@ public class WrittenStatement
 /// <summary>
 /// JSON converter that handles both number and string values
 /// </summary>
-internal sealed class NumberOrStringConverter : JsonConverter<string?>
+internal sealed class NumberOrStringConverter : LenientStringConverter
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
-	{
-		JsonTokenType.Null => null,
-		JsonTokenType.String => reader.GetString(),
-		JsonTokenType.Number => ReadNumberAsText(ref reader),
-		_ => null
-	};
-
-	private static string ReadNumberAsText(ref Utf8JsonReader reader)
-	{
-		if (reader.TryGetInt64(out var number))
-		{
-			return number.ToString();
-		}
-
-		return reader.GetDouble().ToString();
-	}
-
-	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
-	{
-		if (value == null)
-		{
-			writer.WriteNullValue();
-		}
-		else
-		{
-			writer.WriteStringValue(value);
-		}
-	}
+	protected override bool AllowBooleans => false;
 }
