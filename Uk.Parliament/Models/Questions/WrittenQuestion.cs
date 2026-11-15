@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 
 namespace Uk.Parliament.Models.Questions;
@@ -243,7 +244,7 @@ internal sealed class FlexibleStringListConverter : JsonConverter<List<string>?>
 			var value = reader.TokenType switch
 			{
 				JsonTokenType.String => reader.GetString() ?? string.Empty,
-				JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString() : reader.GetDouble().ToString(),
+				JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString(CultureInfo.InvariantCulture) : reader.GetDouble().ToString(CultureInfo.InvariantCulture),
 				JsonTokenType.True => "true",
 				JsonTokenType.False => "false",
 				JsonTokenType.Null => string.Empty,

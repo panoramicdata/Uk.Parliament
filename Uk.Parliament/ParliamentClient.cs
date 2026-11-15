@@ -21,7 +21,7 @@ namespace Uk.Parliament;
 /// <summary>
 /// Unified client for all UK Parliament APIs
 /// </summary>
-public class ParliamentClient : IDisposable
+public partial class ParliamentClient : IDisposable
 {
 	/// <summary>Page size used when a skip/take request does not specify one.</summary>
 	private const int DefaultTakePageSize = 20;
@@ -30,8 +30,8 @@ public class ParliamentClient : IDisposable
 	private const int DefaultPetitionsPageSize = 50;
 
 	private readonly HttpClient? _ownedHttpClient;
-	private readonly bool _disposeHttpClient;
-	private readonly ParliamentClientOptions? _options;
+	private readonly ParliamentClientOptions _options;
+	private readonly Func<HttpMessageHandler> _innerHandlerFactory;
 
 	/// <summary>
 	/// Petitions API - Access public petitions to Parliament
@@ -112,17 +112,24 @@ public class ParliamentClient : IDisposable
 	/// Constructor with options (creates own HttpClient)
 	/// </summary>
 	/// <param name="options">Configuration options</param>
-	public ParliamentClient(ParliamentClientOptions options)
+	public ParliamentClient(ParliamentClientOptions options) : this(options, static () => new HttpClientHandler())
+	{
+	}
+
+	internal ParliamentClient(HttpMessageHandler innerHandler, ParliamentClientOptions options) : this(options, () => innerHandler)
+	{
+	}
+
+	private ParliamentClient(ParliamentClientOptions options, Func<HttpMessageHandler> innerHandlerFactory)
 	{
 		ArgumentNullException.ThrowIfNull(options);
 		_options = options;
+		_innerHandlerFactory = innerHandlerFactory;
 
 		_ownedHttpClient = new HttpClient
 		{
 			Timeout = options.Timeout
 		};
-		_disposeHttpClient = true;
-
 		ConfigureHttpClient(_ownedHttpClient, options);
 
 		var refitSettings = GetRefitSettings(options);
@@ -174,7 +181,8 @@ public class ParliamentClient : IDisposable
 		ArgumentNullException.ThrowIfNull(httpClient);
 		ArgumentNullException.ThrowIfNull(options);
 
-		_disposeHttpClient = false;
+		_options = options;
+		_innerHandlerFactory = static () => new HttpClientHandler();
 
 		ConfigureHttpClient(httpClient, options);
 
@@ -215,13 +223,7 @@ public class ParliamentClient : IDisposable
 		}
 
 		// Create handler chain with logging
-		HttpMessageHandler handler = new HttpClientHandler();
-		if (_options?.Logger != null)
-		{
-			handler = new LoggingHttpMessageHandler(handler, _options.Logger, _options.EnableVerboseLogging);
-		}
-
-		var httpClient = new HttpClient(handler)
+		var httpClient = new HttpClient(BuildHandler())
 		{
 			BaseAddress = new Uri(baseUrl),
 			Timeout = _ownedHttpClient.Timeout
@@ -236,9 +238,9 @@ public class ParliamentClient : IDisposable
 		return RestService.For<T>(httpClient, settings);
 	}
 
-	private static T CreateApi<T>(HttpClient sourceHttpClient, string baseUrl, RefitSettings settings)
+	private T CreateApi<T>(HttpClient sourceHttpClient, string baseUrl, RefitSettings settings)
 	{
-		var httpClient = new HttpClient
+		var httpClient = new HttpClient(BuildHandler())
 		{
 			BaseAddress = new Uri(baseUrl),
 			Timeout = sourceHttpClient.Timeout
@@ -251,6 +253,17 @@ public class ParliamentClient : IDisposable
 		}
 
 		return RestService.For<T>(httpClient, settings);
+	}
+
+	private ReadOnlyHttpMessageHandler BuildHandler()
+	{
+		var handler = _innerHandlerFactory();
+		if (_options.Logger != null)
+		{
+			handler = new LoggingHttpMessageHandler(handler, _options.Logger, _options.EnableVerboseLogging);
+		}
+
+		return new ReadOnlyHttpMessageHandler(handler, _options);
 	}
 
 	private static RefitSettings GetRefitSettings(ParliamentClientOptions options) => new()
@@ -268,195 +281,12 @@ public class ParliamentClient : IDisposable
 	};
 
 	/// <summary>
-	/// Automatically paginate through all results for the given request.
-	/// </summary>
-	/// <typeparam name="TItem">The item type returned by the API.</typeparam>
-	/// <param name="request">A request that implements <see cref="IPaginatedRequest{TItem}"/>.</param>
-	/// <param name="cancellationToken">Cancellation token (required).</param>
-	/// <returns>An async enumerable that streams all pages.</returns>
-	/// <exception cref="NotSupportedException">Thrown when the request type does not have a registered pagination strategy.</exception>
-	public IAsyncEnumerable<TItem> GetAllAsync<TItem>(
-		IPaginatedRequest<TItem> request,
-		CancellationToken cancellationToken)
-	{
-		// Split by API area so that adding a request type touches one small dispatcher rather than
-		// one switch covering every API. Each dispatcher returns null for a request it does not own.
-		var pager = GetLegislationPager(request, cancellationToken)
-			?? GetPeoplePager(request, cancellationToken)
-			?? GetQuestionsPager(request, cancellationToken)
-			?? throw new NotSupportedException($"Pagination is not supported for request type {request.GetType().Name}.");
-
-		return (IAsyncEnumerable<TItem>)pager;
-	}
-
-	/// <summary>
-	/// Pager for the bills, committees and treaties APIs, or null if the request belongs to another area.
-	/// </summary>
-	private object? GetLegislationPager(object request, CancellationToken cancellationToken) => request switch
-	{
-		GetBillsRequest billsRequest => GetAllOffsetCore(
-			billsRequest,
-			billsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Bills.GetBillsAsync(r, ct),
-			resp => resp.Items,
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetCommitteesRequest committeesRequest => GetAllOffsetCore(
-			committeesRequest,
-			committeesRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Committees.GetCommitteesAsync(r, ct),
-			resp => resp.Items,
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetTreatiesRequest treatiesRequest => GetAllOffsetCore(
-			treatiesRequest,
-			treatiesRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Treaties.GetTreatiesAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		_ => null
-	};
-
-	/// <summary>
-	/// Pager for the members, constituencies, interests and petitions APIs, or null if the request
-	/// belongs to another area.
-	/// </summary>
-	private object? GetPeoplePager(object request, CancellationToken cancellationToken) => request switch
-	{
-		SearchMembersRequest membersRequest => GetAllOffsetCore(
-			membersRequest,
-			membersRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Members.SearchAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		SearchConstituenciesRequest constituenciesRequest => GetAllOffsetCore(
-			constituenciesRequest,
-			constituenciesRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Members.SearchConstituenciesAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		SearchInterestsRequest interestsRequest => GetAllOffsetCore(
-			interestsRequest,
-			interestsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => Interests.SearchInterestsAsync(r, ct),
-			resp => resp.Items,
-			resp => resp.TotalResults,
-			cancellationToken),
-		// Petitions is the one API that pages by page number rather than by skip/take.
-		GetPetitionsRequest petitionsRequest => PaginationHelper.GetAllPageAsync(
-			petitionsRequest,
-			petitionsRequest.PageSize ?? DefaultPetitionsPageSize,
-			static (r, page, size) => r with { Page = page, PageSize = size },
-			(r, ct) => Petitions.GetAsync(r, ct),
-			resp => resp.Data,
-			cancellationToken),
-		_ => null
-	};
-
-	/// <summary>
-	/// Pager for the written questions, statements, daily reports, oral questions and motions APIs,
-	/// or null if the request belongs to another area.
-	/// </summary>
-	private object? GetQuestionsPager(object request, CancellationToken cancellationToken) => request switch
-	{
-		GetWrittenQuestionsRequest writtenQuestionsRequest => GetAllOffsetCore(
-			writtenQuestionsRequest,
-			writtenQuestionsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetWrittenQuestionsAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetWrittenStatementsRequest writtenStatementsRequest => GetAllOffsetCore(
-			writtenStatementsRequest,
-			writtenStatementsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetWrittenStatementsAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetDailyReportsRequest dailyReportsRequest => GetAllOffsetCore(
-			dailyReportsRequest,
-			dailyReportsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => QuestionsStatements.GetDailyReportsAsync(r, ct),
-			resp => GetWrappedItems(resp),
-			resp => resp.TotalResults,
-			cancellationToken),
-		GetOralQuestionsRequest oralQuestionsRequest => GetAllOffsetCore(
-			oralQuestionsRequest,
-			oralQuestionsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => OralQuestionsMotions.GetOralQuestionsAsync(r, ct),
-			resp => resp.Response,
-			resp => resp.PagingInfo.Total,
-			cancellationToken),
-		GetMotionsRequest motionsRequest => GetAllOffsetCore(
-			motionsRequest,
-			motionsRequest.Take ?? DefaultTakePageSize,
-			static (r, skip, take) => r with { Skip = skip, Take = take },
-			(r, ct) => OralQuestionsMotions.GetMotionsAsync(r, ct),
-			resp => resp.Response,
-			resp => resp.PagingInfo.Total,
-			cancellationToken),
-		_ => null
-	};
-
-	/// <summary>
-	/// Automatically paginate through all results and return them as a materialized list.
-	/// </summary>
-	/// <typeparam name="TItem">The item type returned by the API.</typeparam>
-	/// <param name="request">A request that implements <see cref="IPaginatedRequest{TItem}"/>.</param>
-	/// <param name="cancellationToken">Cancellation token (required).</param>
-	/// <returns>A list containing every item from all pages.</returns>
-	public Task<List<TItem>> GetAllListAsync<TItem>(
-		IPaginatedRequest<TItem> request,
-		CancellationToken cancellationToken)
-		=> PaginationHelper.ToListAsync(GetAllAsync(request, cancellationToken), cancellationToken);
-
-	#region Pagination core methods
-
-	private static IAsyncEnumerable<TItem> GetAllOffsetCore<TRequest, TResponse, TItem>(
-		TRequest request,
-		int pageSize,
-		Func<TRequest, int, int, TRequest> withPagination,
-		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
-		Func<TResponse, IReadOnlyList<TItem>?> getItems,
-		Func<TResponse, int> getTotalResults,
-		CancellationToken cancellationToken)
-		=> PaginationHelper.GetAllOffsetAsync(
-			request, pageSize,
-			withPagination,
-			fetchPage,
-			getItems,
-			getTotalResults,
-			cancellationToken);
-
-	private static List<T>? GetWrappedItems<T>(PaginatedResponse<T>? response)
-		=> response?.Items?.ConvertAll(static item => item.Value)
-			?? response?.Results?.ConvertAll(static item => item.Value);
-
-	#endregion
-
-	/// <summary>
 	/// Dispose of resources
 	/// </summary>
 	public void Dispose()
 	{
-		if (_disposeHttpClient)
-		{
-			_ownedHttpClient?.Dispose();
-		}
+		_ownedHttpClient?.Dispose();
 
 		GC.SuppressFinalize(this);
 	}
-}
+}

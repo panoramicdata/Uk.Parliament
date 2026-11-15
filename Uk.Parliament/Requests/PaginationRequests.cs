@@ -18,6 +18,8 @@ public abstract record class SkipTakeRequest
 	/// </summary>
 	[AliasAs("take")]
 	public int? Take { get; init; }
+
+	internal SkipTakeRequest WithSkipTake(int skip, int take) => this with { Skip = skip, Take = take };
 }
 
 /// <summary>

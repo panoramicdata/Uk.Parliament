@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 
 namespace Uk.Parliament.Models.Questions;
@@ -169,10 +170,10 @@ internal sealed class NumberOrStringConverter : JsonConverter<string?>
 	{
 		if (reader.TryGetInt64(out var number))
 		{
-			return number.ToString();
+			return number.ToString(CultureInfo.InvariantCulture);
 		}
 
-		return reader.GetDouble().ToString();
+		return reader.GetDouble().ToString(CultureInfo.InvariantCulture);
 	}
 
 	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)

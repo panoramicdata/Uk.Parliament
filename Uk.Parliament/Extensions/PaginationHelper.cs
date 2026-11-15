@@ -51,26 +51,6 @@ internal static class PaginationHelper
 			cancellationToken);
 	}
 
-	public static IAsyncEnumerable<TItem> GetAllPageAsync<TRequest, TResponse, TItem>(
-		TRequest request,
-		int pageSize,
-		Func<TRequest, int, int, TRequest> withPagination,
-		Func<TRequest, CancellationToken, Task<TResponse>> fetchPage,
-		Func<TResponse, IReadOnlyList<TItem>?> getItems,
-		CancellationToken cancellationToken = default)
-	{
-		// Declared inside the method body so that re-enumerating restarts from the first page.
-		var page = 1;
-
-		return GetAllPagesAsync(
-			request,
-			pageSize,
-			new PageReader<TRequest, TResponse, TItem>(withPagination, fetchPage, getItems),
-			// A page-number API reports no total, so a short page is the only end-of-results signal.
-			new PageCursor<TResponse>(() => page, _ => page++, static _ => false),
-			cancellationToken);
-	}
-
 	private static async IAsyncEnumerable<TItem> GetAllPagesAsync<TRequest, TResponse, TItem>(
 		TRequest request,
 		int pageSize,

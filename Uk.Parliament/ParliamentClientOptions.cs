@@ -86,6 +86,14 @@ public class ParliamentClientOptions
 #endif
 
 	/// <summary>
+	/// When true, any request that is not a read (GET, HEAD or OPTIONS) throws <see cref="InvalidOperationException"/> before it is sent.
+	/// </summary>
+	/// <remarks>
+	/// Every UK Parliament endpoint wrapped by this client is a GET, so the default of false changes nothing today; the guard protects callers if a write verb is ever added.
+	/// </remarks>
+	public bool IsReadOnly { get; set; }
+
+	/// <summary>
 	/// Logger for HTTP request/response diagnostics
 	/// </summary>
 	public ILogger? Logger { get; set; }
