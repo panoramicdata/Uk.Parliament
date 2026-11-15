@@ -99,7 +99,7 @@ public class Petitions : IntegrationTestBase
 	[Fact]
 	public async Task GetAsync_WithPagination_Succeeds()
 	{
-		var page1 = await GetPetitionsAsync("open", page: 1, pageSize: 10);
+		var page1 = await GetPetitionsAsync("open", pageSize: 10);
 		var page2 = await GetPetitionsAsync("open", page: 2, pageSize: 10);
 
 		_ = page1.Should().NotBeEmpty();
