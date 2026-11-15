@@ -29,7 +29,7 @@ public partial class ParliamentClient : IDisposable
 	/// <summary>Page size used when a Petitions request does not specify one.</summary>
 	private const int DefaultPetitionsPageSize = 50;
 
-	private readonly HttpClient? _ownedHttpClient;
+	private readonly List<HttpClient> _apiClients = [];
 	private readonly ParliamentClientOptions _options;
 	private readonly Func<HttpMessageHandler> _innerHandlerFactory;
 
@@ -126,41 +126,38 @@ public partial class ParliamentClient : IDisposable
 		_options = options;
 		_innerHandlerFactory = innerHandlerFactory;
 
-		_ownedHttpClient = new HttpClient
-		{
-			Timeout = options.Timeout
-		};
-		ConfigureHttpClient(_ownedHttpClient, options);
+		using var template = new HttpClient { Timeout = options.Timeout };
+		ConfigureHttpClient(template, options);
 
 		var refitSettings = GetRefitSettings(options);
 
 		// Initialize implemented API interfaces
-		Petitions = CreateApi<IPetitionsApi>(options.PetitionsBaseUrl, refitSettings);
-		Members = CreateApi<IMembersApi>(options.MembersBaseUrl, refitSettings);
-		Bills = CreateApi<IBillsApi>(options.BillsBaseUrl, refitSettings);
-		Committees = CreateApi<ICommitteesApi>(options.CommitteesBaseUrl, refitSettings);
+		Petitions = CreateApi<IPetitionsApi>(template, options.PetitionsBaseUrl, refitSettings);
+		Members = CreateApi<IMembersApi>(template, options.MembersBaseUrl, refitSettings);
+		Bills = CreateApi<IBillsApi>(template, options.BillsBaseUrl, refitSettings);
+		Committees = CreateApi<ICommitteesApi>(template, options.CommitteesBaseUrl, refitSettings);
 
 		// Divisions APIs - implemented but currently affected by Parliament API 500 errors
-		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(options.CommonsDivisionsBaseUrl, refitSettings);
-		LordsDivisions = CreateApi<ILordsDivisionsApi>(options.LordsDivisionsBaseUrl, refitSettings);
+		CommonsDivisions = CreateApi<ICommonsDivisionsApi>(template, options.CommonsDivisionsBaseUrl, refitSettings);
+		LordsDivisions = CreateApi<ILordsDivisionsApi>(template, options.LordsDivisionsBaseUrl, refitSettings);
 
 		// Interests API
-		Interests = CreateApi<IInterestsApi>(options.InterestsBaseUrl, refitSettings);
+		Interests = CreateApi<IInterestsApi>(template, options.InterestsBaseUrl, refitSettings);
 
 		// Questions & Statements API
-		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(options.QuestionsStatementsBaseUrl, refitSettings);
+		QuestionsStatements = CreateApi<IQuestionsStatementsApi>(template, options.QuestionsStatementsBaseUrl, refitSettings);
 
 		// Oral Questions & Motions API
-		OralQuestionsMotions = CreateApi<IOralQuestionsMotionsApi>(options.OralQuestionsMotionsBaseUrl, refitSettings);
+		OralQuestionsMotions = CreateApi<IOralQuestionsMotionsApi>(template, options.OralQuestionsMotionsBaseUrl, refitSettings);
 
 		// Treaties API
-		Treaties = CreateApi<ITreatiesApi>(options.TreatiesBaseUrl, refitSettings);
+		Treaties = CreateApi<ITreatiesApi>(template, options.TreatiesBaseUrl, refitSettings);
 
 		// Erskine May API
-		ErskineMay = CreateApi<IErskineMayApi>(options.ErskineMayBaseUrl, refitSettings);
+		ErskineMay = CreateApi<IErskineMayApi>(template, options.ErskineMayBaseUrl, refitSettings);
 
 		// NOW (Annunciator) API
-		Now = CreateApi<INowApi>(options.NowBaseUrl, refitSettings);
+		Now = CreateApi<INowApi>(template, options.NowBaseUrl, refitSettings);
 	}
 
 	/// <summary>
@@ -215,29 +212,6 @@ public partial class ParliamentClient : IDisposable
 		httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 	}
 
-	private T CreateApi<T>(string baseUrl, RefitSettings settings)
-	{
-		if (_ownedHttpClient is null)
-		{
-			throw new InvalidOperationException("Cannot create API without owned HttpClient");
-		}
-
-		// Create handler chain with logging
-		var httpClient = new HttpClient(BuildHandler())
-		{
-			BaseAddress = new Uri(baseUrl),
-			Timeout = _ownedHttpClient.Timeout
-		};
-
-		// Copy headers from owned client
-		foreach (var header in _ownedHttpClient.DefaultRequestHeaders)
-		{
-			_ = httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
-		}
-
-		return RestService.For<T>(httpClient, settings);
-	}
-
 	private T CreateApi<T>(HttpClient sourceHttpClient, string baseUrl, RefitSettings settings)
 	{
 		var httpClient = new HttpClient(BuildHandler())
@@ -251,6 +225,8 @@ public partial class ParliamentClient : IDisposable
 		{
 			_ = httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
 		}
+
+		_apiClients.Add(httpClient);
 
 		return RestService.For<T>(httpClient, settings);
 	}
@@ -295,9 +271,14 @@ public partial class ParliamentClient : IDisposable
 	/// <param name="disposing">True when called from <see cref="Dispose()"/></param>
 	protected virtual void Dispose(bool disposing)
 	{
-		if (disposing)
+		if (!disposing)
 		{
-			_ownedHttpClient?.Dispose();
+			return;
+		}
+
+		foreach (var client in _apiClients)
+		{
+			client.Dispose();
 		}
 	}
 }
