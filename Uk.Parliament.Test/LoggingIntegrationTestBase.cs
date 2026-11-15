@@ -54,6 +54,53 @@ public abstract class LoggingIntegrationTestBase(ITestOutputHelper output) : Int
 	}
 
 	/// <summary>
+	/// Finds one division with <paramref name="findOne"/>, fetches it by identifier and checks the round trip.
+	/// </summary>
+	/// <typeparam name="T">The division type.</typeparam>
+	/// <param name="apiName">Name used in the message written to the test output on a 404.</param>
+	/// <param name="findOne">Searches for a single division.</param>
+	/// <param name="getById">Fetches a division by identifier.</param>
+	/// <param name="divisionId">Reads the identifier from a division.</param>
+	/// <param name="title">Reads the title from a division.</param>
+	protected Task RunDivisionByIdAsync<T>(
+		string apiName,
+		Func<ParliamentClient, Task<List<T>>> findOne,
+		Func<ParliamentClient, int, Task<T>> getById,
+		Func<T, int> divisionId,
+		Func<T, string?> title)
+		=> RunTolerating404Async(apiName, async client =>
+		{
+			var found = await findOne(client);
+
+			if (found.Count == 0)
+			{
+				Output.WriteLine("No divisions found to test GetDivisionByIdAsync");
+				return;
+			}
+
+			var id = divisionId(found[0]);
+			var result = await getById(client, id);
+
+			_ = divisionId(result).Should().Be(id);
+			_ = title(result).Should().NotBeNullOrEmpty();
+		});
+
+	/// <summary>
+	/// Fetches a page and checks that it did not exceed the requested take.
+	/// </summary>
+	/// <typeparam name="T">The division type.</typeparam>
+	/// <param name="apiName">Name used in the message written to the test output on a 404.</param>
+	/// <param name="fetch">Fetches the page.</param>
+	/// <param name="take">The take that was requested.</param>
+	protected Task RunPageWithinTakeAsync<T>(string apiName, Func<ParliamentClient, Task<List<T>>> fetch, int take)
+		=> RunTolerating404Async(apiName, async client =>
+		{
+			var page = await fetch(client);
+
+			_ = page.Should().NotBeNull();
+			_ = page.Count.Should().BeLessThanOrEqualTo(take);
+		});
+	/// <summary>
 	/// Asserts that a divisions list came back non-empty and that every entry has a positive
 	/// identifier and a title.
 	/// </summary>

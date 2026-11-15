@@ -1,6 +1,3 @@
-using System.Globalization;
-using System.Text.Json;
-
 namespace Uk.Parliament.Models.OralQuestions;
 
 /// <summary>
@@ -102,37 +99,9 @@ public class Motion
 }
 
 /// <summary>
-/// JSON converter that handles any value type and converts to string
+/// JSON converter that handles any scalar value type and converts to string
 /// </summary>
-internal sealed class AnyToStringConverter : JsonConverter<string?>
+internal sealed class AnyToStringConverter : LenientStringConverter
 {
-	public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
-	{
-		JsonTokenType.Null => null,
-		JsonTokenType.String => reader.GetString(),
-		JsonTokenType.Number => reader.TryGetInt64(out var l) ? l.ToString(CultureInfo.InvariantCulture) : reader.GetDouble().ToString(CultureInfo.InvariantCulture),
-		JsonTokenType.True => "true",
-		JsonTokenType.False => "false",
-		JsonTokenType.StartObject => SkipAndReturnNull(ref reader),
-		JsonTokenType.StartArray => SkipAndReturnNull(ref reader),
-		_ => null
-	};
-
-	private static string? SkipAndReturnNull(ref Utf8JsonReader reader)
-	{
-		reader.Skip();
-		return null;
-	}
-
-	public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
-	{
-		if (value == null)
-		{
-			writer.WriteNullValue();
-		}
-		else
-		{
-			writer.WriteStringValue(value);
-		}
-	}
+	protected override bool AllowBooleans => true;
 }

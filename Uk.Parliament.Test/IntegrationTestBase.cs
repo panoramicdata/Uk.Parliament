@@ -39,6 +39,13 @@ public abstract class IntegrationTestBase : IDisposable
 		GC.SuppressFinalize(this);
 	}
 
+	/// <summary>Builds a paginated response that wraps each item, for stub and mock setups.</summary>
+	protected static PaginatedResponse<T> Page<T>(params T[] items) => new()
+	{
+		TotalResults = items.Length,
+		Items = [.. items.Select(item => new ValueWrapper<T> { Value = item })]
+	};
+
 	/// <summary>
 	/// Common assertion helper for paginated responses
 	/// </summary>

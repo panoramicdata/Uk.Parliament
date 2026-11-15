@@ -6,138 +6,88 @@ public class Petitions : IntegrationTestBase
 {
 	private const int ValidPetitionId = 700143; // A known closed petition with data
 
-	private async Task<ParliamentApiResponse<List<Petition>>> GetPetitionsAsync(string? state = null, string? search = null, int page = 1, int pageSize = 5)
+	private async Task<List<Petition>> GetPetitionsAsync(string? state = null, string? search = null, int page = 1, int pageSize = 5)
 	{
 		var response = await Client.Petitions.GetAsync(
-			new GetPetitionsRequest
-			{
-				Search = search,
-				State = state,
-				Page = page,
-				PageSize = pageSize
-			},
+			new GetPetitionsRequest { Search = search, State = state, Page = page, PageSize = pageSize },
 			CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
-		_ = response.Data.Should().NotBeEmpty();
 
-		return response;
+		return response.Data;
 	}
 
-	private async Task<ParliamentApiResponse<Petition>> GetPetitionAsync()
+	private async Task<PetitionAttributes> GetKnownPetitionAttributesAsync()
 	{
 		var response = await Client.Petitions.GetByIdAsync(ValidPetitionId, CancellationToken);
 
 		_ = response.Should().NotBeNull();
 		_ = response.Data.Should().NotBeNull();
+		_ = response.Data.Id.Should().Be(ValidPetitionId);
 
-		return response;
+		return response.Data.Attributes;
 	}
 
 	/// <summary>Verifies that searching petitions by text term returns a non-empty result.</summary>
 	[Fact]
 	public async Task GetAsync_WithTextSearch_Succeeds()
-	{
-		await GetPetitionsAsync(search: "Electric Vehicles", pageSize: 10);
-	}
+		=> _ = (await GetPetitionsAsync(search: "Electric Vehicles", pageSize: 10)).Should().NotBeEmpty();
+
+	/// <summary>Verifies that fetching petitions without any filters returns a non-empty result.</summary>
+	[Fact]
+	public async Task GetAsync_NoFilters_Succeeds()
+		=> _ = (await GetPetitionsAsync()).Should().NotBeEmpty();
 
 	/// <summary>Verifies that filtering petitions by state 'open' returns open petitions.</summary>
 	[Fact]
 	public async Task GetAsync_WithStateFilter_Open_Succeeds()
-	{
-		var response = await Client
-			.Petitions
-			.GetAsync(
-			  new GetPetitionsRequest { State = "open", Page = 1, PageSize = 5 },
-				CancellationToken);
-
-		_ = response.Should().NotBeNull();
-		_ = response.Data.Should().NotBeNull();
-		_ = response.Data.Should().NotBeEmpty();
-	}
+		=> _ = (await GetPetitionsAsync("open")).Should().NotBeEmpty();
 
 	/// <summary>Verifies that filtering petitions by state 'closed' returns only closed petitions.</summary>
 	[Fact]
 	public async Task GetAsync_WithStateFilter_Closed_Succeeds()
-	{
-		var response = await Client
-			.Petitions
-			.GetAsync(
-				new GetPetitionsRequest { State = "closed", Page = 1, PageSize = 5 },
-				CancellationToken);
-
-		_ = response.Should().NotBeNull();
-		_ = response.Data.Should().NotBeNull();
-		_ = response.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Closed));
-	}
+		=> _ = (await GetPetitionsAsync("closed")).Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Closed));
 
 	/// <summary>Verifies that filtering petitions by state 'rejected' returns only rejected petitions.</summary>
 	[Fact]
 	public async Task GetAsync_WithStateFilter_Rejected_Succeeds()
-	{
-		var response = await Client
-			.Petitions
-			.GetAsync(
-			  new GetPetitionsRequest { State = "rejected", Page = 1, PageSize = 5 },
-				CancellationToken);
-
-		_ = response.Should().NotBeNull();
-		_ = response.Data.Should().NotBeNull();
-		_ = response.Data.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
-	}
+		=> _ = (await GetPetitionsAsync("rejected")).Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
 
 	/// <summary>Verifies that retrieving a petition by its known ID returns correct attributes.</summary>
 	[Fact]
 	public async Task GetByIdAsync_Succeeds()
 	{
-		var response = await Client
-			.Petitions
-			.GetByIdAsync(
-				ValidPetitionId,
-				CancellationToken);
+		var attributes = await GetKnownPetitionAttributesAsync();
 
-		_ = response.Should().NotBeNull();
-		_ = response.Data.Should().NotBeNull();
-		_ = response.Data.Id.Should().Be(ValidPetitionId);
-		_ = response.Data.Attributes.Should().NotBeNull();
-		_ = response.Data.Attributes.Action.Should().NotBeNullOrWhiteSpace();
-		_ = response.Data.Attributes.SignatureCount.Should().BePositive();
+		_ = attributes.Should().NotBeNull();
+		_ = attributes.Action.Should().NotBeNullOrWhiteSpace();
+		_ = attributes.SignatureCount.Should().BePositive();
 	}
 
 	/// <summary>Verifies that a known petition has non-empty signatures-by-country data including a GB entry.</summary>
 	[Fact]
 	public async Task GetByIdAsync_HasSignaturesByCountry()
 	{
-		var response = await Client
-			.Petitions
-			.GetByIdAsync(
-				ValidPetitionId,
-				CancellationToken);
+		var countries = (await GetKnownPetitionAttributesAsync()).SignaturesByCountry;
 
-		_ = response.Data.Attributes.SignaturesByCountry.Should().NotBeNull();
-		_ = response.Data.Attributes.SignaturesByCountry.Should().NotBeEmpty();
-		_ = response.Data.Attributes.SignaturesByCountry.Should().AllSatisfy(s =>
+		_ = countries.Should().NotBeNullOrEmpty();
+		_ = countries.Should().AllSatisfy(s =>
 		{
 			_ = s.Name.Should().NotBeNullOrWhiteSpace();
 			_ = s.SignatureCount.Should().BeGreaterThanOrEqualTo(0);
 		});
-		_ = response.Data.Attributes.SignaturesByCountry.Should().Contain(s => s.Code == "GB");
+		_ = countries.Should().Contain(s => s.Code == "GB");
 	}
 
 	/// <summary>Verifies that a known petition has non-empty signatures-by-constituency data.</summary>
 	[Fact]
 	public async Task GetByIdAsync_HasSignaturesByConstituency()
 	{
-		var response = await Client
-			.Petitions
-			.GetByIdAsync(
-				ValidPetitionId,
-				CancellationToken);
+		var constituencies = (await GetKnownPetitionAttributesAsync()).SignaturesByConstituency;
 
-		_ = response.Data.Attributes.SignaturesByConstituency.Should().NotBeNull();
-		_ = response.Data.Attributes.SignaturesByConstituency.Should().NotBeEmpty();
-		_ = response.Data.Attributes.SignaturesByConstituency.Should().AllSatisfy(s =>
+		_ = constituencies.Should().NotBeNullOrEmpty();
+		_ = constituencies.Should().AllSatisfy(s =>
 		{
 			_ = s.Name.Should().NotBeNullOrWhiteSpace();
 			_ = s.OnsCode.Should().NotBeNullOrWhiteSpace();
@@ -149,39 +99,12 @@ public class Petitions : IntegrationTestBase
 	[Fact]
 	public async Task GetAsync_WithPagination_Succeeds()
 	{
-		var page1 = await Client
-			.Petitions
-			.GetAsync(
-			  new GetPetitionsRequest { State = "open", Page = 1, PageSize = 10 },
-				CancellationToken);
+		var page1 = await GetPetitionsAsync("open", page: 1, pageSize: 10);
+		var page2 = await GetPetitionsAsync("open", page: 2, pageSize: 10);
 
-		_ = page1.Data.Should().NotBeNull();
-		_ = page1.Data.Should().NotBeEmpty();
-
-		var page2 = await Client
-			.Petitions
-			.GetAsync(
-			  new GetPetitionsRequest { State = "open", Page = 2, PageSize = 10 },
-				CancellationToken);
-
-		_ = page2.Data.Should().NotBeNull();
-		_ = page2.Data.Should().NotBeEmpty();
-		_ = page1.Data[0].Id.Should().NotBe(page2.Data[0].Id);
-	}
-
-	/// <summary>Verifies that fetching petitions without any filters returns a non-empty result.</summary>
-	[Fact]
-	public async Task GetAsync_NoFilters_Succeeds()
-	{
-		var response = await Client
-			.Petitions
-			.GetAsync(
-				new GetPetitionsRequest { PageSize = 5 },
-				CancellationToken);
-
-		_ = response.Should().NotBeNull();
-		_ = response.Data.Should().NotBeNull();
-		_ = response.Data.Should().NotBeEmpty();
+		_ = page1.Should().NotBeEmpty();
+		_ = page2.Should().NotBeEmpty();
+		_ = page1[0].Id.Should().NotBe(page2[0].Id);
 	}
 
 	/// <summary>Verifies that <c>GetAllListAsync</c> retrieves all rejected petitions across multiple pages.</summary>
@@ -192,9 +115,7 @@ public class Petitions : IntegrationTestBase
 			new GetPetitionsRequest { State = "rejected", PageSize = 10 },
 			CancellationToken);
 
-		_ = allPetitions.Should().NotBeNull();
 		_ = allPetitions.Should().NotBeEmpty();
-		// With a page size of 10, if we have more than 10 results, we successfully handled pagination
 		_ = allPetitions.Should().AllSatisfy(p => p.Attributes.State.Should().Be(PetitionState.Rejected));
 	}
 
@@ -202,20 +123,11 @@ public class Petitions : IntegrationTestBase
 	[Fact]
 	public async Task GetAllAsync_StreamingResults_Works()
 	{
-		var count = 0;
+		var petitions = await CollectStreamedItemsAsync(
+			Client.GetAllAsync(new GetPetitionsRequest { State = "open", PageSize = 5 }, CancellationToken),
+			15);
 
-		await foreach (var petition in Client.GetAllAsync(new GetPetitionsRequest { State = "open", PageSize = 5 }, CancellationToken))
-		{
-			_ = petition.Should().NotBeNull();
-			_ = petition.Attributes.Should().NotBeNull();
-			count++;
-
-			if (count >= 15)
-			{
-				break; // Test that pagination works by getting at least 3 pages
-			}
-		}
-
-		_ = count.Should().BeGreaterThanOrEqualTo(15);
+		_ = petitions.Should().HaveCount(15);
+		_ = petitions.Should().AllSatisfy(p => p.Attributes.Should().NotBeNull());
 	}
 }

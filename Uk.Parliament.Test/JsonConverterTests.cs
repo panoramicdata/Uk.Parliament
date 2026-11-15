@@ -85,6 +85,7 @@ public class JsonConverterTests
 	[InlineData("oral-any", "{\"a\":[1,2]}")]
 	[InlineData("oral-any", "[1,{\"b\":2}]")]
 	[InlineData("questions-number-or-string", "true")]
+	[InlineData("questions-number-or-string", "{\"a\":[1]}")]
 	public void Read_WithUnsupportedToken_ReturnsNull(string converter, string json)
 		=> _ = Read(converter, json).Should().BeNull();
 

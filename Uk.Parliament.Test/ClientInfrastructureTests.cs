@@ -12,18 +12,18 @@ public class ClientInfrastructureTests
 	{
 		public List<(LogLevel Level, string Message)> Entries { get; } = [];
 
-		public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+		public List<object> Scopes { get; } = [];
 
-		public bool IsEnabled(LogLevel logLevel) => true;
+		public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+		{
+			Scopes.Add(state);
+			return null;
+		}
+
+		public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-			=> Entries.Add((logLevel, formatter(state, exception)));
-	}
-
-	private sealed class ThrowingHandler : HttpMessageHandler
-	{
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-			=> throw new HttpRequestException("boom");
+			=> Entries.Add((logLevel, $"{eventId.Id}{formatter(state, exception)}"));
 	}
 
 	/// <summary>Registering the client resolves a working instance.</summary>
@@ -117,7 +117,7 @@ public class ClientInfrastructureTests
 	public async Task LoggingHandler_WhenRequestFails_LogsErrorAndRethrows()
 	{
 		var logger = new ListLogger();
-		using var client = new ParliamentClient(new ThrowingHandler(), new ParliamentClientOptions { Logger = logger });
+		using var client = new ParliamentClient(new StubHttpMessageHandler(_ => throw new HttpRequestException("boom")), new ParliamentClientOptions { Logger = logger });
 
 		var act = () => client.Bills.GetBillsAsync(new GetBillsRequest(), TestContext.Current.CancellationToken);
 

@@ -1,3 +1,5 @@
+using Uk.Parliament.Models.Questions;
+
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -6,270 +8,127 @@ namespace Uk.Parliament.Test;
 [Trait("Category", "Integration")]
 public class QuestionsStatementsIntegrationTests : IntegrationTestBase
 {
-	#region Written Questions Tests
+	private const int ExampleMemberId = 172;
+
+	private static (DateTime From, DateTime To) LastMonth() => (DateTime.Now.AddMonths(-1), DateTime.Now);
+
+	/// <summary>Reads the first item of a list response, which the API returns as either Results or Items.</summary>
+	private static T? FirstValue<T>(PaginatedResponse<T> page)
+		=> page.Results is { Count: > 0 } results ? results[0].Value
+			: page.Items is { Count: > 0 } items ? items[0].Value
+			: default;
+
+	private Task<PaginatedResponse<WrittenQuestion>> GetQuestionsAsync(GetWrittenQuestionsRequest request)
+		=> Client.QuestionsStatements.GetWrittenQuestionsAsync(request, CancellationToken);
+
+	private Task<PaginatedResponse<WrittenStatement>> GetStatementsAsync(GetWrittenStatementsRequest request)
+		=> Client.QuestionsStatements.GetWrittenStatementsAsync(request, CancellationToken);
 
 	/// <summary>Verifies that fetching written questions without filters returns a valid paginated result.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_WithNoFilters_Succeeds()
-	{
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenQuestionsAsync(
-			   new GetWrittenQuestionsRequest { Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result);
-	}
+		=> AssertValidPaginatedResponse(await GetQuestionsAsync(new() { Take = 10 }));
 
 	/// <summary>Verifies that filtering written questions by member ID returns questions from that member.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByMember_ReturnsQuestions()
-	{
-		// Arrange
-		const int memberId = 172; // Example member ID
-
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenQuestionsAsync(
-			   new GetWrittenQuestionsRequest { AskingMemberId = memberId, Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result, item => _ = item.Value.AskingMemberId.Should().Be(memberId));
-	}
+		=> AssertValidPaginatedResponse(
+			await GetQuestionsAsync(new() { AskingMemberId = ExampleMemberId, Take = 10 }),
+			item => _ = item.Value.AskingMemberId.Should().Be(ExampleMemberId));
 
 	/// <summary>Verifies that filtering written questions by a date range returns questions within that range.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByDateRange_ReturnsQuestions()
 	{
-		// Arrange
-		var fromDate = DateTime.Now.AddMonths(-1);
-		var toDate = DateTime.Now;
+		var (from, to) = LastMonth();
 
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenQuestionsAsync(
-			   new GetWrittenQuestionsRequest { TabledWhenFrom = fromDate, TabledWhenTo = toDate, Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.DateTabled.Should().BeOnOrAfter(fromDate);
-			_ = item.Value.DateTabled.Should().BeOnOrBefore(toDate);
-		});
+		AssertValidPaginatedResponse(
+			await GetQuestionsAsync(new() { TabledWhenFrom = from, TabledWhenTo = to, Take = 10 }),
+			item => _ = item.Value.DateTabled.Should().BeOnOrAfter(from).And.BeOnOrBefore(to));
 	}
 
 	/// <summary>Verifies that filtering written questions to answered-only returns questions with answer text.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_FilterByAnswered_ReturnsAnsweredQuestions()
-	{
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenQuestionsAsync(
-			   new GetWrittenQuestionsRequest { IsAnswered = true, Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.IsAnswered.Should().BeTrue();
-			_ = item.Value.AnswerText.Should().NotBeNullOrEmpty();
-		});
-	}
+		=> AssertValidPaginatedResponse(
+			await GetQuestionsAsync(new() { IsAnswered = true, Take = 10 }),
+			item =>
+			{
+				_ = item.Value.IsAnswered.Should().BeTrue();
+				_ = item.Value.AnswerText.Should().NotBeNullOrEmpty();
+			});
 
 	/// <summary>Verifies that fetching a written question by a valid ID returns that specific question.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionByIdAsync_WithValidId_ReturnsQuestion()
 	{
-		// Arrange - First get a valid question ID from the list
-		var listResult = await Client
-			.QuestionsStatements
-			.GetWrittenQuestionsAsync(
-				new GetWrittenQuestionsRequest { Take = 1 },
-				CancellationToken);
-
-		// Check if using Results or Items property
-		var hasResults = listResult.Results != null && listResult.Results.Count > 0;
-		var hasItems = listResult.Items != null && listResult.Items.Count > 0;
-
-		if (!hasResults && !hasItems)
+		if (FirstValue(await GetQuestionsAsync(new() { Take = 1 })) is not { } first)
 		{
-			// Skip test if no questions available
 			return;
 		}
 
-		var validQuestionId = hasResults
-			? listResult.Results![0].Value.Id
-			: listResult.Items![0].Value.Id;
+		var result = await Client.QuestionsStatements.GetWrittenQuestionByIdAsync(first.Id, CancellationToken);
 
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenQuestionByIdAsync(
-				validQuestionId,
-				CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Value.Should().NotBeNull();
-		_ = result.Value.Id.Should().Be(validQuestionId);
+		_ = result.Value.Id.Should().Be(first.Id);
 		_ = result.Value.QuestionText.Should().NotBeNullOrEmpty();
 	}
 
 	/// <summary>Verifies that streaming all written questions via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllWrittenQuestionsAsync_StreamsResults()
-	{
-		// Act
-		var questions = await CollectStreamedItemsAsync(
-			Client.GetAllAsync(
-				new GetWrittenQuestionsRequest { House = "Commons", Take = 5 },
-				CancellationToken));
-
-		// Assert - Just verify we can stream without error
-		_ = questions.Should().NotBeNull();
-	}
-
-	#endregion
-
-	#region Written Statements Tests
+		=> _ = (await CollectStreamedItemsAsync(
+			Client.GetAllAsync(new GetWrittenQuestionsRequest { House = "Commons", Take = 5 }, CancellationToken))).Should().NotBeNull();
 
 	/// <summary>Verifies that fetching written statements without filters returns a valid paginated result.</summary>
 	[Fact]
 	public async Task GetWrittenStatementsAsync_WithNoFilters_Succeeds()
-	{
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenStatementsAsync(
-			   new GetWrittenStatementsRequest { Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result);
-	}
+		=> AssertValidPaginatedResponse(await GetStatementsAsync(new() { Take = 10 }));
 
 	/// <summary>Verifies that filtering written statements by date range returns statements within that range.</summary>
 	[Fact]
 	public async Task GetWrittenStatementsAsync_FilterByDateRange_ReturnsStatements()
 	{
-		// Arrange
-		var fromDate = DateTime.Now.AddMonths(-1);
-		var toDate = DateTime.Now;
+		var (from, to) = LastMonth();
 
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenStatementsAsync(
-			 new GetWrittenStatementsRequest { MadeWhenFrom = fromDate, MadeWhenTo = toDate, Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result, item =>
-		{
-			_ = item.Value.DateMade.Should().BeOnOrAfter(fromDate);
-			_ = item.Value.DateMade.Should().BeOnOrBefore(toDate);
-		});
+		AssertValidPaginatedResponse(
+			await GetStatementsAsync(new() { MadeWhenFrom = from, MadeWhenTo = to, Take = 10 }),
+			item => _ = item.Value.DateMade.Should().BeOnOrAfter(from).And.BeOnOrBefore(to));
 	}
 
 	/// <summary>Verifies that fetching a written statement by a valid ID returns that specific statement.</summary>
 	[Fact]
 	public async Task GetWrittenStatementByIdAsync_WithValidId_ReturnsStatement()
 	{
-		// Arrange - First get a valid statement ID from the list
-		var listResult = await Client
-			.QuestionsStatements
-			.GetWrittenStatementsAsync(
-				new GetWrittenStatementsRequest { Take = 1 },
-				CancellationToken);
-
-		// Check if using Results or Items property
-		var hasResults = listResult.Results != null && listResult.Results.Count > 0;
-		var hasItems = listResult.Items != null && listResult.Items.Count > 0;
-
-		if (!hasResults && !hasItems)
+		if (FirstValue(await GetStatementsAsync(new() { Take = 1 })) is not { } first)
 		{
-			// Skip test if no statements available
 			return;
 		}
 
-		var validStatementId = hasResults
-			? listResult.Results![0].Value.Id
-			: listResult.Items![0].Value.Id;
+		var result = await Client.QuestionsStatements.GetWrittenStatementByIdAsync(first.Id, CancellationToken);
 
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetWrittenStatementByIdAsync(
-				validStatementId,
-				CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Value.Should().NotBeNull();
-		_ = result.Value.Id.Should().Be(validStatementId);
+		_ = result.Value.Id.Should().Be(first.Id);
 	}
 
 	/// <summary>Verifies that streaming all written statements via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllWrittenStatementsAsync_StreamsResults()
-	{
-		// Act
-		var statements = await CollectStreamedItemsAsync(
-			Client.GetAllAsync(
-				new GetWrittenStatementsRequest { Take = 5 },
-				CancellationToken));
-
-		// Assert - Just verify we can stream without error
-		_ = statements.Should().NotBeNull();
-	}
-
-	#endregion
-
-	#region Daily Reports Tests
+		=> _ = (await CollectStreamedItemsAsync(
+			Client.GetAllAsync(new GetWrittenStatementsRequest { Take = 5 }, CancellationToken))).Should().NotBeNull();
 
 	/// <summary>Verifies that fetching daily reports within a date range returns the reports collection.</summary>
 	[Fact]
 	public async Task GetDailyReportsAsync_WithDateRange_ReturnsReports()
 	{
-		// Arrange
-		var fromDate = DateTime.Now.AddDays(-7);
-		var toDate = DateTime.Now;
+		var result = await Client.QuestionsStatements.GetDailyReportsAsync(
+			new GetDailyReportsRequest { DateFrom = DateTime.Now.AddDays(-7), DateTo = DateTime.Now, Take = 10 },
+			CancellationToken);
 
-		// Act
-		var result = await Client
-			.QuestionsStatements
-			.GetDailyReportsAsync(
-			 new GetDailyReportsRequest { DateFrom = fromDate, DateTo = toDate, Take = 10 },
-				CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
 	}
 
 	/// <summary>Verifies that streaming daily reports via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllDailyReportsAsync_StreamsResults()
-	{
-		// Arrange
-		var fromDate = DateTime.Now.AddDays(-30);
-
-		// Act
-		var reports = await CollectStreamedItemsAsync(
-			Client.GetAllAsync(
-				new GetDailyReportsRequest { DateFrom = fromDate, Take = 5 },
-				CancellationToken));
-
-		// Assert - Just verify we can stream without error
-		_ = reports.Should().NotBeNull();
-	}
-
-	#endregion
+		=> _ = (await CollectStreamedItemsAsync(
+			Client.GetAllAsync(new GetDailyReportsRequest { DateFrom = DateTime.Now.AddDays(-30), Take = 5 }, CancellationToken))).Should().NotBeNull();
 }

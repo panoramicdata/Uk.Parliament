@@ -10,125 +10,36 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 	/// <summary>Verifies that <see cref="IQuestionsStatementsApi"/> can be mocked using Moq.</summary>
 	[Fact]
 	public void QuestionsStatementsApi_CanBeMocked()
-	{
-		// Arrange
-		var mock = new Mock<IQuestionsStatementsApi>();
-
-		// Assert
-		_ = mock.Object.Should().NotBeNull();
-	}
+		=> new Mock<IQuestionsStatementsApi>().Object.Should().NotBeNull();
 
 	/// <summary>Verifies that a mocked <c>GetWrittenQuestionsAsync</c> returns the expected written questions data.</summary>
 	[Fact]
 	public async Task GetWrittenQuestionsAsync_WithMock_ReturnsExpectedData()
 	{
-		// Arrange
 		var mockApi = new Mock<IQuestionsStatementsApi>();
-		var expectedResponse = CreateWrittenQuestionsResponse();
-		SetupWrittenQuestionsAsyncMock(mockApi, expectedResponse);
+		_ = mockApi.Setup(x => x.GetWrittenQuestionsAsync(It.IsAny<GetWrittenQuestionsRequest>(), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(Page(
+				new WrittenQuestion { Id = 1, Uin = "12345", House = "Commons", QuestionText = "Test question 1" },
+				new WrittenQuestion { Id = 2, Uin = "12346", House = "Commons", QuestionText = "Test question 2" }));
 
-		// Act
-		var result = await mockApi.Object.GetWrittenQuestionsAsync(
-			new GetWrittenQuestionsRequest { Take = 10 },
-			CancellationToken);
+		var result = await mockApi.Object.GetWrittenQuestionsAsync(new GetWrittenQuestionsRequest { Take = 10 }, CancellationToken);
 
-		// Assert
-		_ = result.Should().NotBeNull();
 		_ = result.TotalResults.Should().Be(2);
 		_ = result.Items.Should().HaveCount(2);
 	}
-
-	private static PaginatedResponse<WrittenQuestion> CreateWrittenQuestionsResponse() => new()
-	{
-		TotalResults = 2,
-		Items =
-		[
-			new ValueWrapper<WrittenQuestion>
-			{
-				Value = new WrittenQuestion
-				{
-					Id = 1,
-					Uin = "12345",
-					House = "Commons",
-					QuestionText = "Test question 1",
-					DateTabled = DateTime.Now.AddDays(-1)
-				}
-			},
-			new ValueWrapper<WrittenQuestion>
-			{
-				Value = new WrittenQuestion
-				{
-					Id = 2,
-					Uin = "12346",
-					House = "Commons",
-					QuestionText = "Test question 2",
-					DateTabled = DateTime.Now
-				}
-			}
-		]
-	};
-
-	// Note: This mock setup has apparent complexity due to the API's parameter count.
-	// The complexity is inherent in the API signature being mocked.
-	private static void SetupWrittenQuestionsAsyncMock(
-		Mock<IQuestionsStatementsApi> mockApi,
-		PaginatedResponse<WrittenQuestion> response)
-		=> mockApi
-			.Setup(x => x.GetWrittenQuestionsAsync(
-			   It.IsAny<GetWrittenQuestionsRequest>(),
-				It.IsAny<CancellationToken>()))
-			.ReturnsAsync(response);
 
 	/// <summary>Verifies that a mocked <c>GetWrittenStatementsAsync</c> returns the expected statements data.</summary>
 	[Fact]
 	public async Task GetWrittenStatementsAsync_WithMock_ReturnsExpectedData()
 	{
-		// Arrange
 		var mockApi = new Mock<IQuestionsStatementsApi>();
-		var expectedResponse = new PaginatedResponse<WrittenStatement>
-		{
-			TotalResults = 2,
-			Items =
-			[
-				new ValueWrapper<WrittenStatement>
-				{
-					Value = new WrittenStatement
-					{
-						Id = 1,
-						Uin = "HCWS123",
-						House = "Commons",
-						Title = "Test Statement 1",
-						StatementText = "This is a test statement",
-						DateMade = DateTime.Now.AddDays(-1)
-					}
-				},
-				new ValueWrapper<WrittenStatement>
-				{
-					Value = new WrittenStatement
-					{
-						Id = 2,
-						Uin = "HCWS124",
-						House = "Commons",
-						Title = "Test Statement 2",
-						StatementText = "This is another test statement",
-						DateMade = DateTime.Now
-					}
-				}
-			]
-		};
+		_ = mockApi.Setup(x => x.GetWrittenStatementsAsync(It.IsAny<GetWrittenStatementsRequest>(), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(Page(
+				new WrittenStatement { Id = 1, Uin = "HCWS123", House = "Commons", Title = "Test Statement 1" },
+				new WrittenStatement { Id = 2, Uin = "HCWS124", House = "Commons", Title = "Test Statement 2" }));
 
-		_ = mockApi.Setup(x => x.GetWrittenStatementsAsync(
-			   It.IsAny<GetWrittenStatementsRequest>(),
-			   It.IsAny<CancellationToken>()))
-			   .ReturnsAsync(expectedResponse);
+		var result = await mockApi.Object.GetWrittenStatementsAsync(new GetWrittenStatementsRequest { Take = 10 }, CancellationToken);
 
-		// Act
-		var result = await mockApi.Object.GetWrittenStatementsAsync(
-			 new GetWrittenStatementsRequest { Take = 10 },
-			 CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
 		_ = result.TotalResults.Should().Be(2);
 		_ = result.Items.Should().HaveCount(2);
 	}
@@ -137,42 +48,12 @@ public class QuestionsStatementsApiUnitTests : IntegrationTestBase
 	[Fact]
 	public async Task GetDailyReportsAsync_WithMock_ReturnsExpectedData()
 	{
-		// Arrange
 		var mockApi = new Mock<IQuestionsStatementsApi>();
-		var expectedResponse = new PaginatedResponse<DailyReport>
-		{
-			TotalResults = 1,
-			Items =
-			[
-				new ValueWrapper<DailyReport>
-				{
-					Value = new DailyReport
-					{
-						Id = 1,
-						Date = DateTime.Now.AddDays(-1),
-						House = "Commons",
-						Title = "Daily Report",
-						QuestionCount = 50,
-						StatementCount = 10,
-						IsPublished = true
-					}
-				}
-			]
-		};
+		_ = mockApi.Setup(x => x.GetDailyReportsAsync(It.IsAny<GetDailyReportsRequest>(), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(Page(new DailyReport { Id = 1, House = "Commons", Title = "Daily Report", QuestionCount = 50, StatementCount = 10, IsPublished = true }));
 
-		_ = mockApi.Setup(x => x.GetDailyReportsAsync(
-			  It.IsAny<GetDailyReportsRequest>(),
-			  It.IsAny<CancellationToken>()))
-			  .ReturnsAsync(expectedResponse);
+		var result = await mockApi.Object.GetDailyReportsAsync(new GetDailyReportsRequest(), CancellationToken);
 
-		// Act
-		var result = await mockApi.Object.GetDailyReportsAsync(
-		  new GetDailyReportsRequest(),
-			CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.TotalResults.Should().Be(1);
 		_ = result.Items.Should().ContainSingle();
 		_ = result.Items[0].Value.QuestionCount.Should().Be(50);
 		_ = result.Items[0].Value.StatementCount.Should().Be(10);

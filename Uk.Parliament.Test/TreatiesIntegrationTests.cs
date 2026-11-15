@@ -1,5 +1,3 @@
-using Uk.Parliament.Models.Treaties;
-
 namespace Uk.Parliament.Test;
 
 /// <summary>
@@ -11,34 +9,14 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	/// <summary>Verifies that fetching treaties without filters returns a valid paginated result.</summary>
 	[Fact]
 	public async Task GetTreatiesAsync_WithNoFilters_Succeeds()
-	{
-		// Act
-		var result = await Client
-			.Treaties
-			.GetTreatiesAsync(
-			   new GetTreatiesRequest { Take = 10 },
-				CancellationToken);
-
-		// Assert
-		AssertValidPaginatedResponse(result);
-	}
+		=> AssertValidPaginatedResponse(await Client.Treaties.GetTreatiesAsync(new GetTreatiesRequest { Take = 10 }, CancellationToken));
 
 	/// <summary>Verifies that filtering treaties by status returns a non-null result.</summary>
 	[Fact]
 	public async Task GetTreatiesAsync_FilterByStatus_ReturnsTreaties()
 	{
-		// Arrange
-		const string status = "In Force";
+		var result = await Client.Treaties.GetTreatiesAsync(new GetTreatiesRequest { Status = "In Force", Take = 10 }, CancellationToken);
 
-		// Act
-		var result = await Client
-			.Treaties
-			.GetTreatiesAsync(
-			 new GetTreatiesRequest { Status = status, Take = 10 },
-				CancellationToken);
-
-		// Assert - API returns results but Status field may not be populated
-		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeNull();
 	}
 
@@ -46,52 +24,30 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetTreatyByIdAsync_WithValidId_ReturnsTreaty()
 	{
-		// Arrange - First get a valid treaty ID from the list
-		var validTreatyId = await GetFirstTreatyIdAsync();
-		if (validTreatyId == null)
+		if (await GetFirstTreatyIdAsync() is not { } treatyId)
 		{
-			// Skip test if no treaties available
 			return;
 		}
 
-		// Act
-		var result = await Client
-			.Treaties
-			.GetTreatyByIdAsync(
-				validTreatyId,
-				CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
+		_ = (await Client.Treaties.GetTreatyByIdAsync(treatyId, CancellationToken)).Should().NotBeNull();
 	}
 
 	/// <summary>Verifies that fetching business items for a valid treaty ID returns a result without error.</summary>
 	[Fact]
 	public async Task GetTreatyBusinessItemsAsync_WithValidId_ReturnsBusinessItems()
 	{
-		// Arrange - First get a valid treaty ID from the list
-		var validTreatyId = await GetFirstTreatyIdAsync();
-		if (validTreatyId == null)
+		if (await GetFirstTreatyIdAsync() is not { } treatyId)
 		{
-			// Skip test if no treaties available
 			return;
 		}
 
 		try
 		{
-			// Act
-			var result = await Client
-				.Treaties
-				.GetTreatyBusinessItemsAsync(
-					validTreatyId,
-					CancellationToken);
-
-			// Assert - May be empty for some treaties
-			_ = result.Should().NotBeNull();
+			_ = (await Client.Treaties.GetTreatyBusinessItemsAsync(treatyId, CancellationToken)).Should().NotBeNull();
 		}
 		catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
 		{
-			// Some treaties may not have business items endpoint
+			// Some treaties have no business items endpoint
 		}
 	}
 
@@ -99,13 +55,8 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	[Fact]
 	public async Task GetGovernmentOrganisationsAsync_ReturnsOrganisations()
 	{
-		// Act
-		var result = await Client
-			.Treaties
-			.GetGovernmentOrganisationsAsync(CancellationToken);
+		var result = await Client.Treaties.GetGovernmentOrganisationsAsync(CancellationToken);
 
-		// Assert
-		_ = result.Should().NotBeNull();
 		_ = result.Items.Should().NotBeEmpty();
 		_ = result.Items.Should().AllSatisfy(org =>
 		{
@@ -117,174 +68,12 @@ public class TreatiesIntegrationTests : IntegrationTestBase
 	/// <summary>Verifies that streaming all treaties via async enumerable completes without error.</summary>
 	[Fact]
 	public async Task GetAllTreatiesAsync_StreamsResults()
-	{
-		// Act
-		var treaties = await CollectStreamedItemsAsync(
-			Client.GetAllAsync(
-				new GetTreatiesRequest { Take = 5 },
-				CancellationToken));
+		=> _ = (await CollectStreamedItemsAsync(Client.GetAllAsync(new GetTreatiesRequest { Take = 5 }, CancellationToken))).Should().NotBeNull();
 
-		// Assert - Just verify streaming works
-		_ = treaties.Should().NotBeNull();
-	}
-
-	/// <summary>
-	/// Gets the ID of the first treaty from the API, or null if none are available.
-	/// </summary>
 	private async Task<string?> GetFirstTreatyIdAsync()
 	{
-		var listResult = await Client
-			.Treaties
-			.GetTreatiesAsync(
-				new GetTreatiesRequest { Take = 1 },
-				CancellationToken);
+		var listResult = await Client.Treaties.GetTreatiesAsync(new GetTreatiesRequest { Take = 1 }, CancellationToken);
 
-		if (listResult.Items == null || listResult.Items.Count == 0)
-		{
-			return null;
-		}
-
-		return listResult.Items[0].Value.Id;
+		return listResult.Items is { Count: > 0 } items ? items[0].Value.Id : null;
 	}
-}
-
-/// <summary>
-/// Unit tests for Treaties API (mocking)
-/// </summary>
-public class TreatiesApiUnitTests : IntegrationTestBase
-{
-	/// <summary>Verifies that <see cref="ITreatiesApi"/> can be mocked using Moq.</summary>
-	[Fact]
-	public void TreatiesApi_CanBeMocked()
-	{
-		// Arrange
-		var mock = CreateMockApi();
-
-		// Assert
-		_ = mock.Object.Should().NotBeNull();
-	}
-
-	/// <summary>Verifies that a mocked <c>GetTreatiesAsync</c> returns the expected treaty list.</summary>
-	[Fact]
-	public async Task GetTreatiesAsync_WithMock_ReturnsExpectedData()
-	{
-		// Arrange
-		var mockApi = CreateMockApi();
-		var expectedResponse = new PaginatedResponse<Treaty>
-		{
-			TotalResults = 2,
-			Items =
-			[
-				new ValueWrapper<Treaty>
-				{
-					Value = new Treaty
-					{
-						Id = "1",
-						CommandPaperNumber = "CP 123",
-						Title = "Test Treaty 1",
-						Status = "In Force",
-						DateLaid = DateTime.Now.AddMonths(-6)
-					}
-				},
-				new ValueWrapper<Treaty>
-				{
-					Value = new Treaty
-					{
-						Id = "2",
-						CommandPaperNumber = "CP 124",
-						Title = "Test Treaty 2",
-						Status = "Not Yet In Force",
-						DateLaid = DateTime.Now.AddMonths(-3)
-					}
-				}
-			]
-		};
-
-		_ = mockApi.Setup(x => x.GetTreatiesAsync(
-			  It.IsAny<GetTreatiesRequest>(),
-			  It.IsAny<CancellationToken>()))
-			  .ReturnsAsync(expectedResponse);
-
-		// Act
-		var result = await mockApi.Object.GetTreatiesAsync(
-			new GetTreatiesRequest { Take = 10 },
-			CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.TotalResults.Should().Be(2);
-		_ = result.Items.Should().HaveCount(2);
-	}
-
-	/// <summary>Verifies that a mocked <see cref="ITreatiesApi.GetGovernmentOrganisationsAsync"/> returns the expected organisations.</summary>
-	[Fact]
-	public async Task GetGovernmentOrganisationsAsync_WithMock_ReturnsExpectedData()
-	{
-		// Arrange
-		var mockApi = CreateMockApi();
-		var expectedResponse = new PaginatedResponse<GovernmentOrganisation>
-		{
-			TotalResults = 2,
-			Items =
-			[
-				new ValueWrapper<GovernmentOrganisation>
-				{
-					Value = new GovernmentOrganisation { Id = 1, Name = "Foreign, Commonwealth & Development Office", Abbreviation = "FCDO", IsActive = true }
-				},
-				new ValueWrapper<GovernmentOrganisation>
-				{
-					Value = new GovernmentOrganisation { Id = 2, Name = "Department for Business and Trade", Abbreviation = "DBT", IsActive = true }
-				}
-			]
-		};
-
-		_ = mockApi.Setup(x => x.GetGovernmentOrganisationsAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedResponse);
-
-		// Act
-		var result = await mockApi.Object.GetGovernmentOrganisationsAsync(
-			cancellationToken: CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Items.Should().HaveCount(2);
-		_ = result.Items[0].Value.Name.Should().Be("Foreign, Commonwealth & Development Office");
-		_ = result.Items[1].Value.Abbreviation.Should().Be("DBT");
-	}
-
-	/// <summary>Verifies that a mocked <see cref="ITreatiesApi.GetTreatyBusinessItemsAsync"/> returns the expected business items.</summary>
-	[Fact]
-	public async Task GetTreatyBusinessItemsAsync_WithMock_ReturnsExpectedData()
-	{
-		// Arrange
-		var mockApi = CreateMockApi();
-		var expectedItems = new List<TreatyBusinessItem>
-		{
-			new()
-			{
-				Id = 1,
-				TreatyId = "1",
-				BusinessItemType = "Debate",
-				House = "Commons",
-				Date = DateTime.Now.AddDays(-10)
-			}
-		};
-
-		_ = mockApi.Setup(x => x.GetTreatyBusinessItemsAsync("1", It.IsAny<CancellationToken>()))
-			.ReturnsAsync(expectedItems);
-
-		// Act
-		var result = await mockApi.Object.GetTreatyBusinessItemsAsync("1",
-			cancellationToken: CancellationToken);
-
-		// Assert
-		_ = result.Should().NotBeNull();
-		_ = result.Should().ContainSingle();
-		_ = result[0].BusinessItemType.Should().Be("Debate");
-	}
-
-	/// <summary>
-	/// Creates a mock of <see cref="ITreatiesApi"/> for test setup.
-	/// </summary>
-	private static Mock<ITreatiesApi> CreateMockApi() => new();
 }
