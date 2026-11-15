@@ -285,8 +285,19 @@ public partial class ParliamentClient : IDisposable
 	/// </summary>
 	public void Dispose()
 	{
-		_ownedHttpClient?.Dispose();
-
+		Dispose(disposing: true);
 		GC.SuppressFinalize(this);
+	}
+
+	/// <summary>
+	/// Dispose of resources
+	/// </summary>
+	/// <param name="disposing">True when called from <see cref="Dispose()"/></param>
+	protected virtual void Dispose(bool disposing)
+	{
+		if (disposing)
+		{
+			_ownedHttpClient?.Dispose();
+		}
 	}
 }
