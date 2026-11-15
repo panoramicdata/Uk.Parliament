@@ -76,6 +76,20 @@ public class ClientInfrastructureTests
 		_ = http.DefaultRequestHeaders.UserAgent.ToString().Should().Contain("Uk.Parliament");
 	}
 
+	/// <summary>Disposing the client releases the HTTP clients it created, so later calls fail.</summary>
+	[Fact]
+	public async Task Dispose_ReleasesTheApiClients()
+	{
+		var stub = new StubHttpMessageHandler(_ => "{}");
+		var client = new ParliamentClient(stub, new ParliamentClientOptions());
+		client.Dispose();
+
+		var act = () => client.Bills.GetBillsAsync(new GetBillsRequest(), TestContext.Current.CancellationToken);
+
+		_ = (await act.Should().ThrowAsync<Exception>()).Which.ToString().Should().Contain("ObjectDisposedException");
+		_ = stub.Requests.Should().BeEmpty();
+	}
+
 	/// <summary>A null options argument is rejected.</summary>
 	[Fact]
 	public void Constructor_WithNullOptions_Throws()
